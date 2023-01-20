@@ -13,6 +13,34 @@ Implementará un método el cual recibe por entrada el número de accesos a leer
 - Un objeto tipo vector<long> con las siguientes N direcciones accedidas.
 - Un objeto tipo vector<long> con los respectivos Program Counters (PCs) de las siguientes N instrucciones de acceso.
   
-### 2. BufferSimulator.h
+Las líneas de las trazas de acceso siguen el siguiente formato:
+  <PC (hex)>: <W para escritura ó R para lectura> <direccón accedida (hex)> 
+Por ejemplo:
+    0x7f2974d88093: W 0x7ffeedfc8e88
+    
+    
+### BufferSimulator.h
+
+Declara las clases, interfaces y estructuras:
+
+#### 1. AccessesDataset
+    
+Estructura con dos campos: 
+- Una colección (vector<A>) de accesos, que en nuestro caso serán los direcciones accedidas por las instrucciones.
+    
+#### 2. BuffersDataset
+    
+#### 3. HistoryCache
+    
+#### 4. HistoryCacheEntry
+    
+#### 5. Dictionary
   
+#### 6. DictionaryEntry
+    
+#### 7. BuffersSimulator
   
+    
+### PredictorSVM.h
+    
+### SVMClassifier.h
