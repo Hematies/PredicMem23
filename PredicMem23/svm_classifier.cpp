@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <time.h>
-#include "svm_classifier.hpp"
+#include "SVMClassifier.hpp"
 
 SVMClassifier::SVMClassifier() {
 

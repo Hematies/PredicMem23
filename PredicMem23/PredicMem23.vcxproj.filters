@@ -35,7 +35,7 @@
     <ClInclude Include="PredictorSVM.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="svm_classifier.hpp">
+    <ClInclude Include="SVMClassifier.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="BuffersSimulator.h">

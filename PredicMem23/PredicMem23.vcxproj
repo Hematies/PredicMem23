@@ -136,7 +136,7 @@
   <ItemGroup>
     <ClInclude Include="BuffersSimulator.h" />
     <ClInclude Include="PredictorSVM.h" />
-    <ClInclude Include="svm_classifier.hpp" />
+    <ClInclude Include="SVMClassifier.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

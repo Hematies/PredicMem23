@@ -1,11 +1,28 @@
 #include "BuffersSimulator.h"
 
 template<typename T, typename A, typename LA>
+bool HistoryCacheEntry<T, A, LA>::isEntryValid() {
+	return false;
+}
+
+template<typename T, typename A, typename LA>
+void HistoryCacheEntry<T, A, LA>::setEntry(...) {
+}
+
+template<typename T, typename A, typename LA>
+ClassesHistoryCacheEntry<T, A, LA>::ClassesHistoryCacheEntry() {
+	this->history = vector<int>();
+	this->lastAccess = -1L;
+	this->tag = -1L;
+}
+
+template<typename T, typename A, typename LA>
 ClassesHistoryCacheEntry<T, A, LA>::ClassesHistoryCacheEntry(int numClasses) {
 	this->history = vector<int>(numClasses, -1);
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
+
 template<typename T, typename A, typename LA>
 bool ClassesHistoryCacheEntry<T, A, LA>::isEntryValid() {
 	long invalidValue = -1L;
@@ -27,6 +44,16 @@ void ClassesHistoryCacheEntry<T, A, LA>::setEntry(long newTag, long access, int 
 }
 
 template<typename T, typename I, typename A, typename LA >
+bool HistoryCache<T,I,A,LA>::getEntry(I instruction, HistoryCacheEntry<T, A, LA>& res) {
+	return false;
+}
+
+template<typename T, typename I, typename A, typename LA >
+bool HistoryCache<T, I, A, LA>::newAccess(...) {
+	return false;
+}
+
+template<typename T, typename I, typename A, typename LA >
 InfiniteClassesHistoryCache<T, I, A, LA>::InfiniteClassesHistoryCache() {
 	entries = map<long, ClassesHistoryCacheEntry>();
 }
@@ -34,28 +61,42 @@ InfiniteClassesHistoryCache<T, I, A, LA>::InfiniteClassesHistoryCache() {
 template<typename T, typename I, typename A, typename LA >
 InfiniteClassesHistoryCache<T, I, A, LA>::InfiniteClassesHistoryCache(int numAccesses) {
 	this->_numAccesses = numAccesses;
-	entries = map<long, ClassesHistoryCacheEntry>();
+	entries = map<long, ClassesHistoryCacheEntry<T, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
-ClassesHistoryCacheEntry<long, int, long> InfiniteClassesHistoryCache<T, I, A, LA>::getEntry(long instruction) {
+ bool InfiniteClassesHistoryCache<T, I, A, LA>::getEntry(long instruction,
+	 ClassesHistoryCacheEntry<long, int, long>& res) {
 	if (entries.find(instruction) == entries.end())
-		return nullptr;
-	else
-		return entries[instruction];
+		return false;
+	else {
+		res = entries[instruction];
+		return true;
+	}
+		
 }
 
 template<typename T, typename I, typename A, typename LA >
 bool InfiniteClassesHistoryCache<T, I, A, LA>::newAccess(long instruction, long access, int class_) {
 	bool res = true;
-	ClassesHistoryCacheEntry<long, int, long> entry = getEntry(instruction);
-	if (entry == nullptr) {
+	ClassesHistoryCacheEntry<long, int, long> entry;
+	bool entryFound	= getEntry(instruction, entry);
+	if (!entryFound) {
 		entry = entries[instruction] = ClassesHistoryCacheEntry<long, int, long>(_numAccesses);
 		res = false;
 	}
 	
 	entry.setEntry(instruction, access, class_);
 	return res;
+}
+
+template<typename D>
+Dictionary<D>::Dictionary() {
+	this->numClasses = 0;
+	this->maxConfidence = 0;
+	this->numConfidenceJumps = 0;
+
+	entries = vector<DictionaryEntry<D>>();
 }
 
 template<typename D>
@@ -120,16 +161,24 @@ int Dictionary<D>::getClass(D delta) {
 }
 
 
-template<typename CacheType, typename T, typename I, typename A, typename LA>
-BuffersSimulator <CacheType, T, I, A, LA > ::BuffersSimulator(int numHistoryAccesses, int numClasses,
-	int maxConfidence, int numConfidenceJumps) {
+template<typename T, typename I, typename A, typename LA>
+BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheType, int numHistoryAccesses, int numClasses,
+	int maxConfidence, int numConfidenceJumps, bool saveHistoryAndClassAfterDictMiss) {
 	// We initialize both the cache and the dictionary:
-	this->historyCache = CacheType<T,I,A,LA>(numHistoryAccesses);
+	if (historyCacheType == HistoryCacheType::InfiniteClasses) {
+		this->historyCache = InfiniteClassesHistoryCache<T, I, A, LA>(numHistoryAccesses);
+	}
+	else {
+		// this->historyCache = HistoryCache<T, I, A, LA>();
+		throw -1;
+	}
+	
 	this->dictionary = Dictionary<LA>(numClasses, maxConfidence, numConfidenceJumps);
+	this->saveHistoryAndClassAfterDictMiss = saveHistoryAndClassAfterDictMiss;
 }
 
-template<typename CacheType, typename T, typename I, typename A, typename LA>
-BuffersDataset<A> BuffersSimulator<CacheType, T, I, A, LA >::simulate(AccessesDataset<I, LA> dataset) {
+template<typename T, typename I, typename A, typename LA>
+BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA> dataset) {
 	// We iterate through the given samples:
 	auto accesses = dataset.accesses;
 	auto instructions = dataset.accessesInstructions;
@@ -148,26 +197,44 @@ BuffersDataset<A> BuffersSimulator<CacheType, T, I, A, LA >::simulate(AccessesDa
 		A outputAccess;
 		bool isValid = true;
 
-		// First, we ask the dictionary for the class/word assigned to the access:
-		auto class_ = dictionary.getClass(access);
+		// First, we ask the cache for the respective instruction history:
+		bool historyIsValid = true;
+		HistoryCacheEntry<T, A, LA> history;
+		bool historyIsFound = historyCache.getEntry(instruction, history);
+		LA delta;
+		if (historyIsFound) {
+			historyIsValid = history.isEntryValid();
+			delta = access - history.lastAccess;
+		}
+		else {
+			historyIsValid = false;
+			delta = 0;
+		}
+
+		// First, we ask the dictionary for the class/word assigned to the delta of the access:
+		auto class_ = dictionary.getClass(delta);
 		bool classIsFound = class_ >= 0;
 		
-		// Then, we ask the cache for the respective instruction history:
-		bool historyIsValid = true;
-		HistoryCacheEntry<T, A, LA> history = historyCache.getEntry(instruction);
-		bool historyIsFound = history != nullptr;
-		if (historyIsFound) historyIsValid = history.isEntryValid();
-		else historyIsValid = false;
 
 		// The history and the dictionary are updated:
-		class_ = dictionary.newDelta(access);
+		class_ = dictionary.newDelta(delta);
 		historyCache.newAccess(instruction, access, class_);
 
 		if (!classIsFound || !historyIsValid) {
 			// The access is labeled as miss:
 			isValid = false;
-			inputAccesses = vector<A>(this->numHistoryAccesses, -1);
-			outputAccess = -1;
+			if (!historyIsValid || !saveHistoryAndClassAfterDictMiss) {
+				inputAccesses = vector<A>(this->numHistoryAccesses, -1);
+				outputAccess = -1;
+			}
+			else {
+				// In the case that only the dictionary, failed, we
+				// will indicate as resulting class the class for
+				// the next iteration after updating the dictionary:
+				inputAccesses = vector<A>(history.history);
+				outputAccess = class_;
+			}
+			
 		}
 		else {
 			isValid = true;
@@ -183,4 +250,16 @@ BuffersDataset<A> BuffersSimulator<CacheType, T, I, A, LA >::simulate(AccessesDa
 
 	return res;
 
+}
+
+
+BuffersSimulator<long, long, int, long>
+proposedBuffersSimulator(AccessesDataset<long, long>& dataset, BuffersDataset<int>& classesDataset,
+	int numHistoryAccesses, int numClasses,
+	int maxConfidence, int numConfidenceJumps) {
+	auto res = BuffersSimulator<long, long, int, long>(HistoryCacheType::InfiniteClasses,
+		numHistoryAccesses, numClasses,
+		maxConfidence, numConfidenceJumps);
+	classesDataset = res.simulate(dataset);
+	return res;
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include "svm_classifier.hpp"
+#include "SVMClassifier.hpp"
 
 using namespace std;
 
