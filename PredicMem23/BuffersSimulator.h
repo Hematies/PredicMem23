@@ -15,8 +15,8 @@ public:
 	//HistoryCacheEntry<T,A,LA>();
 	//HistoryCacheEntry<T,A,LA>(int numAccesses);
 
-	virtual bool isEntryValid();
-	virtual void setEntry(...);
+	virtual bool isEntryValid() = 0;
+	virtual void setEntry(T,LA,A) = 0;
 
 };
 
@@ -29,13 +29,6 @@ public:
 	ClassesHistoryCacheEntry();
 	ClassesHistoryCacheEntry(int numClasses);
 	
-	HistoryCacheEntry<T, A, LA> create() {
-		return ClassesHistoryCacheEntry<T,A,LA>();
-	}
-	HistoryCacheEntry<T, A, LA> create(int numAccesses) {
-		return ClassesHistoryCacheEntry<T, A, LA>(numAccesses);
-	}
-
 	bool isEntryValid();
 	void setEntry(long newTag, long access, int class_);
 
@@ -46,11 +39,10 @@ class HistoryCache {
 private:
 	int _numAccesses;
 public:
-
 	// HistoryCache<T,I,A,LA>();
 	// HistoryCache<T,I,A,LA>(int numAccesses);
-	virtual bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>& res);
-	virtual bool newAccess(...);
+	virtual bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res) = 0;
+	virtual bool newAccess(I, LA, A) = 0;
 };
 
 enum HistoryCacheType { InfiniteClasses = 0 };
@@ -65,10 +57,10 @@ public:
 	InfiniteClassesHistoryCache();
 	InfiniteClassesHistoryCache(int numAccesses);
 
-	bool getEntry(long instruction, ClassesHistoryCacheEntry<long, int, long>& res);
-
+	bool getEntry(long instruction, HistoryCacheEntry<long, int, long>* res);
 	bool newAccess(long instruction, long access, int class_);
 };
+
 
 template<typename D>
 struct DictionaryEntry {
@@ -108,7 +100,7 @@ struct BuffersDataset {
 template<typename T = long, typename I = long, typename A = int, typename LA = long>
 class BuffersSimulator {
 public: 
-	HistoryCache<T, I, A, LA> historyCache;
+	HistoryCache<T, I, A, LA>* historyCache;
 	Dictionary<LA> dictionary;
 	int numHistoryAccesses;
 	bool saveHistoryAndClassAfterDictMiss;

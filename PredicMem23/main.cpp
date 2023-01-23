@@ -19,6 +19,7 @@ proposedBuffersSimulator(AccessesDataset<long, long>& dataset, BuffersDataset<in
 
 int main()
 {
+    
     AccessesDataset<long, long> dataset
     {
         vector<long>{0,0,0,0,0,0,0,0},
@@ -26,7 +27,7 @@ int main()
     };
     BuffersDataset<int> res;
     auto b = proposedBuffersSimulator(dataset, res, 2, 2);
-
+    
 
 
     PredictorSVM<MultiSVMClassifierOneToAll> predictor = PredictorSVM<MultiSVMClassifierOneToAll>(nombreFicheroDatos, 8, 6);
