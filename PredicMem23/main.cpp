@@ -22,8 +22,8 @@ int main()
     
     AccessesDataset<long, long> dataset
     {
-        vector<long>{0,0,0,0,0,0,0,0},
-        vector<long>{0,1,0,1,0,1,0,1}
+        vector<long>{0,2,0,2,0,2,0,2,4,8,10,12,14},
+        vector<long>{0,1,0,1,0,1,0,1,2,2,2,3,3}
     };
     BuffersDataset<int> res;
     auto b = proposedBuffersSimulator(dataset, res, 2, 2);

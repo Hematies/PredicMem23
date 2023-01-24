@@ -1,6 +1,31 @@
 #include "BuffersSimulator.h"
 
 template<typename T, typename A, typename LA>
+vector<A> ClassesHistoryCacheEntry<T, A, LA>::getHistory() {
+	return vector<A>(history);
+}
+template<typename T, typename A, typename LA>
+void ClassesHistoryCacheEntry<T, A, LA>::setHistory(vector<A> h) {
+	history = vector<A>(h);
+}
+template<typename T, typename A, typename LA>
+T ClassesHistoryCacheEntry<T, A, LA>::getTag() {
+	return tag;
+}
+template<typename T, typename A, typename LA>
+void ClassesHistoryCacheEntry<T, A, LA>::setTag(T t) {
+	tag = t;
+}
+template<typename T, typename A, typename LA>
+LA ClassesHistoryCacheEntry<T, A, LA>::getLastAccess() {
+	return lastAccess;
+}
+template<typename T, typename A, typename LA>
+void ClassesHistoryCacheEntry<T, A, LA>::setLastAccess(LA la) {
+	lastAccess = la;
+}
+
+template<typename T, typename A, typename LA>
 ClassesHistoryCacheEntry<T, A, LA>::ClassesHistoryCacheEntry() {
 	this->history = vector<int>();
 	this->lastAccess = -1L;
@@ -12,6 +37,14 @@ ClassesHistoryCacheEntry<T, A, LA>::ClassesHistoryCacheEntry(int numClasses) {
 	this->history = vector<int>(numClasses, -1);
 	this->lastAccess = -1L;
 	this->tag = -1L;
+}
+
+template<typename T, typename A, typename LA>
+void ClassesHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
+	// p = new ClassesHistoryCacheEntry();
+	p->setHistory(history);
+	p->setLastAccess(lastAccess);
+	p->setTag(tag);
 }
 
 template<typename T, typename A, typename LA>
@@ -52,7 +85,9 @@ template<typename T, typename I, typename A, typename LA >
 		return false;
 	else {
 		auto entry = entries.find(instruction)->second;
-		res = &entry;
+		// *res = entry;
+		// *res = entry.copy();
+		entry.copy(res);
 		return true;
 	}
 		
@@ -97,7 +132,7 @@ int Dictionary<D>::leastReliableClass() {
 	int res = -1;
 	for (int i = 0; i < entries.size(); i++) {
 		auto entry = entries[i];
-		if ((res == -1) || entry.confidence) {
+		if ((res == -1) || (entry.confidence < minConfidence)) {
 			minConfidence = entry.confidence;
 			res = i;
 		}
@@ -110,14 +145,16 @@ int Dictionary<D>::newDelta(D delta) {
 	int leastReliableClass = this->leastReliableClass();
 	int class_ = -1;
 	for (int i = 0; i < entries.size(); i++) {
-		auto entry = entries[i];
-		if (entry.delta == delta) {
+		auto entry = &entries[i];
+		if (entry->delta == delta) {
 			class_ = i;
-			entry.confidence += (this->maxConfidence + 1) / this->numConfidenceJumps;
-			if (entry.confidence > this->maxConfidence)
-				entry.confidence = this->maxConfidence;
+			entry->confidence += (this->maxConfidence + 1) / this->numConfidenceJumps;
+			if (entry->confidence > this->maxConfidence)
+				entry->confidence = this->maxConfidence;
 		}
-		else entry.confidence -= 1;
+		else if(entry->confidence > 0)
+			entry->confidence -= 1;
+		
 	}
 
 	bool classIsFound = class_ >= 0;
@@ -191,7 +228,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		LA delta;
 		if (historyIsFound) {
 			historyIsValid = history->isEntryValid();
-			delta = access - history->lastAccess;
+			delta = access - history->getLastAccess();
 		}
 		else {
 			historyIsValid = false;
@@ -218,14 +255,14 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 				// In the case that only the dictionary, failed, we
 				// will indicate as resulting class the class for
 				// the next iteration after updating the dictionary:
-				inputAccesses = vector<A>(history->history);
+				inputAccesses = vector<A>(history->getHistory());
 				outputAccess = class_;
 			}
 			
 		}
 		else {
 			isValid = true;
-			inputAccesses = vector<A>(history->history);
+			inputAccesses = vector<A>(history->getHistory());
 			outputAccess = class_;
 		}
 

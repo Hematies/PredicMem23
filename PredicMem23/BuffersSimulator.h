@@ -8,30 +8,53 @@ using namespace std;
 
 template<typename T, typename A, typename LA>
 class HistoryCacheEntry {
-public:
+/*
+protected:
 	vector<A> history;
 	T tag;
 	LA lastAccess;
+*/
+public:
+	
 	//HistoryCacheEntry<T,A,LA>();
 	//HistoryCacheEntry<T,A,LA>(int numAccesses);
 
 	virtual bool isEntryValid() = 0;
 	virtual void setEntry(T,LA,A) = 0;
+	virtual void copy(HistoryCacheEntry<T, A, LA>*) = 0;
+
+	virtual vector<A> getHistory() = 0;
+	virtual void setHistory(vector<A>) = 0;
+	virtual T getTag() = 0;
+	virtual void setTag(T) = 0;
+	virtual LA getLastAccess() = 0;
+	virtual void setLastAccess(LA) = 0;
+
 
 };
 
 template<typename T = long,typename A = int, typename LA = long>
-class ClassesHistoryCacheEntry : public HistoryCacheEntry<T, A, LA>{
-public:
+class ClassesHistoryCacheEntry : public virtual HistoryCacheEntry<T, A, LA>{
+protected:
 	vector<A> history;
 	T tag;
 	LA lastAccess;
+public:
+	
 	ClassesHistoryCacheEntry();
 	ClassesHistoryCacheEntry(int numClasses);
-	
+
 	bool isEntryValid();
 	void setEntry(long newTag, long access, int class_);
+	void copy(HistoryCacheEntry<T, A, LA>*);
 
+	vector<A> getHistory();
+	void setHistory(vector<A> h);
+	T getTag();
+	void setTag(T t);
+	LA getLastAccess();
+	void setLastAccess(LA la);
+		
 };
 
 template<typename T, typename I, typename A, typename LA>
@@ -48,7 +71,7 @@ public:
 enum HistoryCacheType { InfiniteClasses = 0 };
 
 template<typename T = long, typename I = long, typename A = int, typename LA = long>
-class InfiniteClassesHistoryCache : public HistoryCache<T, I, A, LA> {
+class InfiniteClassesHistoryCache : public virtual HistoryCache<T, I, A, LA> {
 private:
 	int _numAccesses;
 public:
