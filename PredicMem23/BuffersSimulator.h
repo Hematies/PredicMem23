@@ -4,7 +4,10 @@
 #include <map>
 #include <iostream>
 
+#define L64b long long
+
 using namespace std;
+
 
 template<typename T, typename A, typename LA>
 class HistoryCacheEntry {
@@ -33,7 +36,7 @@ public:
 
 };
 
-template<typename T = long,typename A = int, typename LA = long>
+template<typename T,typename A, typename LA>
 class ClassesHistoryCacheEntry : public virtual HistoryCacheEntry<T, A, LA>{
 protected:
 	vector<A> history;
@@ -45,7 +48,7 @@ public:
 	ClassesHistoryCacheEntry(int numClasses);
 
 	bool isEntryValid();
-	void setEntry(long newTag, long access, int class_);
+	void setEntry(T newTag, LA access, A class_);
 	void copy(HistoryCacheEntry<T, A, LA>*);
 
 	vector<A> getHistory();
@@ -70,18 +73,18 @@ public:
 
 enum HistoryCacheType { InfiniteClasses = 0 };
 
-template<typename T = long, typename I = long, typename A = int, typename LA = long>
+template<typename T, typename I, typename A, typename LA>
 class InfiniteClassesHistoryCache : public virtual HistoryCache<T, I, A, LA> {
 private:
 	int _numAccesses;
 public:
-	map<long, ClassesHistoryCacheEntry<long,int,long>> entries;
+	map<I, ClassesHistoryCacheEntry<T,A,LA>> entries;
 
 	InfiniteClassesHistoryCache();
 	InfiniteClassesHistoryCache(int numAccesses);
 
-	bool getEntry(long instruction, HistoryCacheEntry<long, int, long>* res);
-	bool newAccess(long instruction, long access, int class_);
+	bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
+	bool newAccess(I instruction, LA access, A class_);
 };
 
 
@@ -97,7 +100,7 @@ public:
 	int numClasses;
 	int maxConfidence;
 	int numConfidenceJumps;
-	vector<DictionaryEntry<long>> entries;
+	vector<DictionaryEntry<D>> entries;
 
 	Dictionary();
 	Dictionary(int numClasses, int maxConfidence = 255, int numConfidenceJumps = 8);
@@ -107,7 +110,7 @@ public:
 
 };
 
-template<typename I = long, typename A = long>
+template<typename I, typename A>
 struct AccessesDataset {
 	vector<A> accesses;
 	vector<I> accessesInstructions;
@@ -120,7 +123,7 @@ struct BuffersDataset {
 	vector<bool> isValid;
 };
 
-template<typename T = long, typename I = long, typename A = int, typename LA = long>
+template<typename T, typename I, typename A, typename LA>
 class BuffersSimulator {
 public: 
 	HistoryCache<T, I, A, LA>* historyCache;
@@ -135,8 +138,8 @@ public:
 	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
 };
 
-BuffersSimulator<long, long, int, long>
-proposedBuffersSimulator(AccessesDataset<long, long>& dataset, BuffersDataset<int>& classesDataset,
+BuffersSimulator<L64b, L64b, int, L64b>
+proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
 	int numHistoryAccesses, int numClasses,
 	int maxConfidence = 255, int numConfidenceJumps = 8);
 

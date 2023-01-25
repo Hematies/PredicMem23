@@ -57,7 +57,7 @@ bool ClassesHistoryCacheEntry<T, A, LA>::isEntryValid() {
 }
 
 template<typename T, typename A, typename LA>
-void ClassesHistoryCacheEntry<T, A, LA>::setEntry(long newTag, long access, int class_) {
+void ClassesHistoryCacheEntry<T, A, LA>::setEntry(T newTag, LA access, A class_) {
 	tag = newTag;
 	lastAccess = access;
 	for (int i = 0; i < history.size() - 1; i++) {
@@ -69,18 +69,18 @@ void ClassesHistoryCacheEntry<T, A, LA>::setEntry(long newTag, long access, int 
 
 template<typename T, typename I, typename A, typename LA >
 InfiniteClassesHistoryCache<T, I, A, LA>::InfiniteClassesHistoryCache() {
-	entries = map<long, ClassesHistoryCacheEntry<T, A, LA>>();
+	entries = map<I, ClassesHistoryCacheEntry<T, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
 InfiniteClassesHistoryCache<T, I, A, LA>::InfiniteClassesHistoryCache(int numAccesses) {
 	this->_numAccesses = numAccesses;
-	entries = map<long, ClassesHistoryCacheEntry<T, A, LA>>();
+	entries = map<I, ClassesHistoryCacheEntry<T, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
- bool InfiniteClassesHistoryCache<T, I, A, LA>::getEntry(long instruction,
-	 HistoryCacheEntry<long, int, long>* res) {
+ bool InfiniteClassesHistoryCache<T, I, A, LA>::getEntry(I instruction,
+	 HistoryCacheEntry<T, A, LA>* res) {
 	if (entries.find(instruction) == entries.end())
 		return false;
 	else {
@@ -94,10 +94,10 @@ template<typename T, typename I, typename A, typename LA >
 }
 
 template<typename T, typename I, typename A, typename LA >
-bool InfiniteClassesHistoryCache<T, I, A, LA>::newAccess(long instruction, long access, int class_) {
+bool InfiniteClassesHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A class_) {
 	bool res = true;
-	ClassesHistoryCacheEntry<long, int, long> entry = 
-		ClassesHistoryCacheEntry<long, int, long>(_numAccesses);
+	ClassesHistoryCacheEntry<T, A, LA> entry = 
+		ClassesHistoryCacheEntry<T, A, LA>(_numAccesses);
 	bool entryFound	= getEntry(instruction, &entry);
 	if (!entryFound) {
 		entries[instruction] = entry;
@@ -223,7 +223,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 
 		// First, we ask the cache for the respective instruction history:
 		bool historyIsValid = true;
-		HistoryCacheEntry<T, A, LA>* history = new ClassesHistoryCacheEntry<long, int, long>();
+		HistoryCacheEntry<T, A, LA>* history = new ClassesHistoryCacheEntry<T, A, LA>();
 		bool historyIsFound = historyCache->getEntry(instruction, history);
 		LA delta;
 		if (historyIsFound) {
@@ -277,11 +277,11 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 }
 
 
-BuffersSimulator<long, long, int, long>
-proposedBuffersSimulator(AccessesDataset<long, long>& dataset, BuffersDataset<int>& classesDataset,
+BuffersSimulator<L64b, L64b, int, L64b>
+proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
 	int numHistoryAccesses, int numClasses,
 	int maxConfidence, int numConfidenceJumps) {
-	auto res = BuffersSimulator<long, long, int, long>(HistoryCacheType::InfiniteClasses,
+	auto res = BuffersSimulator<L64b, L64b, int, L64b>(HistoryCacheType::InfiniteClasses,
 		numHistoryAccesses, numClasses,
 		maxConfidence, numConfidenceJumps);
 	classesDataset = res.simulate(dataset);
