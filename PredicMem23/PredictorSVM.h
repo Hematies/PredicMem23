@@ -2,23 +2,22 @@
 #include <string>
 #include <iostream>
 #include "SVMClassifier.hpp"
+#include "BuffersSimulator.h"
 
 using namespace std;
 
-#define T_CLASE float
 
 
-template<typename T_pred>
+template<typename T_pred, typename T_entrada>
 class PredictorSVM
 {
 
 private:
 	int numPartesMostrar = 1000;
 public:
-	string nombreFicheroDatos;
-	vector<vector<T_CLASE>> datosEntrada = vector<vector<T_CLASE>>();
+	vector<vector<float>> datosEntrada = vector<vector<float>>();
 	vector<char> datosSalida = vector<char>();
-	vector<char> mascaraErroresVocabulario = vector<char>();
+	vector<char> mascaraErroresBufferes = vector<char>();
 	long numAciertos = 0;
 	int numMuestrasLote = 1;
 	int numRepeticiones = 1;
@@ -29,15 +28,13 @@ public:
 	int numClases = 0;
 
 
-	PredictorSVM(string nombreFicheroDatos_, int numElemSecuencia, int numClases) {
+	PredictorSVM(BuffersDataset<T_entrada> datasetClases, int numElemSecuencia, int numClases) {
 
 		static_assert(std::is_base_of<MultiSVMClassifier, T_pred>::value, "Clase no es subtipo de MultiSVMClassifier");
 
-
-		this->nombreFicheroDatos = nombreFicheroDatos_;
 		this->numElemSecuencia = numElemSecuencia;
 		this->numClases = numClases;
-		// importarDatos(this->nombreFicheroDatos);
+		importarDatos(datasetClases);
 		inicializarModelo();
 	}
 
@@ -59,10 +56,30 @@ public:
 
 			this->datosEntrada.push_back(entrada);
 			this->datosSalida.push_back(salida);
-			this->mascaraErroresVocabulario.push_back(haHabidoErrorVocabulario);
+			this->mascaraErroresBufferes.push_back(haHabidoErrorVocabulario);
 		}
 	}
 	*/
+
+
+	void importarDatos(BuffersDataset<T_entrada> datasetClases) {
+		for (int i = 0; i < datasetClases.inputAccesses.size(); i++) {
+			vector<float> entrada = vector<float>();
+			char salida = -1;
+			char haHabidoErrorBufferes = false;
+
+			for (int j = 0; j < datasetClases.inputAccesses[i].size(); j++) {
+				entrada.push_back(datasetClases.inputAccesses[i][j] / numElemSecuencia + 1.0);
+			}
+
+			salida = datasetClases.outputAccesses[i];
+			haHabidoErrorBufferes = !datasetClases.isValid[i];
+
+			this->datosEntrada.push_back(entrada);
+			this->datosSalida.push_back(salida);
+			this->mascaraErroresBufferes.push_back(haHabidoErrorBufferes);
+		}
+	}
 
 	void inicializarModelo() {
 		// double c = 0.5;
@@ -97,20 +114,24 @@ public:
 		for (int i = 0; i < datosEntrada.size(); i++) {
 			vector<float> entrada = vector<float>(datosEntrada[i].begin(), datosEntrada[i].end());
 			int salida = datosSalida[i];
-			auto haHabidoFalloVocabulario = mascaraErroresVocabulario[i];
+			auto haHabidoErrorBufferes = mascaraErroresBufferes[i];
 
-			auto salidaPredicha = predecir(entrada);
+			int salidaPredicha = -1;
+			if(!haHabidoErrorBufferes)
+				salidaPredicha = predecir(entrada);
 
-			bool haHabidoFallo = (salida != salidaPredicha) || haHabidoFalloVocabulario;
+			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
+			bool haHabidoFallo = haHabidoFalloPrediccion || haHabidoErrorBufferes;
 
 			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
-			if (haHabidoFallo) {
+			if (haHabidoFalloPrediccion) {
 				ajustarPredictor(entrada, salida);
 			}
-			else numAciertos++;
+			else if(!haHabidoErrorBufferes) numAciertos++;
 
-			if (i % numPartesMostrar == 0) {
-				// if (true){
+			// if (i % numPartesMostrar == 0) {
+			// 
+			if (true){
 				string in = "";
 				for (auto e : entrada)
 					in += to_string((e - 1.0) * numElemSecuencia) + ", ";

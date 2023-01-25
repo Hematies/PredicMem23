@@ -30,7 +30,8 @@ int main()
     
 
 
-    PredictorSVM<MultiSVMClassifierOneToAll> predictor = PredictorSVM<MultiSVMClassifierOneToAll>(nombreFicheroDatos, 8, 6);
+    PredictorSVM<MultiSVMClassifierOneToAll, int> predictor = 
+        PredictorSVM<MultiSVMClassifierOneToAll, int>(res, 8, 6);
     predictor.simular();
 }
 
