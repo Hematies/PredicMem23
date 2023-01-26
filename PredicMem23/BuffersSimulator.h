@@ -107,6 +107,7 @@ public:
 	int leastReliableClass();
 	int newDelta(D delta);
 	int getClass(D delta);
+	void showContent();
 
 };
 
@@ -136,6 +137,8 @@ public:
 		bool saveHistoryAndClassAfterDictMiss = true);
 
 	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
+
+	bool testBuffers(I instruction, LA previousAccess);
 };
 
 BuffersSimulator<L64b, L64b, int, L64b>

@@ -69,7 +69,7 @@ public:
 			char haHabidoErrorBufferes = false;
 
 			for (int j = 0; j < datasetClases.inputAccesses[i].size(); j++) {
-				entrada.push_back(datasetClases.inputAccesses[i][j] / numElemSecuencia + 1.0);
+				entrada.push_back(((float)datasetClases.inputAccesses[i][j]) / numElemSecuencia + 1.0);
 			}
 
 			salida = datasetClases.outputAccesses[i];
@@ -127,11 +127,14 @@ public:
 			if (haHabidoFalloPrediccion) {
 				ajustarPredictor(entrada, salida);
 			}
-			else if(!haHabidoErrorBufferes) numAciertos++;
+			else if (!haHabidoErrorBufferes)
+				numAciertos++;
+			else
+				printf("");
 
-			// if (i % numPartesMostrar == 0) {
+			if (i % numPartesMostrar == 0) {
 			// 
-			if (true){
+			// if (!haHabidoErrorBufferes){
 				string in = "";
 				for (auto e : entrada)
 					in += to_string((e - 1.0) * numElemSecuencia) + ", ";

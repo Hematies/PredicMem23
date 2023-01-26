@@ -11,7 +11,15 @@
 // string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredictorSVM\\datos\\omnetpp_s_0.bmp";
 //string nombreFicheroDatos = "A:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredictorSVM\\datos\\mcf_s_0.bmp";
 
-string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace_lbm.out";
+// string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace_lbm.out";
+
+// string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace_mcf.out";
+
+string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\605.mcf_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+//string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\620.omnetpp_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+// string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\600.perlbench_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+// string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+
 
 /*
 extern BuffersSimulator<long, long, int, long>
@@ -30,7 +38,8 @@ int main()
     };
 
     TraceReader<L64b, L64b> reader(nombreFicheroDatos);
-    dataset = reader.readNextLines(100000);
+    dataset = reader.readNextLines(10000000);// 10000000);
+    // dataset = reader.readAllLines();
 
     BuffersDataset<int> res;
     auto b = proposedBuffersSimulator(dataset, res, 8, 6);

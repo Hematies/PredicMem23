@@ -164,6 +164,8 @@ int Dictionary<D>::newDelta(D delta) {
 		auto entry = &entries[class_];
 		entry->delta = delta;
 		entry->confidence = (this->maxConfidence + 1) / this->numConfidenceJumps;
+
+		// this->showContent();
 	}
 
 	return class_;
@@ -181,6 +183,19 @@ int Dictionary<D>::getClass(D delta) {
 	}
 
 	return class_;
+}
+
+template<typename D>
+void Dictionary<D>::showContent() {
+	auto leastReliable = leastReliableClass();
+	cout << "-----" << endl;
+	for (int k = 0; k < entries.size(); k++) {
+		string warning = k == leastReliable ? "!" : "";
+		cout << "Entry " << k << ": " << endl;
+		cout << "-> Delta: " << entries[k].delta << endl;
+		cout << "-> Confidence: " << entries[k].confidence << warning << endl;
+	}
+	cout << "-----" << endl;
 }
 
 
@@ -226,9 +241,11 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		HistoryCacheEntry<T, A, LA>* history = new ClassesHistoryCacheEntry<T, A, LA>();
 		bool historyIsFound = historyCache->getEntry(instruction, history);
 		LA delta;
+		LA previousAccess;
 		if (historyIsFound) {
 			historyIsValid = history->isEntryValid();
-			delta = access - history->getLastAccess();
+			previousAccess = history->getLastAccess();
+			delta = access - previousAccess;
 		}
 		else {
 			historyIsValid = false;
@@ -244,6 +261,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		class_ = dictionary.newDelta(delta);
 		historyCache->newAccess(instruction, access, class_);
 
+		
+		bool noError = true;
 		if (!classIsFound || !historyIsValid) {
 			// The access is labeled as miss:
 			isValid = false;
@@ -264,6 +283,13 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 			isValid = true;
 			inputAccesses = vector<A>(history->getHistory());
 			outputAccess = class_;
+
+			// We test the buffers just in case:
+			noError = this->testBuffers(instruction, previousAccess);
+
+			if (!noError)
+				printf("");
+
 		}
 
 		res.inputAccesses.push_back(inputAccesses);
@@ -274,6 +300,26 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 
 	return res;
 
+}
+
+template<typename T, typename I, typename A, typename LA>
+bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA previousAccess) {
+	bool historyIsValid = true;
+	HistoryCacheEntry<T, A, LA>* history = new ClassesHistoryCacheEntry<T, A, LA>();
+	bool historyIsFound = historyCache->getEntry(instruction, history);
+	LA lastAccess;
+	if (!historyIsFound) return false;
+
+	historyIsValid = history->isEntryValid();
+	lastAccess = history->getLastAccess();
+	LA delta = lastAccess - previousAccess;
+	auto savedClass = history->getHistory()[history->getHistory().size() - 1];
+
+	auto class_ = dictionary.getClass(delta);
+	bool classIsFound = class_ >= 0;
+	if(!classIsFound) return false;
+
+	return savedClass == class_;
 }
 
 

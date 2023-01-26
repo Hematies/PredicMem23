@@ -15,6 +15,33 @@ public:
 	TraceReader(string filename) {
 		this->filename = filename;
 		file = ifstream(filename);
+		file.open(filename);
+	}
+
+	unsigned long countNumLines() {
+		// if (file.is_open()) file.close();
+		// file.open(filename);
+		file.clear();
+		file.seekg(0);
+		string line;
+		unsigned long res = 0;
+		// while (file.peek() != EOF)
+		while (!file.eof())
+		{
+			getline(file, line);
+			if (line.compare("#eof") == 0) {
+				break;
+			}
+			res++;
+		}
+		// file.close();
+		// file.open(filename);
+		return res;
+	}
+
+
+	AccessesDataset<I, O> readAllLines() {
+		return readNextLines(countNumLines());
 	}
 
 	AccessesDataset<I, O> readNextLines(unsigned long numLines) {
@@ -31,13 +58,15 @@ public:
 
 		if (file.is_open())
 		{
-
+			file.clear();
+			file.seekg(0);
 			while (file.peek() != EOF)
 			{
 				getline(file, line);
 
 				// if ((k >= start) && (k < end)) {
-				if(k < end ) {
+				if ((k >= end) || (line.compare("#eof") == 0)) break;
+				else if(k < end) {
 					// Example of line:
 					// 0x7f2974d88093: W 0x7ffeedfc8e88
 					int index = line.find(delimiter);
@@ -54,10 +83,10 @@ public:
 					// currentLine++;
 				}
 				k++;
-				if (k >= end) break;
+				
 			}
 		}
-		file.close();
+		// file.close();
 
 		return res;
 	}
