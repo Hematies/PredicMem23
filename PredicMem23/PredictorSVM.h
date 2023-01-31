@@ -3,10 +3,14 @@
 #include <iostream>
 #include "SVMClassifier.hpp"
 #include "BuffersSimulator.h"
+//#include "Experimentation.h"
+#include "Global.h"
 
 using namespace std;
 
 
+// extern struct PredictResults;
+extern struct PredictResultsAndCosts;
 
 template<typename T_pred, typename T_entrada>
 class PredictorSVM
@@ -38,28 +42,22 @@ public:
 		inicializarModelo();
 	}
 
-	/*
-	void importarDatos(string nombreFichero) {
-		Mat datos = leerMat(nombreFichero);
+	PredictorSVM(int numElemSecuencia, int numClases) {
 
-		for (int i = 0; i < datos.rows; i++) {
-			vector<T_CLASE> entrada = vector<T_CLASE>();
-			char salida = -1;
-			char haHabidoErrorVocabulario = false;
+		static_assert(std::is_base_of<MultiSVMClassifier, T_pred>::value, "Clase no es subtipo de MultiSVMClassifier");
 
-			for (int j = 0; j < datos.cols - 2; j++) {
-				entrada.push_back((T_CLASE)datos.at<uchar>(i, j) / numElemSecuencia + 1.0);
-
-			}
-			salida = datos.at<uchar>(i, datos.cols - 2);
-			haHabidoErrorVocabulario = datos.at<uchar>(i, datos.cols - 1);
-
-			this->datosEntrada.push_back(entrada);
-			this->datosSalida.push_back(salida);
-			this->mascaraErroresBufferes.push_back(haHabidoErrorVocabulario);
-		}
+		this->numElemSecuencia = numElemSecuencia;
+		this->numClases = numClases;
+		inicializarModelo();
 	}
-	*/
+
+	PredictorSVM() {
+
+		static_assert(std::is_base_of<MultiSVMClassifier, T_pred>::value, "Clase no es subtipo de MultiSVMClassifier");
+
+		this->numElemSecuencia = 0;
+		this->numClases = 0;
+	}
 
 
 	void importarDatos(BuffersDataset<T_entrada> datasetClases) {
@@ -101,7 +99,11 @@ public:
 		return this->modelo.predict(in)[0];
 	}
 
-	void simular(bool inicializar = true) {
+	PredictResultsAndCosts simular(bool inicializar = true) {
+
+		struct PredictResultsAndCosts resultsAndCosts;
+		double numDictionaryMisses = 0.0;
+
 
 		if (inicializar) {
 			this->inicializarModelo();
@@ -130,7 +132,7 @@ public:
 			else if (!haHabidoErrorBufferes)
 				numAciertos++;
 			else
-				printf("");
+				numDictionaryMisses++;
 
 			if (i % numPartesMostrar == 0) {
 			// 
@@ -145,6 +147,18 @@ public:
 		}
 
 		tasaExito = ((double)numAciertos) / datosEntrada.size();
+
+		resultsAndCosts.hitRate = tasaExito;
+		resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
+		resultsAndCosts.modelMemoryCosts = getModelMemoryCosts();
+		return resultsAndCosts;
+	}
+
+	double getModelMemoryCosts() {
+		int numSVMs = this->modelo.SVMsTable.size();
+		int numElements = this->modelo.numFeatures + 1;
+
+		return numElements * numSVMs; // For now, we just return the total number of elements (weights) of the model.
 	}
 };
 

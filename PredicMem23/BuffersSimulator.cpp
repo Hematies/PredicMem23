@@ -198,12 +198,11 @@ void Dictionary<D>::showContent() {
 	cout << "-----" << endl;
 }
 
-
 template<typename T, typename I, typename A, typename LA>
 BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheType, int numHistoryAccesses, int numClasses,
 	int maxConfidence, int numConfidenceJumps, bool saveHistoryAndClassAfterDictMiss) {
 	// We initialize both the cache and the dictionary:
-	if (historyCacheType == HistoryCacheType::InfiniteClasses) {
+	if (historyCacheType == HistoryCacheType::Infinite) {
 		this->historyCache = new InfiniteClassesHistoryCache<T, I, A, LA>(numHistoryAccesses);
 	}
 	else {
@@ -327,7 +326,7 @@ BuffersSimulator<L64b, L64b, int, L64b>
 proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
 	int numHistoryAccesses, int numClasses,
 	int maxConfidence, int numConfidenceJumps) {
-	auto res = BuffersSimulator<L64b, L64b, int, L64b>(HistoryCacheType::InfiniteClasses,
+	auto res = BuffersSimulator<L64b, L64b, int, L64b>(HistoryCacheType::Infinite,
 		numHistoryAccesses, numClasses,
 		maxConfidence, numConfidenceJumps);
 	classesDataset = res.simulate(dataset);

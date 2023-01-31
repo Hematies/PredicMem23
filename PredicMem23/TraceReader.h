@@ -11,11 +11,20 @@ private:
 public:
 	string filename;
 	ifstream file;
+	unsigned long currentLine = 0;
+
+	TraceReader() {
+		this->filename = "";
+	}
 
 	TraceReader(string filename) {
 		this->filename = filename;
 		file = ifstream(filename);
 		file.open(filename);
+	}
+
+	void closeFile() {
+		file.close();
 	}
 
 	unsigned long countNumLines() {
@@ -80,14 +89,29 @@ public:
 					res.accessesInstructions.push_back(instruction);
 					res.accesses.push_back(address);
 
-					// currentLine++;
 				}
 				k++;
+				currentLine++;
 				
 			}
 		}
 		// file.close();
 
 		return res;
+	}
+
+	AccessesDataset<I, O> readLines(unsigned long inclusiveStart, unsigned long exclusiveEnd) {
+		
+		// We reset the file pointer if necessary:
+		if (currentLine > inclusiveStart) {
+			file.clear();
+			file.seekg(0);
+		}
+
+		// We move the pointer to the given position:
+		readNextLines(inclusiveStart);
+
+		// We read the lines that are between the start and the end:
+		return readNextLines(exclusiveEnd - inclusiveStart);
 	}
 };

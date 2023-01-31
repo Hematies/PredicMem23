@@ -71,7 +71,7 @@ public:
 	virtual bool newAccess(I, LA, A) = 0;
 };
 
-enum HistoryCacheType { InfiniteClasses = 0 };
+enum HistoryCacheType { Infinite = 0 , Real = 0};
 
 template<typename T, typename I, typename A, typename LA>
 class InfiniteClassesHistoryCache : public virtual HistoryCache<T, I, A, LA> {
@@ -131,6 +131,12 @@ public:
 	Dictionary<LA> dictionary;
 	int numHistoryAccesses;
 	bool saveHistoryAndClassAfterDictMiss;
+
+	BuffersSimulator() {
+		this->historyCache = nullptr;
+		this->dictionary = Dictionary<LA>();
+		this->saveHistoryAndClassAfterDictMiss = false;
+	}
 
 	BuffersSimulator(HistoryCacheType historyCacheType, int numHistoryAccesses, int numClasses,
 		int maxConfidence = 255, int numConfidenceJumps = 8,
