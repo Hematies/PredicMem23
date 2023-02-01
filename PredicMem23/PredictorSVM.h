@@ -22,6 +22,9 @@ public:
 	vector<vector<float>> datosEntrada = vector<vector<float>>();
 	vector<char> datosSalida = vector<char>();
 	vector<char> mascaraErroresBufferes = vector<char>();
+	vector<char> mascaraErroresCache = vector<char>();
+	vector<char> mascaraErroresDiccionario = vector<char>();
+
 	long numAciertos = 0;
 	int numMuestrasLote = 1;
 	int numRepeticiones = 1;
@@ -76,6 +79,8 @@ public:
 			this->datosEntrada.push_back(entrada);
 			this->datosSalida.push_back(salida);
 			this->mascaraErroresBufferes.push_back(haHabidoErrorBufferes);
+			this->mascaraErroresCache.push_back(datasetClases.isCacheMiss[i]);
+			this->mascaraErroresDiccionario.push_back(datasetClases.isDictionaryMiss[i]);
 		}
 	}
 
@@ -103,6 +108,7 @@ public:
 
 		struct PredictResultsAndCosts resultsAndCosts;
 		double numDictionaryMisses = 0.0;
+		double numCacheMisses = 0.0;
 
 
 		if (inicializar) {
@@ -117,6 +123,8 @@ public:
 			vector<float> entrada = vector<float>(datosEntrada[i].begin(), datosEntrada[i].end());
 			int salida = datosSalida[i];
 			auto haHabidoErrorBufferes = mascaraErroresBufferes[i];
+			auto haHabidoErrorCache = mascaraErroresCache[i];
+			auto haHabidoErrorDiccionario = mascaraErroresDiccionario[i];
 
 			int salidaPredicha = -1;
 			if(!haHabidoErrorBufferes)
@@ -131,8 +139,11 @@ public:
 			}
 			else if (!haHabidoErrorBufferes)
 				numAciertos++;
-			else
-				numDictionaryMisses++;
+			else {
+				if (haHabidoErrorDiccionario) numDictionaryMisses++;
+				if (haHabidoErrorCache) numCacheMisses++;
+			}
+				
 
 			if (i % numPartesMostrar == 0) {
 			// 
@@ -150,6 +161,7 @@ public:
 
 		resultsAndCosts.hitRate = tasaExito;
 		resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
+		resultsAndCosts.cacheMissRate = numCacheMisses / datosEntrada.size();
 		resultsAndCosts.modelMemoryCosts = getModelMemoryCosts();
 		return resultsAndCosts;
 	}

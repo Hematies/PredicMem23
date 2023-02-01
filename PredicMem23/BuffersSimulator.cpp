@@ -225,6 +225,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 	BuffersDataset<A> res = {
 		vector<vector<A>>(),
 		vector<A>(),
+		vector<bool>(),
+		vector<bool>(),
 		vector<bool>()
 	};
 
@@ -234,7 +236,9 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 
 		vector<A> inputAccesses = vector<A>();
 		A outputAccess;
-		bool isValid = true;
+		bool isValid = true,
+			isCacheMiss = false,
+			isDictionaryMiss = false;
 
 		// First, we ask the cache for the respective instruction history:
 		bool historyIsValid = true;
@@ -260,9 +264,10 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		// The history and the dictionary are updated:
 		class_ = dictionary.newDelta(delta);
 		historyCache->newAccess(instruction, access, class_);
-
 		
 		bool noError = true;
+		isCacheMiss = !historyIsValid;
+		isDictionaryMiss = !classIsFound;
 		if (!classIsFound || !historyIsValid) {
 			// The access is labeled as miss:
 			isValid = false;
@@ -287,14 +292,13 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 			// We test the buffers just in case:
 			noError = this->testBuffers(instruction, previousAccess);
 
-			if (!noError)
-				printf("");
-
 		}
 
 		res.inputAccesses.push_back(inputAccesses);
 		res.outputAccesses.push_back(outputAccess);
 		res.isValid.push_back(isValid);
+		res.isDictionaryMiss.push_back(isDictionaryMiss);
+		res.isCacheMiss.push_back(isCacheMiss);
 
 	}
 

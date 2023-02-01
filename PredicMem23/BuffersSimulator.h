@@ -121,6 +121,8 @@ template<typename A = long>
 struct BuffersDataset {
 	vector<vector<A>> inputAccesses;
 	vector<A> outputAccesses;
+	vector<bool> isCacheMiss;
+	vector<bool> isDictionaryMiss;
 	vector<bool> isValid;
 };
 
