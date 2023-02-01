@@ -136,6 +136,7 @@ public:
 		this->historyCache = nullptr;
 		this->dictionary = Dictionary<LA>();
 		this->saveHistoryAndClassAfterDictMiss = false;
+		numHistoryAccesses = 0;
 	}
 
 	BuffersSimulator(HistoryCacheType historyCacheType, int numHistoryAccesses, int numClasses,

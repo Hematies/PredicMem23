@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<Traces>
+    <pruebaCCL hitRate="0.817254" cacheMissRate="0" dictionaryMissRate="0.00764865">
+        <01_02_2023_11_52_21::pruebaCCL_0_1000000 hitRate="0.780695" cacheMissRate="0" dictionaryMissRate="0.013754" />
+        <01_02_2023_11_52_21::pruebaCCL_1000000_2000000 hitRate="0.816959" cacheMissRate="0" dictionaryMissRate="0.032628" />
+        <01_02_2023_11_52_21::pruebaCCL_2000000_3000000 hitRate="0.779091" cacheMissRate="0" dictionaryMissRate="0.007156" />
+        <01_02_2023_11_52_21::pruebaCCL_3000000_4000000 hitRate="0.767356" cacheMissRate="0" dictionaryMissRate="0.007109" />
+        <01_02_2023_11_52_21::pruebaCCL_4000000_5000000 hitRate="0.783969" cacheMissRate="0" dictionaryMissRate="0.006745" />
+        <01_02_2023_11_52_21::pruebaCCL_5000000_6000000 hitRate="0.776987" cacheMissRate="0" dictionaryMissRate="0.006594" />
+        <01_02_2023_11_52_21::pruebaCCL_6000000_7000000 hitRate="0.76373" cacheMissRate="0" dictionaryMissRate="0.006777" />
+        <01_02_2023_11_52_21::pruebaCCL_7000000_8000000 hitRate="0.776383" cacheMissRate="0" dictionaryMissRate="0.00653" />
+        <01_02_2023_11_52_21::pruebaCCL_8000000_9000000 hitRate="0.775579" cacheMissRate="0" dictionaryMissRate="0.006953" />
+        <01_02_2023_11_52_21::pruebaCCL_9000000_10000000 hitRate="0.786963" cacheMissRate="0" dictionaryMissRate="0.00712" />
+        <01_02_2023_11_52_21::pruebaCCL_10000000_11000000 hitRate="0.817364" cacheMissRate="0" dictionaryMissRate="0.023717" />
+        <01_02_2023_11_52_21::pruebaCCL_11000000_12000000 hitRate="0.745861" cacheMissRate="0" dictionaryMissRate="0.000288" />
+        <01_02_2023_11_52_21::pruebaCCL_12000000_13000000 hitRate="0.739252" cacheMissRate="0" dictionaryMissRate="0.000288" />
+        <01_02_2023_11_52_21::pruebaCCL_13000000_14000000 hitRate="0.891421" cacheMissRate="0" dictionaryMissRate="0.000493" />
+        <01_02_2023_11_52_21::pruebaCCL_14000000_15000000 hitRate="0.946507" cacheMissRate="0" dictionaryMissRate="7.3e-05" />
+        <01_02_2023_11_52_21::pruebaCCL_15000000_16000000 hitRate="0.910483" cacheMissRate="0" dictionaryMissRate="0.004462" />
+        <01_02_2023_11_52_21::pruebaCCL_16000000_17000000 hitRate="0.890722" cacheMissRate="0" dictionaryMissRate="0.00012" />
+        <01_02_2023_11_52_21::pruebaCCL_17000000_17455582 hitRate="0.961253" cacheMissRate="0" dictionaryMissRate="0.00686867" />
+    </pruebaCCL>
+    <pruebaCorta hitRate="0.779732" cacheMissRate="0" dictionaryMissRate="0.0306997">
+        <01_02_2023_11_52_21::pruebaCorta_0_683852 hitRate="0.779732" cacheMissRate="0" dictionaryMissRate="0.0306997" />
+    </pruebaCorta>
+</Traces>

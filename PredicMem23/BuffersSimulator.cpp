@@ -213,6 +213,7 @@ BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheT
 	
 	this->dictionary = Dictionary<LA>(numClasses, maxConfidence, numConfidenceJumps);
 	this->saveHistoryAndClassAfterDictMiss = saveHistoryAndClassAfterDictMiss;
+	this->numHistoryAccesses = numHistoryAccesses;
 }
 
 template<typename T, typename I, typename A, typename LA>

@@ -5,6 +5,8 @@
 #include "PredictorSVM.h"
 #include "BuffersSimulator.h"
 #include "TraceReader.h"
+#include "Experimentation.h"
+#include "Global.h"
 
 // string nombreFicheroDatos = "foto.jpg";//  "datasetClases.bmp"; // // "..\\..\\datos\\datasetClases.bmp";
 // string nombreFicheroDatos = "A:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredictorSVM\\datos\\datasetClases2.bmp";
@@ -15,10 +17,13 @@
 
 // string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace_mcf.out";
 
-//string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\605.mcf_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-//string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\620.omnetpp_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\600.perlbench_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-// string nombreFicheroDatos = "D:\\TrazasSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string mcf_s = "D:\\TrazasSPEC\\benchspec\\CPU\\605.mcf_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string omnetpp_s = "D:\\TrazasSPEC\\benchspec\\CPU\\620.omnetpp_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string perlbench_s = "D:\\TrazasSPEC\\benchspec\\CPU\\600.perlbench_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string x264_s = "D:\\TrazasSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+
+string prueba2 = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\trazaCCL.out";
+string prueba1 = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace.out";
 
 
 /*
@@ -30,22 +35,62 @@ proposedBuffersSimulator(AccessesDataset<long, long>& dataset, BuffersDataset<in
 
 int main()
 {
-    
-    AccessesDataset<L64b, L64b> dataset
-    {
-        vector<L64b>{0,2,0,2,0,2,0,2,4,8,10,12,14},
-        vector<L64b>{0,1,0,1,0,1,0,1,2,2,2,3,3}
-    };
+    bool probarExperimentacion = true;
+    if (!probarExperimentacion) {
+        AccessesDataset<L64b, L64b> dataset
+        {
+            vector<L64b>{0,2,0,2,0,2,0,2,4,8,10,12,14},
+            vector<L64b>{0,1,0,1,0,1,0,1,2,2,2,3,3}
+        };
 
-    TraceReader<L64b, L64b> reader(nombreFicheroDatos);
-    dataset = reader.readNextLines(10000000);// 10000000);
-    // dataset = reader.readAllLines();
+        TraceReader<L64b, L64b> reader(mcf_s);
+        dataset = reader.readNextLines(10000000);// 10000000);
+        // dataset = reader.readAllLines();
 
-    BuffersDataset<int> res;
-    auto b = proposedBuffersSimulator(dataset, res, 8, 6);
-    
-    PredictorSVM<MultiSVMClassifierOneToAll, int> predictor = 
-        PredictorSVM<MultiSVMClassifierOneToAll, int>(res, 8, 6);
-    predictor.simular();
+        BuffersDataset<int> res;
+        auto b = proposedBuffersSimulator(dataset, res, 8, 6);
+
+        PredictorSVM<MultiSVMClassifierOneToAll, int> predictor =
+            PredictorSVM<MultiSVMClassifierOneToAll, int>(res, 8, 6);
+        predictor.simular();
+
+    }
+    else {
+        vector<string> traceFiles = vector<string>{
+            prueba1, prueba2 //, mcf_s // , omnetpp_s, perlbench_s, x264_s
+        };
+        vector<string> traceNames = vector<string>{
+            "pruebaCorta", "pruebaCCL"// "mcf_s" // , "omnetpp_s", "perlbench_s", "x264_s"
+        };
+
+        CacheParameters cacheParams = {
+            0, // Infinite cache
+            0,
+            8
+        };
+
+        DictionaryParameters dictParams = {
+            6,
+            6,
+            255,
+            8,
+            true
+        };
+
+        PredictorParameters params = {
+            cacheParams,
+            dictParams
+        };
+
+        TracePredictExperientation experimentation = TracePredictExperientation("results.xml");
+        experimentation.buildExperiments(traceNames, traceFiles, params, 1000000);
+        experimentation.performExperiments();
+        experimentation.exportResults();
+
+        printf("");
+    }
+
+
+
 }
 

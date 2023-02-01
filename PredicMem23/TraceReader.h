@@ -45,6 +45,8 @@ public:
 		}
 		// file.close();
 		// file.open(filename);
+		file.clear();
+		file.seekg(0);
 		return res;
 	}
 
@@ -68,7 +70,7 @@ public:
 		if (file.is_open())
 		{
 			file.clear();
-			file.seekg(0);
+			// file.seekg(0);
 			while (file.peek() != EOF)
 			{
 				getline(file, line);
@@ -109,7 +111,7 @@ public:
 		}
 
 		// We move the pointer to the given position:
-		readNextLines(inclusiveStart);
+		readNextLines(inclusiveStart - currentLine);
 
 		// We read the lines that are between the start and the end:
 		return readNextLines(exclusiveEnd - inclusiveStart);

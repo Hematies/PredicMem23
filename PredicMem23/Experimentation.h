@@ -26,8 +26,8 @@ public:
 
 	virtual void performExperiments() = 0;
 	virtual void exportResults(string filename) = 0;
-	virtual vector<shared_ptr<Experiment>> getExperiments() = 0;
-	virtual void setExperiments(vector<shared_ptr<Experiment>>) = 0;
+	virtual vector<Experiment*> getExperiments() = 0;
+	virtual void setExperiments(vector<Experiment*>) = 0;
 
 };
 
@@ -35,21 +35,23 @@ public:
 
 class TracePredictExperientation : public Experimentation{
 private:
-	vector<shared_ptr<Experiment>> experiments;
+	vector<Experiment*> experiments;
 	string outputFilename;
 public:
 	TraceReader<L64b, L64b> traceReader;
 
-	TracePredictExperientation(vector<shared_ptr<Experiment>> experiments, string outputFilename);
+	TracePredictExperientation(vector<Experiment*> experiments, string outputFilename);
 	TracePredictExperientation(string outputFilename);
 
 	void performExperiments();
 	void exportResults(string filename);
-	vector<shared_ptr<Experiment>> getExperiments();
-	void setExperiments(vector<shared_ptr<Experiment>>);
+	void exportResults() { exportResults(this->outputFilename); }
+	vector<Experiment*> getExperiments();
+	void setExperiments(vector<Experiment*>);
 
 	void buildExperiments(vector<string> name, vector<string> filenames, PredictorParameters params, long numAccessesPerExperiment);
-	map<string, vector<shared_ptr<Experiment>>> getExperimentsByTrace();
+
+	map<string, vector<Experiment*>> getExperimentsByTrace();
 };
 
 class TracePredictExperiment : public Experiment {
@@ -63,10 +65,10 @@ private:
 		= BuffersSimulator<L64b, L64b, int, L64b>();
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model;
 
-	shared_ptr<TracePredictExperientation> framework;
+	TracePredictExperientation* framework;
 
 public:
-	TracePredictExperiment(shared_ptr<TracePredictExperientation> framework,
+	TracePredictExperiment(TracePredictExperientation* framework,
 		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 
