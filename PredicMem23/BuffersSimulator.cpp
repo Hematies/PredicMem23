@@ -285,8 +285,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 
 		// First, we ask the cache for the respective instruction history:
 		bool historyIsValid = true;
-		unique_ptr<HistoryCacheEntry<T, A, LA>> history = 
-			unique_ptr< HistoryCacheEntry<T, A, LA>>(new ClassesHistoryCacheEntry<T, A, LA>());
+		shared_ptr<HistoryCacheEntry<T, A, LA>> history = 
+			shared_ptr< HistoryCacheEntry<T, A, LA>>(new ClassesHistoryCacheEntry<T, A, LA>());
 		bool historyIsFound = historyCache->getEntry(instruction, history.get());
 		LA delta;
 		LA previousAccess;
@@ -344,6 +344,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		res.isDictionaryMiss.push_back(isDictionaryMiss);
 		res.isCacheMiss.push_back(isCacheMiss);
 
+		history.reset();
 	}
 
 	return res;
@@ -354,10 +355,11 @@ template<typename T, typename I, typename A, typename LA>
 bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA previousAccess) {
 	bool historyIsValid = true;
 	auto history = 
-		unique_ptr<HistoryCacheEntry<T, A, LA>>(new ClassesHistoryCacheEntry<T, A, LA>());
+		shared_ptr<HistoryCacheEntry<T, A, LA>>(new ClassesHistoryCacheEntry<T, A, LA>());
 	bool historyIsFound = historyCache->getEntry(instruction, history.get());
 	LA lastAccess;
 	if (!historyIsFound) {
+		history.reset();
 		return false;
 	}
 
@@ -368,7 +370,7 @@ bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA previousAcces
 
 	auto class_ = dictionary.getClass(delta);
 	bool classIsFound = class_ >= 0;
-
+	history.reset();
 	if (!classIsFound) {
 		return false;
 	}

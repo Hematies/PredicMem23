@@ -95,7 +95,7 @@ int main()
         }
 
         TracePredictExperientation experimentation = TracePredictExperientation("results.xml");
-        experimentation.buildExperiments(tracesInfo, params, 1000000);
+        experimentation.buildExperiments(tracesInfo, params, 1000000);// 10000);//
         experimentation.performExperiments();
         experimentation.exportResults();
 

@@ -41,7 +41,7 @@ public:
 	ClassesHistoryCacheEntry();
 	ClassesHistoryCacheEntry(int numClasses);
 	~ClassesHistoryCacheEntry() {
-		// history.clear();
+		history.clear();
 	}
 
 	bool isEntryValid();
@@ -56,7 +56,7 @@ public:
 	void setLastAccess(LA la);
 	void clear() {
 		history.clear();
-		this->~ClassesHistoryCacheEntry();
+		// this->~ClassesHistoryCacheEntry();
 	}
 		
 };
