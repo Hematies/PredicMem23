@@ -39,3 +39,9 @@ struct PredictResultsAndCosts {
 	double dictionaryMemoryCosts;
 	double modelMemoryCosts;
 };
+
+struct TraceInfo {
+	string name;
+	string filename;
+	unsigned long numAccesses;
+};

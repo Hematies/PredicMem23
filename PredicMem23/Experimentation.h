@@ -1,8 +1,8 @@
 #pragma once
-#include "BuffersSimulator.h"
 #include "PredictorSVM.h"
 #include "TraceReader.h"
 #include "Global.h"
+#include "BuffersSimulator.h"
 
 class Experiment {
 public:
@@ -18,6 +18,7 @@ public:
 	virtual map<string, double> getResults() = 0;
 	virtual void performExperiment() = 0;
 	virtual void setPredictor(BuffersSimulator<L64b, L64b, int, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
+	virtual void clean() = 0;
 };
 
 
@@ -28,7 +29,7 @@ public:
 	virtual void exportResults(string filename) = 0;
 	virtual vector<Experiment*> getExperiments() = 0;
 	virtual void setExperiments(vector<Experiment*>) = 0;
-
+	
 };
 
 
@@ -49,7 +50,7 @@ public:
 	vector<Experiment*> getExperiments();
 	void setExperiments(vector<Experiment*>);
 
-	void buildExperiments(vector<string> name, vector<string> filenames, PredictorParameters params, long numAccessesPerExperiment);
+	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment);
 
 	map<string, vector<Experiment*>> getExperimentsByTrace();
 };
@@ -62,7 +63,7 @@ private:
 	long endLine;
 
 	BuffersSimulator<L64b, L64b, int, L64b> buffersSimulator
-		= BuffersSimulator<L64b, L64b, int, L64b>();
+		 = BuffersSimulator<L64b, L64b, int, L64b>();
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model;
 
 	TracePredictExperientation* framework;
@@ -87,5 +88,6 @@ public:
 	map<string, double> getResults();
 	void performExperiment();
 	void setPredictor(BuffersSimulator<L64b, L64b, int, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
+	void clean();
 	
 };

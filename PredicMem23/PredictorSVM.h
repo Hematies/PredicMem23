@@ -34,6 +34,13 @@ public:
 	int numElemSecuencia = 0;
 	int numClases = 0;
 
+	~PredictorSVM() {
+		datosEntrada.clear();
+		datosSalida.clear();
+		mascaraErroresBufferes.clear();
+		mascaraErroresCache.clear();
+		mascaraErroresDiccionario.clear();
+	}
 
 	PredictorSVM(BuffersDataset<T_entrada> datasetClases, int numElemSecuencia, int numClases) {
 

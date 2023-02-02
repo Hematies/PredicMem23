@@ -1,4 +1,4 @@
-#include "Experimentation.h"
+
 #include <chrono>
 #include <iostream>
 #include <iomanip>
@@ -7,6 +7,7 @@
 #include <time.h>
 #include "tinyxml.h"
 #include <algorithm> 
+#include "Experimentation.h"
 
 
 TracePredictExperientation::TracePredictExperientation(vector<Experiment*> experiments, string outputFilename) {
@@ -24,7 +25,10 @@ TracePredictExperientation::TracePredictExperientation(string outputFilename) {
 
 void TracePredictExperientation::performExperiments() {
 	for (auto& experiment : this->experiments) {
+		cout << "\n=========";
+		cout << "EXPERIMENT: " << experiment->getString() << "\n";
 		experiment->performExperiment();
+		experiment->clean();
 	}
 }
 
@@ -107,17 +111,18 @@ void TracePredictExperientation::exportResults(string filename) {
 	doc.SaveFile(filename.c_str());
 }
 
-void TracePredictExperientation::buildExperiments(vector<string> names, vector<string> filenames, 
+void TracePredictExperientation::buildExperiments(vector<TraceInfo> tracesInfo,
 	PredictorParameters params, long numAccessesPerExperiment = 10000000) {
 
+
 	auto pointer = this;
-	for (int i = 0; i < names.size(); i++) {
-		auto name = names[i];
-		auto filename = filenames[i];
+	for (int i = 0; i < tracesInfo.size(); i++) {
+		auto name = tracesInfo[i].name;
+		auto filename = tracesInfo[i].filename;
 
 		// auto experiment = TracePredictExperiment(this, filename, name, )
 		TraceReader<L64b, L64b> reader(filename);
-		unsigned long numLines = reader.countNumLines();
+		unsigned long numLines = tracesInfo[i].numAccesses;
 		unsigned long k = 0;
 		unsigned long k1 = numAccessesPerExperiment;
 		while(true) {
@@ -230,7 +235,7 @@ map<string, double> TracePredictExperiment::getResults() {
 
 void TracePredictExperiment::setPredictor(BuffersSimulator<L64b, L64b, int, L64b> bufferSimulator,
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model) {
-	this->buffersSimulator = bufferSimulator;
+	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(bufferSimulator);
 	this->model = model;
 }
 
@@ -252,8 +257,22 @@ void TracePredictExperiment::performExperiment() {
 	// Finally, we simulate the predictor model and extract metrics from results:
 	this->model.importarDatos(classesDataset);
 	resultsAndCosts = this->model.simular();
+
+	dataset.accesses.clear();
+	dataset.accessesInstructions.clear();
+	classesDataset.inputAccesses.clear();
+	classesDataset.outputAccesses.clear();
+	classesDataset.isValid.clear();
+	classesDataset.isCacheMiss.clear();
+	classesDataset.isDictionaryMiss.clear();
 }
 
 string TracePredictExperiment::getName() {
 	return this->traceName;
+}
+
+void TracePredictExperiment::clean() {
+	buffersSimulator.clean();
+	model.~PredictorSVM();
+
 }
