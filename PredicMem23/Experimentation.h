@@ -19,6 +19,8 @@ public:
 	virtual void performExperiment() = 0;
 	virtual void setPredictor(BuffersSimulator<L64b, L64b, int, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
 	virtual void clean() = 0;
+	virtual PredictorParameters getPredictorParams() = 0;
+	virtual void setPredictorParams(PredictorParameters) = 0;
 };
 
 
@@ -69,6 +71,7 @@ private:
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model;
 
 	TracePredictExperientation* framework;
+	PredictorParameters predictorParams;
 
 public:
 	TracePredictExperiment(TracePredictExperientation* framework,
@@ -76,6 +79,7 @@ public:
 	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 
 	PredictResultsAndCosts resultsAndCosts;
+
 
 	long getStartLine();
 	long getEndLine();
@@ -91,5 +95,8 @@ public:
 	void performExperiment();
 	void setPredictor(BuffersSimulator<L64b, L64b, int, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
 	void clean();
+
+	PredictorParameters getPredictorParams();
+	void setPredictorParams(PredictorParameters);
 	
 };

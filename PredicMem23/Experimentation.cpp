@@ -81,6 +81,10 @@ void TracePredictExperientation::exportResults(string filename) {
 	TiXmlDeclaration decl("1.0", "", "");
 	doc.InsertEndChild(decl);
 
+	// First, we output the used predictorParams???
+
+	
+	// Then we output the info related to traces results:
 	TiXmlElement* traces = new TiXmlElement("Traces");
 
 	auto experimentsByTrace = getExperimentsByTrace();
@@ -100,11 +104,36 @@ void TracePredictExperientation::exportResults(string filename) {
 		for (auto experiment : experimentsByTrace[traceName]) {
 			TiXmlElement* experiment_ = new TiXmlElement(experiment->getString().c_str());
 			auto results = experiment->getResults();
-			experiment_->SetDoubleAttribute("hitRate", results["hitRate"]);
-			experiment_->SetDoubleAttribute("cacheMissRate", results["cacheMissRate"]);
-			experiment_->SetDoubleAttribute("dictionaryMissRate", results["dictionaryMissRate"]);
-			trace->LinkEndChild(experiment_); // OJO CON LOS PUNTEROS
+			auto params = experiment->getPredictorParams();
 
+			// First node: related to results:
+			TiXmlElement* results_ = new TiXmlElement("results");
+			results_->SetDoubleAttribute("hitRate", results["hitRate"]);
+			results_->SetDoubleAttribute("cacheMissRate", results["cacheMissRate"]);
+			results_->SetDoubleAttribute("dictionaryMissRate", results["dictionaryMissRate"]);
+			experiment_->LinkEndChild(results_);
+
+			// Second node: related to input, cache params:
+			auto cacheParams = params.cacheParams;
+			TiXmlElement* cacheParams_ = new TiXmlElement("cacheParams");
+			cacheParams_->SetAttribute("numIndexBits", cacheParams.numIndexBits);
+			cacheParams_->SetAttribute("numWays", cacheParams.numWays);
+			cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
+			experiment_->LinkEndChild(cacheParams_);
+
+			// Third node: related to input, dictionary params:
+			auto dictParams = params.dictParams;
+			TiXmlElement* dictParams_ = new TiXmlElement("dictParams");
+			dictParams_->SetAttribute("numClasses", dictParams.numClasses);
+			dictParams_->SetAttribute("numEntries", dictParams.numEntries);
+			dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
+			dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
+			dictParams_->SetAttribute("saveHistoryAndClassAfterMiss", dictParams.saveHistoryAndClassAfterMiss);
+			experiment_->LinkEndChild(dictParams_);
+
+			// Fourth node: related to input, model params: TODO
+			
+			trace->LinkEndChild(experiment_);
 			totalResults.hitRate += results["hitRate"] / numExperiments;
 			totalResults.cacheMissRate += results["cacheMissRate"] / numExperiments;
 			totalResults.dictionaryMissRate += results["dictionaryMissRate"] / numExperiments;
@@ -158,6 +187,7 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	this->startLine = startLine;
 	this->endLine = endLine;
 
+	this->predictorParams = params;
 	auto cacheParams = params.cacheParams;
 	auto dictParams = params.dictParams;
 	
@@ -179,6 +209,7 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* frame
 	this->startLine = startLine;
 	this->endLine = endLine;
 
+	this->predictorParams = params;
 	auto cacheParams = params.cacheParams;
 	auto dictParams = params.dictParams;
 
@@ -285,4 +316,12 @@ void TracePredictExperiment::clean() {
 	buffersSimulator.clean();
 	model.~PredictorSVM();
 
+}
+
+PredictorParameters TracePredictExperiment::getPredictorParams() {
+	return predictorParams;
+}
+
+void TracePredictExperiment::setPredictorParams(PredictorParameters params) {
+	this->predictorParams = params;
 }

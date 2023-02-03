@@ -85,7 +85,7 @@ int main()
             dictParams
         };
 
-        unsigned long numAccessesPerTrace = 4 * 1e6;// 1e9;
+        unsigned long numAccessesPerTrace = 1e9;
         vector<TraceInfo> tracesInfo = vector<TraceInfo>();
         for (int i = 0; i < traceNames.size(); i++) {
             tracesInfo.push_back({
