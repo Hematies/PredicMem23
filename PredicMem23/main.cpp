@@ -56,13 +56,14 @@ int main()
 
     }
     else {
+        string outputName = "mcf_perlbench_omnetpp_x264.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
-            perlbench_s // mcf_s // , omnetpp_s, perlbench_s, x264_s
+            mcf_s, perlbench_s, omnetpp_s, x264_s
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
-            "perlbench_s" // "mcf_s" // , "omnetpp_s", "perlbench_s", "x264_s"
+            "mcf_s", "perlbench_s", "omnetpp_s", "x264_s"
         };
 
         CacheParameters cacheParams = {
@@ -84,7 +85,7 @@ int main()
             dictParams
         };
 
-        unsigned long numAccessesPerTrace = 1e9;
+        unsigned long numAccessesPerTrace = 4 * 1e6;// 1e9;
         vector<TraceInfo> tracesInfo = vector<TraceInfo>();
         for (int i = 0; i < traceNames.size(); i++) {
             tracesInfo.push_back({
@@ -94,8 +95,8 @@ int main()
                 });
         }
 
-        TracePredictExperientation experimentation = TracePredictExperientation("results.xml");
-        experimentation.buildExperiments(tracesInfo, params, 1000000);// 10000);//
+        TracePredictExperientation experimentation = TracePredictExperientation(outputName);
+        experimentation.buildExperiments(tracesInfo, params, 1e6);// 10000);//
         experimentation.performExperiments();
         experimentation.exportResults();
 

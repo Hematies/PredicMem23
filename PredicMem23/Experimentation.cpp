@@ -9,24 +9,36 @@
 #include <algorithm> 
 #include "Experimentation.h"
 
+string nowDateTime() {
+	// auto now = std::chrono::system_clock::now();
+	auto t = std::time(nullptr);
+	tm tm;
+	localtime_s(&tm, &t);
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%d_%m_%Y_%H_%M_%S");
+	string now = oss.str();
+	return now;
+}
 
 TracePredictExperientation::TracePredictExperientation(vector<Experiment*> experiments, string outputFilename) {
 	// this->experiments = vector<Experiment*>(experiments);
 	this->experiments = experiments;
 	this->outputFilename = outputFilename;
 	this->traceReader = TraceReader<L64b, L64b>();
+	
 }
 
 TracePredictExperientation::TracePredictExperientation(string outputFilename) {
 	this->experiments = vector<Experiment*>();
 	this->outputFilename = outputFilename;
 	this->traceReader = TraceReader<L64b, L64b>();
+
 }
 
 void TracePredictExperientation::performExperiments() {
 	for (auto& experiment : this->experiments) {
 		cout << "\n=========";
-		cout << "EXPERIMENT: " << experiment->getString() << "\n";
+		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
 		experiment->performExperiment();
 		experiment->clean();
 	}
@@ -133,7 +145,7 @@ void TracePredictExperientation::buildExperiments(vector<TraceInfo> tracesInfo,
 
 			k += numAccessesPerExperiment;
 			k1 += numAccessesPerExperiment;
-			if (k > numLines) break;
+			if (k >= numLines) break;
 		}
 
 	}
@@ -155,6 +167,8 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 		dictParams.maxConfidence, dictParams.numConfidenceJumps, dictParams.saveHistoryAndClassAfterMiss);
 
 	this->model = PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses);
+
+	this->startDateTime = nowDateTime();
 }
 
 TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* framework, string traceFilename, string traceName, long startLine, long endLine,
@@ -175,6 +189,7 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* frame
 
 	this->model = PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses);
 
+	this->startDateTime = nowDateTime();
 }
 
 long TracePredictExperiment::getStartLine() {
@@ -206,16 +221,9 @@ void TracePredictExperiment::setName(string name) {
 }
 
 string TracePredictExperiment::getString() {
-	// auto now = std::chrono::system_clock::now();
-	auto t = std::time(nullptr);
-	tm tm;
-	localtime_s(&tm, &t);
-	std::ostringstream oss; 
-	oss << std::put_time(&tm, "%d_%m_%Y_%H_%M_%S");
-	string now = oss.str();
 
 	ostringstream res; 
-	res << now << "::" << traceName << "_" << startLine << "_" << endLine;
+	res << this->startDateTime << "::" << traceName << "_" << startLine << "_" << endLine;
 
 	return res.str();
 }
@@ -240,6 +248,8 @@ void TracePredictExperiment::setPredictor(BuffersSimulator<L64b, L64b, int, L64b
 }
 
 void TracePredictExperiment::performExperiment() {
+	this->startDateTime = nowDateTime();
+
 	// First, we check that we don't have to instantiate a new TraceReader:
 	TraceReader<L64b, L64b>* traceReader = &this->framework->traceReader;
 	bool isSameFile = traceReader->filename == this->traceFilename;

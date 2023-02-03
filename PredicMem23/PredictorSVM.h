@@ -17,7 +17,7 @@ class PredictorSVM
 {
 
 private:
-	int numPartesMostrar = 1000;
+	int numPartesMostrar = 10000;
 public:
 	vector<vector<float>> datosEntrada = vector<vector<float>>();
 	vector<char> datosSalida = vector<char>();

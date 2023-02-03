@@ -38,6 +38,7 @@ class TracePredictExperientation : public Experimentation{
 private:
 	vector<Experiment*> experiments;
 	string outputFilename;
+	
 public:
 	TraceReader<L64b, L64b> traceReader;
 
@@ -61,6 +62,7 @@ private:
 	string traceName;
 	long startLine;
 	long endLine;
+	string startDateTime;
 
 	BuffersSimulator<L64b, L64b, int, L64b> buffersSimulator
 		 = BuffersSimulator<L64b, L64b, int, L64b>();
