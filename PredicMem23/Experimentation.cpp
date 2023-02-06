@@ -20,22 +20,25 @@ string nowDateTime() {
 	return now;
 }
 
-TracePredictExperientation::TracePredictExperientation(vector<Experiment*> experiments, string outputFilename) {
+template<typename Reader>
+TracePredictExperimentation<Reader>::TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename) {
 	// this->experiments = vector<Experiment*>(experiments);
 	this->experiments = experiments;
 	this->outputFilename = outputFilename;
-	this->traceReader = TraceReader<L64b, L64b>();
+	this->traceReader = Reader();
 	
 }
 
-TracePredictExperientation::TracePredictExperientation(string outputFilename) {
+template<typename Reader>
+TracePredictExperimentation<Reader>::TracePredictExperimentation(string outputFilename) {
 	this->experiments = vector<Experiment*>();
 	this->outputFilename = outputFilename;
-	this->traceReader = TraceReader<L64b, L64b>();
+	this->traceReader = Reader();
 
 }
 
-void TracePredictExperientation::performExperiments() {
+template<typename Reader>
+void TracePredictExperimentation<Reader>::performExperiments() {
 	for (auto& experiment : this->experiments) {
 		cout << "\n=========";
 		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
@@ -44,17 +47,20 @@ void TracePredictExperientation::performExperiments() {
 	}
 }
 
-vector<Experiment*> TracePredictExperientation::getExperiments() {
+template<typename Reader>
+vector<Experiment*> TracePredictExperimentation<Reader>::getExperiments() {
 	// return vector<Experiment*>(experiments);
 	return experiments;
 }
 
-void TracePredictExperientation::setExperiments(vector<Experiment*> experiments) {
+template<typename Reader>
+void TracePredictExperimentation<Reader>::setExperiments(vector<Experiment*> experiments) {
 	// this->experiments = vector<Experiment*>(experiments);
 	this->experiments = experiments;
 }
 
-map<string, vector<Experiment*>> TracePredictExperientation::getExperimentsByTrace() {
+template<typename Reader>
+map<string, vector<Experiment*>> TracePredictExperimentation<Reader>::getExperimentsByTrace() {
 	map<string, vector<Experiment*>> res = map<string, vector<Experiment*>>();
 	for (auto& experiment : this->experiments) {
 		string traceName = experiment->getName();
@@ -75,7 +81,8 @@ map<string, vector<Experiment*>> TracePredictExperientation::getExperimentsByTra
 	return res;
 }
 
-void TracePredictExperientation::exportResults(string filename) {
+template<typename Reader>
+void TracePredictExperimentation<Reader>::exportResults(string filename) {
 	
 	TiXmlDocument doc;
 	TiXmlDeclaration decl("1.0", "", "");
@@ -152,8 +159,9 @@ void TracePredictExperientation::exportResults(string filename) {
 	doc.SaveFile(filename.c_str());
 }
 
-void TracePredictExperientation::buildExperiments(vector<TraceInfo> tracesInfo,
-	PredictorParameters params, long numAccessesPerExperiment = 10000000) {
+template<typename Reader>
+void TracePredictExperimentation<Reader>::buildExperiments(vector<TraceInfo> tracesInfo,
+	PredictorParameters params, long numAccessesPerExperiment) {
 
 
 	auto pointer = this;
@@ -179,8 +187,8 @@ void TracePredictExperientation::buildExperiments(vector<TraceInfo> tracesInfo,
 
 	}
 }
-
-TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
+template<typename Reader>
+TracePredictExperiment<Reader>::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
 	struct PredictorParameters params) {
 	this->traceFilename = traceFilename;
 	this->traceName = traceName;
@@ -201,7 +209,8 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	this->startDateTime = nowDateTime();
 }
 
-TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* framework, string traceFilename, string traceName, long startLine, long endLine,
+template<typename Reader>
+TracePredictExperiment<Reader>::TracePredictExperiment(TracePredictExperimentation<Reader>* framework, string traceFilename, string traceName, long startLine, long endLine,
 	struct PredictorParameters params) {
 	this->framework = framework;
 	this->traceFilename = traceFilename;
@@ -223,35 +232,43 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* frame
 	this->startDateTime = nowDateTime();
 }
 
-long TracePredictExperiment::getStartLine() {
+template<typename Reader>
+long TracePredictExperiment<Reader>::getStartLine() {
 	return startLine;
 }
 
-void TracePredictExperiment::setStartLine(long startLine) {
+template<typename Reader>
+void TracePredictExperiment<Reader>::setStartLine(long startLine) {
 	this->startLine = startLine;
 }
 
-long TracePredictExperiment::getEndLine() {
+template<typename Reader>
+long TracePredictExperiment<Reader>::getEndLine() {
 	return endLine;
 }
 
-void TracePredictExperiment::setEndLine(long endLine) {
+template<typename Reader>
+void TracePredictExperiment<Reader>::setEndLine(long endLine) {
 	this->endLine = endLine;
 }
 
-string TracePredictExperiment::getTracefile() {
+template<typename Reader>
+string TracePredictExperiment<Reader>::getTracefile() {
 	return traceFilename;
 }
 
-void TracePredictExperiment::setTraceFile(string filename) {
+template<typename Reader>
+void TracePredictExperiment<Reader>::setTraceFile(string filename) {
 	this->traceFilename = filename;
 }
 
-void TracePredictExperiment::setName(string name) {
+template<typename Reader>
+void TracePredictExperiment<Reader>::setName(string name) {
 	this->traceName = name;
 }
 
-string TracePredictExperiment::getString() {
+template<typename Reader>
+string TracePredictExperiment<Reader>::getString() {
 
 	ostringstream res; 
 	res << this->startDateTime << "::" << traceName << "_" << startLine << "_" << endLine;
@@ -259,11 +276,13 @@ string TracePredictExperiment::getString() {
 	return res.str();
 }
 
-void TracePredictExperiment::setTraceName(string name) {
+template<typename Reader>
+void TracePredictExperiment<Reader>::setTraceName(string name) {
 	this->traceName = name;
 }
 
-map<string, double> TracePredictExperiment::getResults() {
+template<typename Reader>
+map<string, double> TracePredictExperiment<Reader>::getResults() {
 	auto res = map<string, double>{
 		{"hitRate", resultsAndCosts.hitRate},
 		{"cacheMissRate", resultsAndCosts.cacheMissRate},
@@ -272,13 +291,15 @@ map<string, double> TracePredictExperiment::getResults() {
 	return res;
 }
 
-void TracePredictExperiment::setPredictor(BuffersSimulator<L64b, L64b, int, L64b> bufferSimulator,
+template<typename Reader>
+void TracePredictExperiment<Reader>::setPredictor(BuffersSimulator<L64b, L64b, int, L64b> bufferSimulator,
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model) {
 	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(bufferSimulator);
 	this->model = model;
 }
 
-void TracePredictExperiment::performExperiment() {
+template<typename Reader>
+void TracePredictExperiment<Reader>::performExperiment() {
 	this->startDateTime = nowDateTime();
 
 	// First, we check that we don't have to instantiate a new TraceReader:
@@ -286,7 +307,7 @@ void TracePredictExperiment::performExperiment() {
 	bool isSameFile = traceReader->filename == this->traceFilename;
 	bool isFileOpen = traceReader->file.is_open();
 
-	if (!isSameFile || !isFileOpen)
+	if (!isSameFile || !isFileOpen)-
 		*traceReader = TraceReader<L64b, L64b>(this->traceFilename);
 
 	// Next, we read the trace and extract the working dataset:
@@ -308,20 +329,24 @@ void TracePredictExperiment::performExperiment() {
 	classesDataset.isDictionaryMiss.clear();
 }
 
-string TracePredictExperiment::getName() {
+template<typename Reader>
+string TracePredictExperiment<Reader>::getName() {
 	return this->traceName;
 }
 
-void TracePredictExperiment::clean() {
+template<typename Reader>
+void TracePredictExperiment<Reader>::clean() {
 	buffersSimulator.clean();
 	model.~PredictorSVM();
 
 }
 
-PredictorParameters TracePredictExperiment::getPredictorParams() {
+template<typename Reader>
+PredictorParameters TracePredictExperiment<Reader>::getPredictorParams() {
 	return predictorParams;
 }
 
-void TracePredictExperiment::setPredictorParams(PredictorParameters params) {
+template<typename Reader>
+void TracePredictExperiment<Reader>::setPredictorParams(PredictorParameters params) {
 	this->predictorParams = params;
 }

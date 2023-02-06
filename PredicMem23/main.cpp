@@ -5,6 +5,7 @@
 #include "PredictorSVM.h"
 #include "BuffersSimulator.h"
 #include "TraceReader.h"
+#include "TraceReaderFromCompetition.h"
 #include "Experimentation.h"
 #include "Global.h"
 
@@ -21,6 +22,14 @@ string mcf_s = "D:\\TrazasSPEC\\benchspec\\CPU\\605.mcf_s\\run\\run_peak_refspee
 string omnetpp_s = "D:\\TrazasSPEC\\benchspec\\CPU\\620.omnetpp_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 string perlbench_s = "D:\\TrazasSPEC\\benchspec\\CPU\\600.perlbench_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 string x264_s = "D:\\TrazasSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+
+string gcc_s = "D:\\TrazasSPEC\\benchspec\\CPU\\602.gcc_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string xalancbmk_s = "D:\\TrazasSPEC\\benchspec\\CPU\\623.xalancbmk_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string deepsjeng_s = "D:\\TrazasSPEC\\benchspec\\CPU\\631.deepsjeng_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string leela_s = "D:\\TrazasSPEC\\benchspec\\CPU\\641.leela_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string exchange2_s = "D:\\TrazasSPEC\\benchspec\\CPU\\648.exchange2_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string xz_s = "D:\\TrazasSPEC\\benchspec\\CPU\\657.xz_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+
 
 string prueba2 = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\trazaCCL.out";
 string prueba1 = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace.out";
@@ -56,14 +65,17 @@ int main()
 
     }
     else {
-        string outputName = "mcf_perlbench_omnetpp_x264.xml";
+        // string outputName = "mcf_perlbench_omnetpp_x264.xml";
+        string outputName = "gcc_xalancbmk_deepsjeng_leela_exchange2_xz.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
-            mcf_s, perlbench_s, omnetpp_s, x264_s
+            // mcf_s, perlbench_s, omnetpp_s, x264_s
+            gcc_s, xalancbmk_s, deepsjeng_s, leela_s, exchange2_s, xz_s
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
-            "mcf_s", "perlbench_s", "omnetpp_s", "x264_s"
+            // "mcf_s", "perlbench_s", "omnetpp_s", "x264_s"
+            "gcc_s", "xalancbmk_s", "deepsjeng_s", "leela_s", "exchange2_s", "xz_s"
         };
 
         CacheParameters cacheParams = {
@@ -95,12 +107,16 @@ int main()
                 });
         }
 
-        TracePredictExperientation experimentation = TracePredictExperientation(outputName);
+        TracePredictExperimentation<TraceReaderFromCompetition> experimentation = 
+            TracePredictExperimentation<TraceReaderFromCompetition>(outputName);
         experimentation.buildExperiments(tracesInfo, params, 1e6);// 10000);//
         experimentation.performExperiments();
         experimentation.exportResults();
 
         printf("");
+
+        // TraceReaderFromCompetition<long,long> trace;
+
     }
 
 

@@ -35,17 +35,17 @@ public:
 };
 
 
-
-class TracePredictExperientation : public Experimentation{
+template<typename Reader>
+class TracePredictExperimentation : public Experimentation{
 private:
 	vector<Experiment*> experiments;
 	string outputFilename;
 	
 public:
-	TraceReader<L64b, L64b> traceReader;
+	Reader traceReader;
 
-	TracePredictExperientation(vector<Experiment*> experiments, string outputFilename);
-	TracePredictExperientation(string outputFilename);
+	TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename);
+	TracePredictExperimentation(string outputFilename);
 
 	void performExperiments();
 	void exportResults(string filename);
@@ -53,11 +53,12 @@ public:
 	vector<Experiment*> getExperiments();
 	void setExperiments(vector<Experiment*>);
 
-	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment);
+	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment = 10000000);
 
 	map<string, vector<Experiment*>> getExperimentsByTrace();
 };
 
+template<typename Reader>
 class TracePredictExperiment : public Experiment {
 private:
 	string traceFilename;
@@ -70,11 +71,11 @@ private:
 		 = BuffersSimulator<L64b, L64b, int, L64b>();
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model;
 
-	TracePredictExperientation* framework;
+	TracePredictExperimentation<Reader>* framework;
 	PredictorParameters predictorParams;
 
 public:
-	TracePredictExperiment(TracePredictExperientation* framework,
+	TracePredictExperiment(TracePredictExperimentation<Reader>* framework,
 		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 

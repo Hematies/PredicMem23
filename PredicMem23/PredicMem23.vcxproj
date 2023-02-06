@@ -151,6 +151,7 @@
     <ClInclude Include="PredictorSVM.h" />
     <ClInclude Include="TraceReader.h" />
     <ClInclude Include="SVMClassifier.hpp" />
+    <ClInclude Include="TraceReaderFromCompetition.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
