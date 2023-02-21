@@ -8,23 +8,15 @@
 #include "Experimentation.h"
 #include "Global.h"
 
-// string nombreFicheroDatos = "foto.jpg";//  "datasetClases.bmp"; // // "..\\..\\datos\\datasetClases.bmp";
-// string nombreFicheroDatos = "A:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredictorSVM\\datos\\datasetClases2.bmp";
-// string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredictorSVM\\datos\\omnetpp_s_0.bmp";
-//string nombreFicheroDatos = "A:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredictorSVM\\datos\\mcf_s_0.bmp";
-
-// string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace_lbm.out";
-
-// string nombreFicheroDatos = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace_mcf.out";
-
-string mcf_s = "D:\\TrazasSPEC\\benchspec\\CPU\\605.mcf_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-string omnetpp_s = "D:\\TrazasSPEC\\benchspec\\CPU\\620.omnetpp_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-string perlbench_s = "D:\\TrazasSPEC\\benchspec\\CPU\\600.perlbench_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-string x264_s = "D:\\TrazasSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
-
-string prueba2 = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\trazaCCL.out";
-string prueba1 = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem22\\PredicMem22\\trazas\\pinatrace.out";
-
+string perlbench_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\600.perlbench_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string gcc_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\602.gcc_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string mcf_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\605.mcf_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string lbm_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\619.lbm_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string omnetpp_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\620.omnetpp_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string xalancbmk_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\623.xalancbmk_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string x264_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string deepsjeng_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\631.deepsjeng_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string leela_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\641.leela_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 
 /*
 extern BuffersSimulator<long, long, int, long>
@@ -56,14 +48,30 @@ int main()
 
     }
     else {
-        string outputName = "mcf_perlbench_omnetpp_x264.xml";
+        /*
+        string outputName = "perlbench_gcc_mcf_lbm_omnetpp_xalancbmk_x264_deepsjeng_leela_distrib.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
-            mcf_s, perlbench_s, omnetpp_s, x264_s
+            perlbench_s,gcc_s,mcf_s,lbm_s,omnetpp_s,xalancbmk_s,x264_s,deepsjeng_s,leela_s
+            //deepsjeng_s
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
-            "mcf_s", "perlbench_s", "omnetpp_s", "x264_s"
+            "perlbench_s","gcc_s","mcf_s","lbm_s","omnetpp_s","xalancbmk_s","x264_s","deepsjeng_s",
+            "leela_s"
+            //"deepsjeng_s"
+        };
+        */
+        string outputName = "leela_distrib.xml";
+        vector<string> traceFiles = vector<string>{
+            //prueba1, prueba2,
+            leela_s
+            //deepsjeng_s
+        };
+        vector<string> traceNames = vector<string>{
+            //"pruebaCorta", "pruebaCCL",
+            "leela_s"
+            //"deepsjeng_s"
         };
 
         CacheParameters cacheParams = {
