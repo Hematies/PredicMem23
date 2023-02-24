@@ -4,7 +4,7 @@
 #include <map>
 #include <iostream>
 
-#define L64b long long
+#define L64b unsigned long long
 
 using namespace std;
 
@@ -22,25 +22,25 @@ public:
 	virtual void setHistory(vector<A>) = 0;
 	virtual T getTag() = 0;
 	virtual void setTag(T) = 0;
+	//virtual int getWay();
+	//virtual void setWay();
 	virtual LA getLastAccess() = 0;
 	virtual void setLastAccess(LA) = 0;
 	virtual void clear() = 0;
-
-
-
+	
 };
 
 template<typename T,typename A, typename LA>
-class ClassesHistoryCacheEntry : public HistoryCacheEntry<T, A, LA>{
+class InfiniteHistoryCacheEntry : public HistoryCacheEntry<T, A, LA>{
 protected:
 	vector<A> history;
 	T tag;
 	LA lastAccess;
 public:
 	
-	ClassesHistoryCacheEntry();
-	ClassesHistoryCacheEntry(int numClasses);
-	~ClassesHistoryCacheEntry() {
+	InfiniteHistoryCacheEntry();
+	InfiniteHistoryCacheEntry(int numAccesses);
+	~InfiniteHistoryCacheEntry() {
 		history.clear();
 	}
 
@@ -56,9 +56,69 @@ public:
 	void setLastAccess(LA la);
 	void clear() {
 		history.clear();
-		// this->~ClassesHistoryCacheEntry();
+		// this->~InfiniteHistoryCacheEntry();
 	}
+
+	/*
+	int getWay() {
+		return -1;
+	}
+
+	void setWay(int way) {
+	}
+	*/
 		
+};
+
+template<typename T, typename A, typename LA>
+class RealHistoryCacheEntry : public InfiniteHistoryCacheEntry<T, A, LA> {
+protected:
+	int way;
+public:
+
+	RealHistoryCacheEntry();
+	RealHistoryCacheEntry(int numAccesses, int way);
+	~RealHistoryCacheEntry() {
+		history.clear();
+	}
+
+	void copy(HistoryCacheEntry<T, A, LA>*);
+	
+	int getWay() {
+		return this->way;
+	}
+
+	void setWay(int way) {
+		this->way = way;
+	}
+
+};
+
+template<typename T, typename I, typename A, typename LA>
+
+class HistoryCacheSet {
+protected: 
+	vector<RealHistoryCacheEntry<T, A, LA>> entries;
+	vector<int> indexToNextAccess;
+	int numTagBits;
+	int numAccesses;
+	int headWay;
+public:
+
+	HistoryCacheSet();
+	HistoryCacheSet(int numWays, int numTagBits, int numAccesses);
+
+	int getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
+	bool newAccess(I instruction, LA access, A class_);
+	int updateLRU(int newAccessWay);
+	int getLeastRecentWay();
+
+	void clean() {
+		for (RealHistoryCacheEntry<T, A, LA> entry : entries) {
+			entry.reset();
+			indexToNextAccess.clear();
+		}
+	}
 };
 
 template<typename T, typename I, typename A, typename LA>
@@ -68,6 +128,7 @@ public:
 	virtual bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res) = 0;
 	virtual bool newAccess(I, LA, A) = 0;
 	virtual void clean() = 0;
+	virtual long getNumEntries() = 0;
 
 };
 
@@ -76,9 +137,10 @@ enum HistoryCacheType { Infinite = 0 , Real = 0};
 template<typename T, typename I, typename A, typename LA>
 class InfiniteHistoryCache : public HistoryCache<T, I, A, LA> {
 private:
+	map<I, InfiniteHistoryCacheEntry<T, A, LA>> entries;
+protected:
 	int _numAccesses;
 public:
-	map<I, ClassesHistoryCacheEntry<T,A,LA>> entries;
 
 	InfiniteHistoryCache();
 	InfiniteHistoryCache(int numAccesses);
@@ -97,6 +159,51 @@ public:
 		entries.clear();
 	}
 
+	long getNumEntries() {
+		return entries.size();
+	}
+
+};
+
+template<typename T, typename I, typename A, typename LA>
+class RealHistoryCache : public HistoryCache<T, I, A, LA> {
+private:
+	// map<I, RealHistoryCache<T, A, LA>> entries;
+	vector<HistoryCacheSet<T, A, LA>> sets;
+	int numWays;
+	long numSets;
+	int numIndexBits;
+public:
+
+	RealHistoryCache();
+	RealHistoryCache(int numIndexBits, int numWays, int numAccesses);
+
+	~RealHistoryCache() {
+		entries.clear();
+	}
+
+	bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
+	bool newAccess(I instruction, LA access, A class_);
+
+	void clean() {
+		sets.clean();
+	}
+
+	int getNumWays() {
+		return this->numWays;
+	}
+
+	long getNumSets() {
+		return this->numSets;
+	}
+
+	int getNumIndexBits() {
+		return numIndexBits;
+	}
+
+	long getNumEntries() {
+		return numSets * numWays;
+	}
 
 };
 
