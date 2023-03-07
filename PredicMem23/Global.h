@@ -1,4 +1,7 @@
 #pragma once
+#include<stdio.h>
+
+// using namespace std;
 
 struct ModelParameters {
 
@@ -41,7 +44,7 @@ struct PredictResultsAndCosts {
 };
 
 struct TraceInfo {
-	string name;
-	string filename;
+	std::string name;
+	std::string filename;
 	unsigned long numAccesses;
 };

@@ -18,6 +18,11 @@ string x264_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\625.x264_s\\run\\run_pea
 string deepsjeng_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\631.deepsjeng_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 string leela_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\641.leela_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 
+string cactuBSSN_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\607.cactuBSSN_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string exchange2_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\648.exchange2_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+string roms_s = "D:\\TrazasDistribSPEC\\benchspec\\CPU\\654.roms_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
+
+
 /*
 extern BuffersSimulator<long, long, int, long>
 proposedBuffersSimulator(AccessesDataset<long, long>& dataset, BuffersDataset<int>& classesDataset,
@@ -39,8 +44,22 @@ int main()
         dataset = reader.readNextLines(10000000);// 10000000);
         // dataset = reader.readAllLines();
 
+        CacheParameters cacheParams = {
+            0, // Infinite cache
+            0,
+            8
+        };
+
+        DictionaryParameters dictParams = {
+            6,
+            6,
+            255,
+            8,
+            true
+        };
+
         BuffersDataset<int> res;
-        auto b = proposedBuffersSimulator(dataset, res, 8, 6);
+        auto b = proposedBuffersSimulator(dataset, res, cacheParams, dictParams);
 
         PredictorSVM<MultiSVMClassifierOneToAll, int> predictor =
             PredictorSVM<MultiSVMClassifierOneToAll, int>(res, 8, 6);
@@ -62,21 +81,21 @@ int main()
             //"deepsjeng_s"
         };
         */
-        string outputName = "leela_distrib.xml";
+        string outputName = "mcf_s_distrib_real_cache.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
-            leela_s
-            //deepsjeng_s
+            //cactuBSSN_s, exchange2_s, roms_s
+            mcf_s
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
-            "leela_s"
-            //"deepsjeng_s"
+            //"cactuBSSN_s", "exchange2_s", "roms_s"
+            "mcf_s"
         };
 
         CacheParameters cacheParams = {
-            0, // Infinite cache
-            0,
+            10, // Infinite cache
+            4,
             8
         };
 

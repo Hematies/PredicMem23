@@ -193,8 +193,7 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	
 	HistoryCacheType cacheType = (cacheParams.numIndexBits > 0)? HistoryCacheType::Real : HistoryCacheType::Infinite;
 
-	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(cacheType, cacheParams.numSequenceAccesses, dictParams.numClasses,
-		dictParams.maxConfidence, dictParams.numConfidenceJumps, dictParams.saveHistoryAndClassAfterMiss);
+	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(cacheType, cacheParams, dictParams);
 
 	this->model = PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses);
 
@@ -215,8 +214,7 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* frame
 
 	HistoryCacheType cacheType = (cacheParams.numIndexBits > 0) ? HistoryCacheType::Real : HistoryCacheType::Infinite;
 
-	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(cacheType, cacheParams.numSequenceAccesses, dictParams.numClasses,
-		dictParams.maxConfidence, dictParams.numConfidenceJumps, dictParams.saveHistoryAndClassAfterMiss);
+	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(cacheType, cacheParams, dictParams);
 
 	this->model = PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses);
 

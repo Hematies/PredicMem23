@@ -139,14 +139,10 @@ RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry(int numAccesses, int way)
 
 template<typename T, typename A, typename LA>
 void RealHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
-	// p = new InfiniteHistoryCacheEntry();
-	/*
-	p->setHistory(history);
-	p->setLastAccess(lastAccess);
-	p->setTag(tag);
-	p->setWay(way);
-	*/
-	p = new RealHistoryCacheEntry<T, A, LA>(this);
+	*p = RealHistoryCacheEntry<T, A, LA>(this->history.size(), this->way);
+	p->setHistory(this->history);
+	p->setLastAccess(this->lastAccess);
+	p->setTag(this->tag);
 }
 
 
@@ -154,7 +150,7 @@ template<typename T, typename I, typename A, typename LA >
 RealHistoryCache<T, I, A, LA>::RealHistoryCache() {
 	this->numSets = 0;
 	this->numWays = 0;
-	entries = vector<RealHistoryCacheEntry<T, A, LA>>();
+	sets = vector<HistoryCacheSet<T, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
@@ -162,10 +158,10 @@ RealHistoryCache<T, I, A, LA>::RealHistoryCache(int numIndexBits, int numWays, i
 	this->_numAccesses = numAccesses;
 	this->numIndexBits = numIndexBits;
 	this->numWays = numWays;
-	sets = vector<HistoryCacheSet<T, A, LA>>();
+	sets = vector<HistoryCacheSet<T, I, A, LA>>();
 
 	for (int index = 0; index < pow(2, numIndexBits); index++) {
-		sets.push_back(HistoryCacheSet<T, A, LA>(numWays, std::numeric_limits<T>::digits - numIndexBits, numAccesses));
+		sets.push_back(HistoryCacheSet<T, I, A, LA>(numWays, std::numeric_limits<T>::digits - numIndexBits, numAccesses));
 	}
 }
 
@@ -174,7 +170,15 @@ bool RealHistoryCache<T, I, A, LA>::getEntry(I instruction,
 	HistoryCacheEntry<T, A, LA>* res) {
 	int numTagBits = std::numeric_limits<T>::digits - numIndexBits;
 	long index = (instruction << numTagBits) >> numTagBits;
-	return this->sets[index].getEntry(instruction, res);
+	int way = this->sets[index].getEntry(instruction, res);
+
+	/*
+	if (way != -1) {
+		cout << "(index, way) = (" << index << "," << way << ")" << endl;
+	}
+	*/
+
+	return way != -1;
 }
 
 template<typename T, typename I, typename A, typename LA >
@@ -187,7 +191,7 @@ bool RealHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A class_
 template<typename T, typename I, typename A, typename LA >
 HistoryCacheSet<T, I, A, LA>::HistoryCacheSet() {
 	this->numTagBits = -1;
-	this->indexToNextAccess = vector<int>();
+	this->isEntryRecentlyUsed = vector<bool>();
 	this->entries = vector<shared_ptr<HistoryCacheEntry<T, A, LA>>>();
 	this->numAccesses = -1;
 	this->headWay = -1;
@@ -196,12 +200,11 @@ HistoryCacheSet<T, I, A, LA>::HistoryCacheSet() {
 template<typename T, typename I, typename A, typename LA >
 HistoryCacheSet<T, I, A, LA>::HistoryCacheSet(int numWays, int numTagBits, int numAccesses) {
 	this->numTagBits = numTagBits;
-	this->indexToNextAccess = vector<int>();
+	this->isEntryRecentlyUsed = vector<bool>(numWays, false);
 	this->entries = vector<RealHistoryCacheEntry<T, A, LA>>();
 	this->numAccesses = numAccesses;
 	this->headWay = 0;
 	for (int way = 0; way < numWays; way++) {
-		indexToNextAccess.push_back(way == 0 ? way : way - 1);
 		entries.push_back(RealHistoryCacheEntry<T,A,LA>(numAccesses, way));
 	}
 }
@@ -210,9 +213,9 @@ template<typename T, typename I, typename A, typename LA >
 int HistoryCacheSet<T, I, A, LA>::getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res) {
 	int numIndexBits = std::numeric_limits<T>::digits - this->numTagBits;
 	T tag = instruction >> numIndexBits;
-	for (int way = 0; way < numWays; way++) {
-		RealHistoryCacheEntry<T, I, A> entry = entries[way];
-		if (entry.isEntryValid() && (entry.getTag() == tag)) {
+	for (int way = 0; way < entries.size(); way++) {
+		RealHistoryCacheEntry<T, A, LA> entry = entries[way];
+		if (entry.getTag() == tag) {
 			entry.copy(res);
 			return way;
 		}
@@ -225,40 +228,54 @@ template<typename T, typename I, typename A, typename LA >
 bool HistoryCacheSet<T, I, A, LA>::newAccess(I instruction, LA access, A class_) {
 	bool res = true;
 	RealHistoryCacheEntry<T, A, LA> entry =
-		RealHistoryCacheEntry<T, A, LA>(_numAccesses);
+		RealHistoryCacheEntry<T, A, LA>();
+
+	// We get the entry corresponding the given instruction:
 	int way = getEntry(instruction, &entry);
 	bool entryFound = way >= 0;
 	if (!entryFound) {
+		// If it is not found, we will set one of the least recent entries:
 		res = false;
 		way = getLeastRecentWay();
 	}
-	entries[way].setEntry(instruction, access, class_);
+
+	// We set the entry and update the LRU system:
+	int numIndexBits = std::numeric_limits<T>::digits - this->numTagBits;
+	T tag = instruction >> numIndexBits;
+	entries[way].setEntry(tag, access, class_);
+	updateLRU(way);
+	
 	return res;
 }
 
 template<typename T, typename I, typename A, typename LA >
 int HistoryCacheSet<T, I, A, LA>::getLeastRecentWay() {
-	vector<bool> isWayPointed = vector<bool>(this->indexToNextAccess.size(),false);
 	int tailWay = -1;
 	for (int way = 0; way < this->entries.size(); way++) {
-		int pointedWay = this->indexToNextAccess[way];
-		isWayPointed[pointedWay] = true;
-	}
-	for (int way = 0; way < this->entries.size(); way++) {
-		if (!isWayPointed[way]) {
+		bool isEntryObsolete = !isEntryRecentlyUsed[way];
+		if (isEntryObsolete) {
 			tailWay = way;
 			break;
 		}
 	}
-
+	
 	return tailWay;
 }
 
 template<typename T, typename I, typename A, typename LA >
-int HistoryCacheSet<T, I, A, LA>::updateLRU(int newAccessWay) {
-	int previousHead = this->headWay;
-	this->headWay = newAccessWay;
-	indexToNextAccess[previousHead] = this->headWay; // NOOOOOOOO
+void HistoryCacheSet<T, I, A, LA>::updateLRU(int newAccessWay) {
+	isEntryRecentlyUsed[newAccessWay] = true;
+	headWay = newAccessWay;
+
+	// If all entries were used, we reset they "recentness", except for the head:
+	bool areAllEntriesRecent = true;
+	for (int w = 0; w < this->entries.size(); w++) {
+		areAllEntriesRecent = areAllEntriesRecent && isEntryRecentlyUsed[w];
+	}
+	if (areAllEntriesRecent) {
+		isEntryRecentlyUsed = vector<bool>(this->entries.size(), false);
+		isEntryRecentlyUsed[headWay] = true;
+	}
 
 }
 
@@ -305,10 +322,14 @@ template<typename D>
 int Dictionary<D>::newDelta(D delta) {
 	int leastReliableClass = this->leastReliableClass();
 	int class_ = -1;
+	bool classIsFound = false;
 	for (int i = 0; i < entries.size(); i++) {
 		auto entry = &entries[i];
 		if (entry->delta == delta) {
-			class_ = i;
+			if (!classIsFound) {
+				class_ = i;
+				classIsFound = true;
+			}
 			entry->confidence += (this->maxConfidence + 1) / this->numConfidenceJumps;
 			if (entry->confidence > this->maxConfidence)
 				entry->confidence = this->maxConfidence;
@@ -318,7 +339,7 @@ int Dictionary<D>::newDelta(D delta) {
 		
 	}
 
-	bool classIsFound = class_ >= 0;
+	// classIsFound = class_ >= 0;
 
 	if(!classIsFound){
 		class_ = leastReliableClass;
@@ -374,22 +395,27 @@ Dictionary<D> Dictionary<D>::copy() {
 
 
 template<typename T, typename I, typename A, typename LA>
-BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheType, int numHistoryAccesses, int numClasses,
-	int maxConfidence, int numConfidenceJumps, bool saveHistoryAndClassAfterDictMiss) {
+BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams, 
+	DictionaryParameters dictParams) {
 	// We initialize both the cache and the dictionary:
 	if (historyCacheType == HistoryCacheType::Infinite) {
 		this->historyCache = 
-			shared_ptr<HistoryCache< T, I, A, LA >>(new InfiniteHistoryCache<T, I, A, LA>(numHistoryAccesses));
+			shared_ptr<HistoryCache< T, I, A, LA >>(new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses));
 	}
+	else if (historyCacheType == HistoryCacheType::Real) {
+		this->historyCache = 
+			shared_ptr<HistoryCache< T, I, A, LA >>(new RealHistoryCache<T, I, A, LA>(cacheParams.numIndexBits, 
+				cacheParams.numWays, cacheParams.numSequenceAccesses));
+	}	
 	else {
 		// this->historyCache = HistoryCache<T, I, A, LA>();
 		// throw -1;
 		this->historyCache = nullptr;
 	}
 	
-	this->dictionary = Dictionary<LA>(numClasses, maxConfidence, numConfidenceJumps);
-	this->saveHistoryAndClassAfterDictMiss = saveHistoryAndClassAfterDictMiss;
-	this->numHistoryAccesses = numHistoryAccesses;
+	this->dictionary = Dictionary<LA>(dictParams.numClasses, dictParams.maxConfidence, dictParams.numConfidenceJumps);
+	this->saveHistoryAndClassAfterDictMiss = dictParams.saveHistoryAndClassAfterMiss;
+	this->numHistoryAccesses = cacheParams.numSequenceAccesses;
 }
 
 template<typename T, typename I, typename A, typename LA>
@@ -478,8 +504,10 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 			outputAccess = class_;
 
 			// We test the buffers just in case:
-			noError = this->testBuffers(instruction, previousAccess);
+			noError = this->testBuffers(instruction, access, previousAccess);
 
+			if (!noError)
+				cout << "ERROR" << endl;
 		}
 
 		res.inputAccesses.push_back(inputAccesses);
@@ -496,7 +524,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 }
 
 template<typename T, typename I, typename A, typename LA>
-bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA previousAccess) {
+bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
 	bool historyIsValid = true;
 	auto history = 
 		shared_ptr<HistoryCacheEntry<T, A, LA>>(new InfiniteHistoryCacheEntry<T, A, LA>());
@@ -509,6 +537,9 @@ bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA previousAcces
 
 	historyIsValid = history->isEntryValid();
 	lastAccess = history->getLastAccess();
+	if (lastAccess != currentAccess) {
+		return false;
+	}
 	LA delta = lastAccess - previousAccess;
 	auto savedClass = history->getHistory()[history->getHistory().size() - 1];
 
@@ -518,7 +549,11 @@ bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA previousAcces
 	if (!classIsFound) {
 		return false;
 	}
-	return savedClass == class_;
+
+	bool classesAreSame = (savedClass == class_);
+	bool deltasAreSame = (delta == dictionary.entries[savedClass].delta);
+	return classesAreSame && deltasAreSame;
+	// return deltasAreSame;
 }
 
 /*
@@ -538,12 +573,9 @@ BuffersSimulator<T, I, A, LA > BuffersSimulator<T, I, A, LA >::copy() {
 
 BuffersSimulator<L64b, L64b, int, L64b>
 proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
-	int numHistoryAccesses, int numClasses,
-	int maxConfidence, int numConfidenceJumps) {
+	CacheParameters cacheParams, DictionaryParameters dictParams) {
 	BuffersSimulator<L64b, L64b, int, L64b> res = 
-		BuffersSimulator<L64b, L64b, int, L64b>(HistoryCacheType::Infinite,
-		numHistoryAccesses, numClasses,
-		maxConfidence, numConfidenceJumps);
+		BuffersSimulator<L64b, L64b, int, L64b>(HistoryCacheType::Infinite, cacheParams, dictParams);
 	classesDataset = res.simulate(dataset);
 	return res;
 }

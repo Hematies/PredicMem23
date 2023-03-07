@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include "Global.h"
 
 #define L64b unsigned long long
 
@@ -32,12 +33,16 @@ public:
 
 template<typename T,typename A, typename LA>
 class InfiniteHistoryCacheEntry : public HistoryCacheEntry<T, A, LA>{
+
+	
 protected:
 	vector<A> history;
 	T tag;
 	LA lastAccess;
 public:
 	
+	//friend class RealHistoryCacheEntry<T, A, LA>;
+
 	InfiniteHistoryCacheEntry();
 	InfiniteHistoryCacheEntry(int numAccesses);
 	~InfiniteHistoryCacheEntry() {
@@ -73,13 +78,15 @@ public:
 template<typename T, typename A, typename LA>
 class RealHistoryCacheEntry : public InfiniteHistoryCacheEntry<T, A, LA> {
 protected:
+	//vector<A> history;
 	int way;
+	//int _numAccesses;
 public:
 
 	RealHistoryCacheEntry();
 	RealHistoryCacheEntry(int numAccesses, int way);
 	~RealHistoryCacheEntry() {
-		history.clear();
+		this->history.clear();
 	}
 
 	void copy(HistoryCacheEntry<T, A, LA>*);
@@ -95,11 +102,10 @@ public:
 };
 
 template<typename T, typename I, typename A, typename LA>
-
 class HistoryCacheSet {
 protected: 
 	vector<RealHistoryCacheEntry<T, A, LA>> entries;
-	vector<int> indexToNextAccess;
+	vector<bool> isEntryRecentlyUsed;
 	int numTagBits;
 	int numAccesses;
 	int headWay;
@@ -110,13 +116,13 @@ public:
 
 	int getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
 	bool newAccess(I instruction, LA access, A class_);
-	int updateLRU(int newAccessWay);
+	void updateLRU(int newAccessWay);
 	int getLeastRecentWay();
 
 	void clean() {
 		for (RealHistoryCacheEntry<T, A, LA> entry : entries) {
 			entry.reset();
-			indexToNextAccess.clear();
+			isEntryRecentlyUsed.clear();
 		}
 	}
 };
@@ -132,10 +138,11 @@ public:
 
 };
 
-enum HistoryCacheType { Infinite = 0 , Real = 0};
+enum HistoryCacheType { Infinite = 0 , Real = 1};
 
 template<typename T, typename I, typename A, typename LA>
 class InfiniteHistoryCache : public HistoryCache<T, I, A, LA> {
+friend class RealHistoryCacheEntry<T, A, LA>;
 private:
 	map<I, InfiniteHistoryCacheEntry<T, A, LA>> entries;
 protected:
@@ -166,27 +173,28 @@ public:
 };
 
 template<typename T, typename I, typename A, typename LA>
-class RealHistoryCache : public HistoryCache<T, I, A, LA> {
-private:
+class RealHistoryCache : public HistoryCache<T, I, A, LA>, public InfiniteHistoryCache<T, I, A, LA> {
+protected:
 	// map<I, RealHistoryCache<T, A, LA>> entries;
-	vector<HistoryCacheSet<T, A, LA>> sets;
+	vector<HistoryCacheSet<T, I, A, LA>> sets;
 	int numWays;
 	long numSets;
 	int numIndexBits;
+	// int _numAccesses;
 public:
 
 	RealHistoryCache();
 	RealHistoryCache(int numIndexBits, int numWays, int numAccesses);
 
 	~RealHistoryCache() {
-		entries.clear();
+		clean();
 	}
 
 	bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
 	bool newAccess(I instruction, LA access, A class_);
 
 	void clean() {
-		sets.clean();
+		sets.clear();
 	}
 
 	int getNumWays() {
@@ -269,9 +277,7 @@ public:
 		numHistoryAccesses = 0;
 	}
 
-	BuffersSimulator(HistoryCacheType historyCacheType, int numHistoryAccesses, int numClasses,
-		int maxConfidence = 255, int numConfidenceJumps = 8,
-		bool saveHistoryAndClassAfterDictMiss = true);
+	BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams, DictionaryParameters dictParams);
 
 	BuffersSimulator(const BuffersSimulator& b);
 
@@ -282,13 +288,12 @@ public:
 
 	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
 
-	bool testBuffers(I instruction, LA previousAccess);
+	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);
 
 	// BuffersSimulator<T,I,A,LA> copy();
 };
 
 BuffersSimulator<L64b, L64b, int, L64b>
 proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
-	int numHistoryAccesses, int numClasses,
-	int maxConfidence = 255, int numConfidenceJumps = 8);
+	CacheParameters cacheParams, DictionaryParameters dictParams);
 
