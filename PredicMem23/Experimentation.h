@@ -16,7 +16,7 @@ public:
 	virtual string getString() = 0;
 	virtual string getName() = 0;
 	virtual void setName(string) = 0;
-	virtual map<string, double> getResults() = 0;
+	virtual map<string, double> getResultsAndCosts() = 0;
 	virtual void performExperiment() = 0;
 	virtual void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
 	virtual void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>) = 0;
@@ -94,7 +94,7 @@ public:
 	void setTraceName(string name);
 	string getName();
 	void setName(string);
-	map<string, double> getResults();
+	map<string, double> getResultsAndCosts();
 	void performExperiment();
 	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
 	void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>);

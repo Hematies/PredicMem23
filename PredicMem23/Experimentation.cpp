@@ -91,26 +91,24 @@ void TracePredictExperimentation::exportResults(string filename) {
 	for (auto iter = experimentsByTrace.begin(); iter != experimentsByTrace.end(); ++iter) {
 		string traceName = iter->first;
 		TiXmlElement* trace = new TiXmlElement(traceName.c_str());
-		BuffersSVMPredictResultsAndCosts totalResults{
-			0.0,
-			0.0,
-			0.0,
-			0.0,
-			0.0,
-			0.0
-		};
+		map<string, double> totalResults = {};
 
 		int numExperiments = experimentsByTrace[traceName].size();
 		for (auto experiment : experimentsByTrace[traceName]) {
 			TiXmlElement* experiment_ = new TiXmlElement(experiment->getString().c_str());
-			auto results = experiment->getResults();
+			auto results = experiment->getResultsAndCosts();
 			auto params = experiment->getPredictorParams();
 
-			// First node: related to results:
-			TiXmlElement* results_ = new TiXmlElement("results");
+			// First node: related to results and costs:
+			TiXmlElement* results_ = new TiXmlElement("resultsAndCosts");
+			/*
 			results_->SetDoubleAttribute("hitRate", results["hitRate"]);
 			results_->SetDoubleAttribute("cacheMissRate", results["cacheMissRate"]);
 			results_->SetDoubleAttribute("dictionaryMissRate", results["dictionaryMissRate"]);
+			*/
+			for (auto it = results.begin(); it != results.end(); it++) {
+				results_->SetDoubleAttribute(it->first.c_str(), it->second);
+			}
 			experiment_->LinkEndChild(results_);
 
 			// Second node: related to input, cache params:
@@ -130,21 +128,16 @@ void TracePredictExperimentation::exportResults(string filename) {
 			dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
 			dictParams_->SetAttribute("saveHistoryAndClassAfterMiss", dictParams.saveHistoryAndClassAfterMiss);
 			experiment_->LinkEndChild(dictParams_);
-
-			// Fourth node: related to input, model params: TODO
 			
 			trace->LinkEndChild(experiment_);
-			totalResults.hitRate += results["hitRate"] / numExperiments;
-			totalResults.cacheMissRate += results["cacheMissRate"] / numExperiments;
-			totalResults.dictionaryMissRate += results["dictionaryMissRate"] / numExperiments;
-			// totalResults.modelMemoryCost += results["modelMemoryCost"];
-			// totalResults.dictionaryMemoryCost += results["dictionaryMemoryCost"];
-			// totalResults.cacheMemoryCost += results["cacheMemoryCost"];
+			for (auto it = results.begin(); it != results.end(); it++) {
+				totalResults[it->first] += it->second / numExperiments;
+			}
 		}
 
-		trace->SetDoubleAttribute("hitRate", totalResults.hitRate);
-		trace->SetDoubleAttribute("cacheMissRate", totalResults.cacheMissRate);
-		trace->SetDoubleAttribute("dictionaryMissRate", totalResults.dictionaryMissRate);
+		for (auto it = totalResults.begin(); it != totalResults.end(); it++) {
+			trace->SetDoubleAttribute(it->first.c_str(), it->second);
+		}
 		traces->LinkEndChild(trace);
 	}
 	doc.LinkEndChild(traces);
@@ -270,7 +263,7 @@ void TracePredictExperiment::setTraceName(string name) {
 	this->traceName = name;
 }
 
-map<string, double> TracePredictExperiment::getResults() {
+map<string, double> TracePredictExperiment::getResultsAndCosts() {
 	return resultsAndCosts->getResultsAndCosts();
 }
 

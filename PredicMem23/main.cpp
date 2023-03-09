@@ -81,7 +81,7 @@ int main()
             //"deepsjeng_s"
         };
         */
-        string outputName = "mcf_s_distrib_real_cache.xml";
+        string outputName = "perlbench_s_distrib_real_cache_.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
             //cactuBSSN_s, exchange2_s, roms_s
@@ -93,30 +93,32 @@ int main()
             //"cactuBSSN_s", "exchange2_s", "roms_s"
             //"mcf_s"
             "perlbench_s"
+            //"cactuBSSN_s"
         };
 
         CacheParameters cacheParams = {
-            8,// 0,// 9,// 8,// 10, // Infinite cache
-            6,// 8,// 8,// 4,
+            0,// 0,// 9,// 8,// 10, // Infinite cache
+            8,// 8,// 8,// 4,
             4,// 8
         };
 
         DictionaryParameters dictParams = {
-            6,
-            6,
+            4,
+            4,
             255,
             8,
             true
         };
 
         PredictorParameters params = {
-            PredictorModelType::BufferSVM,
-            // PredictorModelType::DFCMInfinito,
+            // PredictorModelType::BufferSVM,
+            PredictorModelType::DFCMInfinito,
             cacheParams,
             dictParams
         };
 
-        unsigned long numAccessesPerTrace = 1e9;
+        // unsigned long numAccessesPerTrace = 1e9;
+        unsigned long numAccessesPerTrace = 1e7;
         vector<TraceInfo> tracesInfo = vector<TraceInfo>();
         for (int i = 0; i < traceNames.size(); i++) {
             tracesInfo.push_back({
