@@ -394,8 +394,8 @@ Dictionary<D> Dictionary<D>::copy() {
 
 
 
-template<typename T, typename I, typename A, typename LA>
-BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams, 
+template<typename T, typename I, typename A, typename LA, typename Delta>
+BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams,
 	DictionaryParameters dictParams) {
 	// We initialize both the cache and the dictionary:
 	if (historyCacheType == HistoryCacheType::Infinite) {
@@ -413,24 +413,24 @@ BuffersSimulator <T, I, A, LA >::BuffersSimulator(HistoryCacheType historyCacheT
 		this->historyCache = nullptr;
 	}
 	
-	this->dictionary = Dictionary<LA>(dictParams.numClasses, dictParams.maxConfidence, dictParams.numConfidenceJumps);
+	this->dictionary = Dictionary<Delta>(dictParams.numClasses, dictParams.maxConfidence, dictParams.numConfidenceJumps);
 	this->saveHistoryAndClassAfterDictMiss = dictParams.saveHistoryAndClassAfterMiss;
 	this->numHistoryAccesses = cacheParams.numSequenceAccesses;
 }
 
-template<typename T, typename I, typename A, typename LA>
-BuffersSimulator <T, I, A, LA >::BuffersSimulator(const BuffersSimulator <T, I, A, LA >& simulator) {
+template<typename T, typename I, typename A, typename LA, typename Delta>
+BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <T, I, A, LA, Delta >& simulator) {
 	saveHistoryAndClassAfterDictMiss = simulator.saveHistoryAndClassAfterDictMiss;
 	numHistoryAccesses = simulator.numHistoryAccesses;
-	dictionary = Dictionary<LA>(simulator.dictionary);
+	dictionary = Dictionary<Delta>(simulator.dictionary);
 	InfiniteHistoryCache<T, I, A, LA> cache = *((InfiniteHistoryCache<T, I, A, LA>*) & simulator.historyCache);
 	historyCache = shared_ptr<HistoryCache<T, I, A, LA>>(
 		new InfiniteHistoryCache<T, I, A, LA>(cache));
 
 }
 
-template<typename T, typename I, typename A, typename LA>
-BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA> dataset) {
+template<typename T, typename I, typename A, typename LA, typename Delta>
+BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA> dataset) {
 	// We iterate through the given samples:
 	auto accesses = dataset.accesses;
 	auto instructions = dataset.accessesInstructions;
@@ -458,7 +458,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		shared_ptr<HistoryCacheEntry<T, A, LA>> history = 
 			shared_ptr< HistoryCacheEntry<T, A, LA>>(new StandardHistoryCacheEntry<T, A, LA>());
 		bool historyIsFound = historyCache->getEntry(instruction, history.get());
-		LA delta;
+		Delta delta;
 		LA previousAccess;
 		if (historyIsFound) {
 			historyIsValid = history->isEntryValid();
@@ -523,8 +523,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 
 }
 
-template<typename T, typename I, typename A, typename LA>
-bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
+template<typename T, typename I, typename A, typename LA, typename Delta>
+bool BuffersSimulator<T, I, A, LA, Delta>::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
 	bool historyIsValid = true;
 	auto history = 
 		shared_ptr<HistoryCacheEntry<T, A, LA>>(new StandardHistoryCacheEntry<T, A, LA>());
@@ -540,7 +540,7 @@ bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA currentAccess
 	if (lastAccess != currentAccess) {
 		return false;
 	}
-	LA delta = lastAccess - previousAccess;
+	Delta delta = lastAccess - previousAccess;
 	auto savedClass = history->getHistory()[history->getHistory().size() - 1];
 
 	auto class_ = dictionary.getClass(delta);
@@ -571,11 +571,11 @@ BuffersSimulator<T, I, A, LA > BuffersSimulator<T, I, A, LA >::copy() {
 */
 
 
-BuffersSimulator<L64b, L64b, int, L64b>
-proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
+BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>
+proposedBuffersSimulator(AccessesDataset<L64bu, L64bu>& dataset, BuffersDataset<int>& classesDataset,
 	CacheParameters cacheParams, DictionaryParameters dictParams) {
-	BuffersSimulator<L64b, L64b, int, L64b> res = 
-		BuffersSimulator<L64b, L64b, int, L64b>(HistoryCacheType::Infinite, cacheParams, dictParams);
+	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> res = 
+		BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(HistoryCacheType::Infinite, cacheParams, dictParams);
 	classesDataset = res.simulate(dataset);
 	return res;
 }

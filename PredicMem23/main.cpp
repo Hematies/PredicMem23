@@ -34,13 +34,13 @@ int main()
 {
     bool probarExperimentacion = true;
     if (!probarExperimentacion) {
-        AccessesDataset<L64b, L64b> dataset
+        AccessesDataset<L64bu, L64bu> dataset
         {
-            vector<L64b>{0,2,0,2,0,2,0,2,4,8,10,12,14},
-            vector<L64b>{0,1,0,1,0,1,0,1,2,2,2,3,3}
+            vector<L64bu>{0,2,0,2,0,2,0,2,4,8,10,12,14},
+            vector<L64bu>{0,1,0,1,0,1,0,1,2,2,2,3,3}
         };
 
-        TraceReader<L64b, L64b> reader(mcf_s);
+        TraceReader<L64bu, L64bu> reader(mcf_s);
         dataset = reader.readNextLines(10000000);// 10000000);
         // dataset = reader.readAllLines();
 
@@ -85,18 +85,20 @@ int main()
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
             //cactuBSSN_s, exchange2_s, roms_s
-            mcf_s
+            //mcf_s
+            perlbench_s
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
             //"cactuBSSN_s", "exchange2_s", "roms_s"
-            "mcf_s"
+            //"mcf_s"
+            "perlbench_s"
         };
 
         CacheParameters cacheParams = {
-            10, // Infinite cache
-            4,
-            8
+            10,// 9,// 8,// 10, // Infinite cache
+            4,// 8,// 8,// 4,
+            4,// 8
         };
 
         DictionaryParameters dictParams = {
@@ -108,6 +110,8 @@ int main()
         };
 
         PredictorParameters params = {
+            PredictorModelType::BufferSVM,
+            // PredictorModelType::DFCMInfinito,
             cacheParams,
             dictParams
         };

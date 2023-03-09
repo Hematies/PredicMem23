@@ -24,14 +24,14 @@ TracePredictExperimentation::TracePredictExperimentation(vector<Experiment*> exp
 	// this->experiments = vector<Experiment*>(experiments);
 	this->experiments = experiments;
 	this->outputFilename = outputFilename;
-	this->traceReader = TraceReader<L64b, L64b>();
+	this->traceReader = TraceReader<L64bu, L64bu>();
 	
 }
 
 TracePredictExperimentation::TracePredictExperimentation(string outputFilename) {
 	this->experiments = vector<Experiment*>();
 	this->outputFilename = outputFilename;
-	this->traceReader = TraceReader<L64b, L64b>();
+	this->traceReader = TraceReader<L64bu, L64bu>();
 
 }
 
@@ -91,7 +91,7 @@ void TracePredictExperimentation::exportResults(string filename) {
 	for (auto iter = experimentsByTrace.begin(); iter != experimentsByTrace.end(); ++iter) {
 		string traceName = iter->first;
 		TiXmlElement* trace = new TiXmlElement(traceName.c_str());
-		PredictResultsAndCosts totalResults{
+		BuffersSVMPredictResultsAndCosts totalResults{
 			0.0,
 			0.0,
 			0.0,
@@ -162,7 +162,7 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 		auto filename = tracesInfo[i].filename;
 
 		// auto experiment = TracePredictExperiment(this, filename, name, )
-		TraceReader<L64b, L64b> reader(filename);
+		TraceReader<L64bu, L64bu> reader(filename);
 		unsigned long numLines = tracesInfo[i].numAccesses;
 		unsigned long k = 0;
 		unsigned long k1 = numAccessesPerExperiment;
@@ -193,10 +193,15 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	
 	HistoryCacheType cacheType = (cacheParams.numIndexBits > 0)? HistoryCacheType::Real : HistoryCacheType::Infinite;
 
-	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(cacheType, cacheParams, dictParams);
-
-	this->model = PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses);
-
+	if (params.type == PredictorModelType::BufferSVM) {
+		this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(cacheType, cacheParams, dictParams);
+		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*)
+			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses));
+	}
+	else {
+		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+	}
+	
 	this->startDateTime = nowDateTime();
 }
 
@@ -214,10 +219,14 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 
 	HistoryCacheType cacheType = (cacheParams.numIndexBits > 0) ? HistoryCacheType::Real : HistoryCacheType::Infinite;
 
-	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(cacheType, cacheParams, dictParams);
-
-	this->model = PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses);
-
+	if (params.type == PredictorModelType::BufferSVM) {
+		this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(cacheType, cacheParams, dictParams);
+		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*)
+			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses));
+	}
+	else {
+		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+	}
 	this->startDateTime = nowDateTime();
 }
 
@@ -262,40 +271,42 @@ void TracePredictExperiment::setTraceName(string name) {
 }
 
 map<string, double> TracePredictExperiment::getResults() {
-	auto res = map<string, double>{
-		{"hitRate", resultsAndCosts.hitRate},
-		{"cacheMissRate", resultsAndCosts.cacheMissRate},
-		{"dictionaryMissRate", resultsAndCosts.dictionaryMissRate}
-	};
-	return res;
+	return resultsAndCosts->getResultsAndCosts();
 }
 
-void TracePredictExperiment::setPredictor(BuffersSimulator<L64b, L64b, int, L64b> bufferSimulator,
+void TracePredictExperiment::setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> bufferSimulator,
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model) {
-	this->buffersSimulator = BuffersSimulator<L64b, L64b, int, L64b>(bufferSimulator);
-	this->model = model;
+	this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(bufferSimulator);
+	this->model = shared_ptr<PredictorModel<L64bu,int>>((PredictorModel<L64bu, int>*) & model);
+}
+
+void TracePredictExperiment::setPredictorModel(PredictorDFCMInfinito<L64bu, L64b> model) {
+	this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) & model);
 }
 
 void TracePredictExperiment::performExperiment() {
 	this->startDateTime = nowDateTime();
 
 	// First, we check that we don't have to instantiate a new TraceReader:
-	TraceReader<L64b, L64b>* traceReader = &this->framework->traceReader;
+	TraceReader<L64bu, L64bu>* traceReader = &this->framework->traceReader;
 	bool isSameFile = traceReader->filename == this->traceFilename;
 	bool isFileOpen = traceReader->file.is_open();
 
 	if (!isSameFile || !isFileOpen)
-		*traceReader = TraceReader<L64b, L64b>(this->traceFilename);
+		*traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
 
 	// Next, we read the trace and extract the working dataset:
 	auto dataset = traceReader->readLines(startLine, endLine);
+	BuffersDataset<int> classesDataset;
 
-	// Now we simulate the buffers and extract the final dataset:
-	BuffersDataset<int> classesDataset = this->buffersSimulator.simulate(dataset);
+	if (this->predictorParams.type == PredictorModelType::BufferSVM) {
+		// Now we simulate the buffers and extract the final dataset:
+		classesDataset = this->buffersSimulator.simulate(dataset);
+	}
 
 	// Finally, we simulate the predictor model and extract metrics from results:
-	this->model.importarDatos(classesDataset);
-	resultsAndCosts = this->model.simular();
+	this->model->importarDatos(dataset, classesDataset);
+	resultsAndCosts = this->model->simular();
 
 	dataset.accesses.clear();
 	dataset.accessesInstructions.clear();
@@ -312,8 +323,7 @@ string TracePredictExperiment::getName() {
 
 void TracePredictExperiment::clean() {
 	buffersSimulator.clean();
-	model.~PredictorSVM();
-
+	model.reset();
 }
 
 PredictorParameters TracePredictExperiment::getPredictorParams() {

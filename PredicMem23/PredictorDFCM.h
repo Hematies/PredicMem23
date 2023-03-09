@@ -4,15 +4,16 @@
 #include "BuffersSimulator.h"
 //#include "Experimentation.h"
 #include "Global.h"
+#include "PredictorModel.h"
 
 using namespace std;
 
 
 // extern struct PredictResults;
-extern struct PredictResultsAndCosts;
+extern struct BuffersSVMPredictResultsAndCosts;
 
-template<typename T>
-class PredictorDFCMInfinito
+template<typename T, typename Delta>
+class PredictorDFCMInfinito : PredictorModel<T, int>
 {
 private:
 	int numPartesMostrar = 10000;
@@ -25,13 +26,13 @@ private:
 		}
 		else {
 			auto tupla = tablaInstrHash[instruccion];
-			*ultimoAcceso = tupla.get<0>();
-			*hash = tupla.get<1>();
+			*ultimoAcceso = get<0>(tupla);
+			*hash = get<1>(tupla);
 			return true;
 		}
 	}
 
-	bool accederTablaHashDelta(T hash, T* delta) {
+	bool accederTablaHashDelta(T hash, Delta* delta) {
 		if (tablaHashDelta.find(hash) == tablaHashDelta.end()) {
 			return false;
 		}
@@ -42,19 +43,17 @@ private:
 	}
 
 	bool escribirTablaInstrHash(T instruccion, T ultimoAcceso, T hash) {
-		bool estabaEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &hash);
+		T h;
+		bool estabaEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &h);
 		tablaInstrHash[instruccion] = tuple<T,T>(ultimoAcceso, hash);
 		return estabaEnTabla;
 	}
 
-	bool escribirTablaHashDelta(T hash, T delta) {
-		bool estabaEnTabla = accederTablaHashDelta(hash, &delta);
+	bool escribirTablaHashDelta(T hash, Delta delta) {
+		Delta d;
+		bool estabaEnTabla = accederTablaHashDelta(hash, &d);
 		tablaHashDelta[hash] = delta;
 		return estabaEnTabla;
-	}
-
-	T calcularHash(T v1, T v2) {
-		return v1 ^ v2;
 	}
 
 public:
@@ -64,7 +63,7 @@ public:
 	double tasaExito = 0.0;
 
 	map<T, tuple<T,T>> tablaInstrHash;
-	map<T, T> tablaHashDelta;
+	map<T, Delta> tablaHashDelta;
 
 	PredictorDFCMInfinito(AccessesDataset<T,T>& datos) {
 		this->datos = datos;
@@ -75,9 +74,13 @@ public:
 		inicializarPredictor();
 	}
 
+	void importarDatos(AccessesDataset<T, T>& datos, BuffersDataset<int>& datasetClases) {
+		this->datos = datos;
+	}
+
 	void inicializarPredictor() {
-		tablaInstrHash = map<T, T>();
-		tablaHashDelta = map<T, T>();
+		tablaInstrHash = {};
+		tablaHashDelta = {};
 	}
 
 
@@ -85,7 +88,7 @@ public:
 		// Primera tabla
 		T hash;
 		T accesoAnterior;
-		T delta;
+		Delta delta;
 		bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, &hash);
 		if (!hashEnTabla) {
 			accesoAnterior = acceso;
@@ -96,7 +99,7 @@ public:
 		}
 		else {
 			delta = acceso - accesoAnterior;
-			hash = hash ^ delta;
+			hash = hash ^ ((L64b)delta);
 			escribirTablaInstrHash(instruccion, acceso, hash);
 			escribirTablaHashDelta(hash, delta);
 		}
@@ -112,10 +115,12 @@ public:
 		*instrEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &hash);
 		if (!(*instrEnTabla)) return false;
 		else {
-			T delta;
+			Delta delta;
 			*hashEnTabla = accederTablaHashDelta(hash, &delta);
-			if (!(*hashEnTabla)) return false;
-			else *acceso = ultimoAcceso + delta;
+			if (!(*hashEnTabla)) 
+				return false;
+			else *acceso = 
+				ultimoAcceso + delta;
 		}
 		return true;
 	}
@@ -125,9 +130,9 @@ public:
 		return prededir(instruccion, acceso, &a, &b);
 	}
 
-	DFCMPredictResultsAndCosts simular(bool inicializar = true) {
+	shared_ptr<PredictResultsAndCosts> simular(bool inicializar = true) {
 
-		struct DFCMPredictResultsAndCosts resultsAndCosts;
+		DFCMPredictResultsAndCosts resultsAndCosts = DFCMPredictResultsAndCosts();
 		double numFirstTableMisses = 0.0;
 		double numSecondTableMisses = 0.0;
 
@@ -145,7 +150,7 @@ public:
 			T salida = datos.accesses[i];
 			T salidaPredicha;
 			bool instrEnTabla, hashEnTabla;
-			bool haHabidoFalloTablas = predecir(entrada, &salidaPredicha, &instrEnTabla, &hashEnTabla);
+			bool haHabidoFalloTablas = !predecir(entrada, &salidaPredicha, &instrEnTabla, &hashEnTabla);
 
 			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
 			bool haHabidoFallo = haHabidoFalloPrediccion || haHabidoFalloTablas;
@@ -155,8 +160,10 @@ public:
 				ajustarPredictor(entrada, salida);
 
 				if(haHabidoFalloTablas) {
-					if (!instrEnTabla) numFirstTableMisses++;
-					if (!hashEnTabla) numSecondTableMisses++;
+					if (!instrEnTabla) 
+						numFirstTableMisses++;
+					if (!hashEnTabla) 
+						numSecondTableMisses++;
 				}
 			}
 			else
@@ -181,7 +188,7 @@ public:
 		resultsAndCosts.totalMemoryCost = getMemoryCosts(&firstTableCost, &secondTableCost);
 		resultsAndCosts.firstTableMemoryCost = firstTableCost;
 		resultsAndCosts.secondTableMemoryCost = secondTableCost;
-		return resultsAndCosts;
+		return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*)new DFCMPredictResultsAndCosts(resultsAndCosts));
 	}
 
 	double getMemoryCosts(double* firstTableCost, double* secondTableCost) {

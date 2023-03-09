@@ -5,7 +5,6 @@
 #include <iostream>
 #include "Global.h"
 
-#define L64b unsigned long long
 
 using namespace std;
 
@@ -247,32 +246,18 @@ public:
 
 };
 
-template<typename I, typename A>
-struct AccessesDataset {
-	vector<A> accesses;
-	vector<I> accessesInstructions;
-};
 
-template<typename A = long>
-struct BuffersDataset {
-	vector<vector<A>> inputAccesses;
-	vector<A> outputAccesses;
-	vector<bool> isCacheMiss;
-	vector<bool> isDictionaryMiss;
-	vector<bool> isValid;
-};
-
-template<typename T, typename I, typename A, typename LA>
+template<typename T, typename I, typename A, typename LA, typename Delta>
 class BuffersSimulator {
 public: 
 	shared_ptr<HistoryCache<T, I, A, LA>> historyCache;
-	Dictionary<LA> dictionary;
+	Dictionary<Delta> dictionary;
 	int numHistoryAccesses;
 	bool saveHistoryAndClassAfterDictMiss;
 
 	BuffersSimulator() {
 		this->historyCache = nullptr;
-		this->dictionary = Dictionary<LA>();
+		this->dictionary = Dictionary<Delta>();
 		this->saveHistoryAndClassAfterDictMiss = false;
 		numHistoryAccesses = 0;
 	}
@@ -282,7 +267,8 @@ public:
 	BuffersSimulator(const BuffersSimulator& b);
 
 	void clean() {
-		this->historyCache->clean();
+		if(this->historyCache != nullptr)
+			this->historyCache->clean();
 		this->dictionary.~Dictionary();
 	}
 
@@ -293,7 +279,7 @@ public:
 	// BuffersSimulator<T,I,A,LA> copy();
 };
 
-BuffersSimulator<L64b, L64b, int, L64b>
-proposedBuffersSimulator(AccessesDataset<L64b, L64b>& dataset, BuffersDataset<int>& classesDataset,
+BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>
+proposedBuffersSimulator(AccessesDataset<L64bu, L64bu>& dataset, BuffersDataset<int>& classesDataset,
 	CacheParameters cacheParams, DictionaryParameters dictParams);
 

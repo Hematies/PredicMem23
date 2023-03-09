@@ -5,15 +5,16 @@
 #include "BuffersSimulator.h"
 //#include "Experimentation.h"
 #include "Global.h"
+#include "PredictorModel.h"
 
 using namespace std;
 
 
 // extern struct PredictResults;
-extern struct PredictResultsAndCosts;
+extern struct BuffersSVMPredictResultsAndCosts;
 
 template<typename T_pred, typename T_entrada>
-class PredictorSVM
+class PredictorSVM : PredictorModel<L64bu, T_entrada>
 {
 
 private:
@@ -69,8 +70,11 @@ public:
 		this->numClases = 0;
 	}
 
+	void importarDatos(AccessesDataset<L64bu, L64bu>& datos, BuffersDataset<T_entrada>& datasetClases) {
+		importarDatos(datasetClases);
+	}
 
-	void importarDatos(BuffersDataset<T_entrada> datasetClases) {
+	void importarDatos(BuffersDataset<T_entrada>& datasetClases) {
 		for (int i = 0; i < datasetClases.inputAccesses.size(); i++) {
 			vector<float> entrada = vector<float>();
 			char salida = -1;
@@ -111,9 +115,9 @@ public:
 		return this->modelo.predict(in)[0];
 	}
 
-	PredictResultsAndCosts simular(bool inicializar = true) {
+	shared_ptr<PredictResultsAndCosts> simular(bool inicializar = true) {
 
-		struct PredictResultsAndCosts resultsAndCosts;
+		BuffersSVMPredictResultsAndCosts resultsAndCosts = BuffersSVMPredictResultsAndCosts();
 		double numDictionaryMisses = 0.0;
 		double numCacheMisses = 0.0;
 
@@ -170,7 +174,7 @@ public:
 		resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
 		resultsAndCosts.cacheMissRate = numCacheMisses / datosEntrada.size();
 		resultsAndCosts.modelMemoryCost = getModelMemoryCosts();
-		return resultsAndCosts;
+		return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*) new BuffersSVMPredictResultsAndCosts(resultsAndCosts));
 	}
 
 	double getModelMemoryCosts() {
