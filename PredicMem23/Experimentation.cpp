@@ -308,6 +308,13 @@ void TracePredictExperiment::performExperiment() {
 	this->model->importarDatos(dataset, classesDataset);
 	resultsAndCosts = this->model->simular();
 
+	if (this->predictorParams.type == PredictorModelType::BufferSVM) {
+		BuffersSVMPredictResultsAndCosts* rc = (BuffersSVMPredictResultsAndCosts*)resultsAndCosts.get();
+		rc->cacheMemoryCost = buffersSimulator.historyCache->getTotalMemoryCost();
+		rc->dictionaryMemoryCost = buffersSimulator.dictionary.getTotalMemoryCost();
+		rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
+	}
+
 	dataset.accesses.clear();
 	dataset.accessesInstructions.clear();
 	classesDataset.inputAccesses.clear();

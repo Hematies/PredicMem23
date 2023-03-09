@@ -79,7 +79,7 @@ class RealHistoryCacheEntry : public StandardHistoryCacheEntry<T, A, LA> {
 protected:
 	//vector<A> history;
 	int way;
-	//int _numAccesses;
+	//int numAccesses;
 public:
 
 	RealHistoryCacheEntry();
@@ -135,6 +135,8 @@ public:
 	virtual void clean() = 0;
 	virtual long getNumEntries() = 0;
 
+	virtual double getMemoryCost() = 0;
+	virtual double getTotalMemoryCost() = 0;
 };
 
 enum HistoryCacheType { Infinite = 0 , Real = 1};
@@ -145,11 +147,12 @@ friend class RealHistoryCacheEntry<T, A, LA>;
 private:
 	map<I, StandardHistoryCacheEntry<T, A, LA>> entries;
 protected:
-	int _numAccesses;
+	int numAccesses;
+	int numClasses;
 public:
 
 	InfiniteHistoryCache();
-	InfiniteHistoryCache(int numAccesses);
+	InfiniteHistoryCache(int numAccesses, int numClasses);
 	
 	~InfiniteHistoryCache() {
 		entries.clear();
@@ -160,7 +163,10 @@ public:
 
 	bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
 	bool newAccess(I instruction, LA access, A class_);
-	
+	double getMemoryCost();
+	double getTotalMemoryCost();
+
+
 	void clean() {
 		entries.clear();
 	}
@@ -177,13 +183,12 @@ protected:
 	// map<I, RealHistoryCache<T, A, LA>> entries;
 	vector<HistoryCacheSet<T, I, A, LA>> sets;
 	int numWays;
-	long numSets;
 	int numIndexBits;
-	// int _numAccesses;
+	// int numAccesses;
 public:
 
 	RealHistoryCache();
-	RealHistoryCache(int numIndexBits, int numWays, int numAccesses);
+	RealHistoryCache(int numIndexBits, int numWays, int numAccesses, int numClasses);
 
 	~RealHistoryCache() {
 		clean();
@@ -191,6 +196,8 @@ public:
 
 	bool getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
 	bool newAccess(I instruction, LA access, A class_);
+	double getMemoryCost();
+	double getTotalMemoryCost();
 
 	void clean() {
 		sets.clear();
@@ -209,7 +216,7 @@ public:
 	}
 
 	long getNumEntries() {
-		return numSets * numWays;
+		return sets.size() * numWays;
 	}
 
 };
@@ -241,6 +248,15 @@ public:
 	int newDelta(D delta);
 	int getClass(D delta);
 	void showContent();
+
+	double getMemoryCost() {
+		double costPerEntry = sizeof(D); // Delta value. There are no class bits.
+		return costPerEntry * this->entries.size();
+	}
+	double getTotalMemoryCost() {
+		double extraCostPerEntry = ceil(log10(this->maxConfidence) / log10(2)); // Confidence value bits
+		return (extraCostPerEntry / 8) * this->entries.size() + getMemoryCost();
+	}
 
 	// Dictionary copy();
 
@@ -275,6 +291,13 @@ public:
 	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
 
 	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);
+
+	double getMemoryCost() {
+		return this->historyCache->getMemoryCost() + this->dictionary.getMemoryCost();
+	}
+	double getTotalMemoryCost() {
+		return this->historyCache->getTotalMemoryCost() + this->dictionary.getTotalMemoryCost();
+	}
 
 	// BuffersSimulator<T,I,A,LA> copy();
 };

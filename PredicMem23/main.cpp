@@ -96,8 +96,8 @@ int main()
         };
 
         CacheParameters cacheParams = {
-            10,// 9,// 8,// 10, // Infinite cache
-            4,// 8,// 8,// 4,
+            8,// 0,// 9,// 8,// 10, // Infinite cache
+            6,// 8,// 8,// 4,
             4,// 8
         };
 

@@ -181,7 +181,8 @@ public:
 		int numSVMs = this->modelo.SVMsTable.size();
 		int numElements = this->modelo.numFeatures + 1;
 
-		return numElements * numSVMs; // For now, we just return the total number of elements (weights) of the model.
+		return numElements * sizeof(float) * numSVMs; 
+			// For now, we return the total number bytes of the elements (weights) of the model.
 	}
 };
 

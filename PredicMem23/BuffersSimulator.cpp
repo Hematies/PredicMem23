@@ -74,8 +74,9 @@ InfiniteHistoryCache<T, I, A, LA>::InfiniteHistoryCache() {
 }
 
 template<typename T, typename I, typename A, typename LA >
-InfiniteHistoryCache<T, I, A, LA>::InfiniteHistoryCache(int numAccesses) {
-	this->_numAccesses = numAccesses;
+InfiniteHistoryCache<T, I, A, LA>::InfiniteHistoryCache(int numAccesses, int numClasses) {
+	this->numAccesses = numAccesses;
+	this->numClasses = numClasses;
 	entries = map<I, StandardHistoryCacheEntry<T, A, LA>>();
 }
 
@@ -107,7 +108,7 @@ template<typename T, typename I, typename A, typename LA >
 bool InfiniteHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A class_) {
 	bool res = true;
 	StandardHistoryCacheEntry<T, A, LA> entry = 
-		StandardHistoryCacheEntry<T, A, LA>(_numAccesses);
+		StandardHistoryCacheEntry<T, A, LA>(numAccesses);
 	bool entryFound	= getEntry(instruction, &entry);
 	if (!entryFound) {
 		entries[instruction] = entry;
@@ -118,7 +119,19 @@ bool InfiniteHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A cl
 	return res;
 }
 
+template<typename T, typename I, typename A, typename LA >
+double InfiniteHistoryCache<T, I, A, LA>::getMemoryCost() {
+	double costPerEntry = sizeof(LA); // Last access value
+	double numBitsClass = ceil(log10(this->numClasses) / log10(2));
+	costPerEntry += (numAccesses * numBitsClass) / 8;
+	return costPerEntry * this->entries.size();
+}
 
+template<typename T, typename I, typename A, typename LA >
+double InfiniteHistoryCache<T, I, A, LA>::getTotalMemoryCost() {
+	double extraCostPerEntry = sizeof(I); // Instruction as tag
+	return extraCostPerEntry * this->entries.size() + getMemoryCost();
+}
 
 template<typename T, typename A, typename LA>
 RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry() {
@@ -154,10 +167,11 @@ RealHistoryCache<T, I, A, LA>::RealHistoryCache() {
 }
 
 template<typename T, typename I, typename A, typename LA >
-RealHistoryCache<T, I, A, LA>::RealHistoryCache(int numIndexBits, int numWays, int numAccesses) {
-	this->_numAccesses = numAccesses;
+RealHistoryCache<T, I, A, LA>::RealHistoryCache(int numIndexBits, int numWays, int numAccesses, int numClasses) {
+	this->numAccesses = numAccesses;
 	this->numIndexBits = numIndexBits;
 	this->numWays = numWays;
+	this->numClasses = numClasses;
 	sets = vector<HistoryCacheSet<T, I, A, LA>>();
 
 	for (int index = 0; index < pow(2, numIndexBits); index++) {
@@ -186,6 +200,22 @@ bool RealHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A class_
 	int numTagBits = std::numeric_limits<T>::digits - numIndexBits;
 	long index = (instruction << numTagBits) >> numTagBits;
 	return this->sets[index].newAccess(instruction, access, class_);
+}
+
+template<typename T, typename I, typename A, typename LA >
+double RealHistoryCache<T, I, A, LA>::getMemoryCost() {
+	double costPerEntry = sizeof(LA); // Last access value;
+	double numBitsClass = ceil(log10(this->numClasses) / log10(2));
+	costPerEntry += (this->numAccesses * numBitsClass) / 8;
+	return costPerEntry * this->getNumEntries();
+}
+
+template<typename T, typename I, typename A, typename LA >
+double RealHistoryCache<T, I, A, LA>::getTotalMemoryCost() {
+	double extraCostPerEntry = std::numeric_limits<T>::digits - this->numIndexBits; // Tag bits
+	extraCostPerEntry += this->numAccesses; // LRU bits
+	extraCostPerEntry = extraCostPerEntry / 8;
+	return extraCostPerEntry * this->getNumEntries() + getMemoryCost();
 }
 
 template<typename T, typename I, typename A, typename LA >
@@ -381,18 +411,19 @@ void Dictionary<D>::showContent() {
 }
 
 /*
-template<typename D>
-Dictionary<D> Dictionary<D>::copy() {
-	Dictionary<D> res = Dictionary<D>();
-	res.maxConfidence = this->maxConfidence;
-	res.numClasses = this->numClasses;
-	res.numConfidenceJumps = this->numConfidenceJumps;
-	res.entries = vector<DictionaryEntry<D>>(this->entries);
-	return res;
+template<typename D >
+double Dictionary<D>::getMemoryCost() {
+	double costPerEntry = sizeof(D); // Delta value. There are no class bits.
+	return costPerEntry * this->entries.size();
 }
 */
-
-
+/*
+template<typename D>
+double Dictionary<D>::getTotalMemoryCost() {
+	double extraCostPerEntry = ceil(log10(this->maxConfidence) / log10(2)); // Confidence value bits
+	return (extraCostPerEntry / 8) * this->entries.size() + getMemoryCost();
+}
+*/
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams,
@@ -400,12 +431,13 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType history
 	// We initialize both the cache and the dictionary:
 	if (historyCacheType == HistoryCacheType::Infinite) {
 		this->historyCache = 
-			shared_ptr<HistoryCache< T, I, A, LA >>(new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses));
+			shared_ptr<HistoryCache< T, I, A, LA >>(
+				new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses, dictParams.numClasses));
 	}
 	else if (historyCacheType == HistoryCacheType::Real) {
 		this->historyCache = 
 			shared_ptr<HistoryCache< T, I, A, LA >>(new RealHistoryCache<T, I, A, LA>(cacheParams.numIndexBits, 
-				cacheParams.numWays, cacheParams.numSequenceAccesses));
+				cacheParams.numWays, cacheParams.numSequenceAccesses, dictParams.numClasses));
 	}	
 	else {
 		// this->historyCache = HistoryCache<T, I, A, LA>();
