@@ -20,7 +20,7 @@ string nowDateTime() {
 	return now;
 }
 
-TracePredictExperientation::TracePredictExperientation(vector<Experiment*> experiments, string outputFilename) {
+TracePredictExperimentation::TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename) {
 	// this->experiments = vector<Experiment*>(experiments);
 	this->experiments = experiments;
 	this->outputFilename = outputFilename;
@@ -28,14 +28,14 @@ TracePredictExperientation::TracePredictExperientation(vector<Experiment*> exper
 	
 }
 
-TracePredictExperientation::TracePredictExperientation(string outputFilename) {
+TracePredictExperimentation::TracePredictExperimentation(string outputFilename) {
 	this->experiments = vector<Experiment*>();
 	this->outputFilename = outputFilename;
 	this->traceReader = TraceReader<L64b, L64b>();
 
 }
 
-void TracePredictExperientation::performExperiments() {
+void TracePredictExperimentation::performExperiments() {
 	for (auto& experiment : this->experiments) {
 		cout << "\n=========";
 		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
@@ -44,17 +44,17 @@ void TracePredictExperientation::performExperiments() {
 	}
 }
 
-vector<Experiment*> TracePredictExperientation::getExperiments() {
+vector<Experiment*> TracePredictExperimentation::getExperiments() {
 	// return vector<Experiment*>(experiments);
 	return experiments;
 }
 
-void TracePredictExperientation::setExperiments(vector<Experiment*> experiments) {
+void TracePredictExperimentation::setExperiments(vector<Experiment*> experiments) {
 	// this->experiments = vector<Experiment*>(experiments);
 	this->experiments = experiments;
 }
 
-map<string, vector<Experiment*>> TracePredictExperientation::getExperimentsByTrace() {
+map<string, vector<Experiment*>> TracePredictExperimentation::getExperimentsByTrace() {
 	map<string, vector<Experiment*>> res = map<string, vector<Experiment*>>();
 	for (auto& experiment : this->experiments) {
 		string traceName = experiment->getName();
@@ -75,7 +75,7 @@ map<string, vector<Experiment*>> TracePredictExperientation::getExperimentsByTra
 	return res;
 }
 
-void TracePredictExperientation::exportResults(string filename) {
+void TracePredictExperimentation::exportResults(string filename) {
 	
 	TiXmlDocument doc;
 	TiXmlDeclaration decl("1.0", "", "");
@@ -137,9 +137,9 @@ void TracePredictExperientation::exportResults(string filename) {
 			totalResults.hitRate += results["hitRate"] / numExperiments;
 			totalResults.cacheMissRate += results["cacheMissRate"] / numExperiments;
 			totalResults.dictionaryMissRate += results["dictionaryMissRate"] / numExperiments;
-			// totalResults.modelMemoryCosts += results["modelMemoryCosts"];
-			// totalResults.dictionaryMemoryCosts += results["dictionaryMemoryCosts"];
-			// totalResults.cacheMemoryCosts += results["cacheMemoryCosts"];
+			// totalResults.modelMemoryCost += results["modelMemoryCost"];
+			// totalResults.dictionaryMemoryCost += results["dictionaryMemoryCost"];
+			// totalResults.cacheMemoryCost += results["cacheMemoryCost"];
 		}
 
 		trace->SetDoubleAttribute("hitRate", totalResults.hitRate);
@@ -152,7 +152,7 @@ void TracePredictExperientation::exportResults(string filename) {
 	doc.SaveFile(filename.c_str());
 }
 
-void TracePredictExperientation::buildExperiments(vector<TraceInfo> tracesInfo,
+void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	PredictorParameters params, long numAccessesPerExperiment = 10000000) {
 
 
@@ -200,7 +200,7 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	this->startDateTime = nowDateTime();
 }
 
-TracePredictExperiment::TracePredictExperiment(TracePredictExperientation* framework, string traceFilename, string traceName, long startLine, long endLine,
+TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* framework, string traceFilename, string traceName, long startLine, long endLine,
 	struct PredictorParameters params) {
 	this->framework = framework;
 	this->traceFilename = traceFilename;

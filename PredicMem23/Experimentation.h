@@ -36,7 +36,7 @@ public:
 
 
 
-class TracePredictExperientation : public Experimentation{
+class TracePredictExperimentation : public Experimentation{
 private:
 	vector<Experiment*> experiments;
 	string outputFilename;
@@ -44,8 +44,8 @@ private:
 public:
 	TraceReader<L64b, L64b> traceReader;
 
-	TracePredictExperientation(vector<Experiment*> experiments, string outputFilename);
-	TracePredictExperientation(string outputFilename);
+	TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename);
+	TracePredictExperimentation(string outputFilename);
 
 	void performExperiments();
 	void exportResults(string filename);
@@ -70,11 +70,11 @@ private:
 		 = BuffersSimulator<L64b, L64b, int, L64b>();
 	PredictorSVM<MultiSVMClassifierOneToAll, int> model;
 
-	TracePredictExperientation* framework;
+	TracePredictExperimentation* framework;
 	PredictorParameters predictorParams;
 
 public:
-	TracePredictExperiment(TracePredictExperientation* framework,
+	TracePredictExperiment(TracePredictExperimentation* framework,
 		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
 

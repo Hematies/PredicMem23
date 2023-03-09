@@ -32,7 +32,7 @@ public:
 };
 
 template<typename T,typename A, typename LA>
-class InfiniteHistoryCacheEntry : public HistoryCacheEntry<T, A, LA>{
+class StandardHistoryCacheEntry : public HistoryCacheEntry<T, A, LA>{
 
 	
 protected:
@@ -43,9 +43,9 @@ public:
 	
 	//friend class RealHistoryCacheEntry<T, A, LA>;
 
-	InfiniteHistoryCacheEntry();
-	InfiniteHistoryCacheEntry(int numAccesses);
-	~InfiniteHistoryCacheEntry() {
+	StandardHistoryCacheEntry();
+	StandardHistoryCacheEntry(int numAccesses);
+	~StandardHistoryCacheEntry() {
 		history.clear();
 	}
 
@@ -61,7 +61,7 @@ public:
 	void setLastAccess(LA la);
 	void clear() {
 		history.clear();
-		// this->~InfiniteHistoryCacheEntry();
+		// this->~StandardHistoryCacheEntry();
 	}
 
 	/*
@@ -76,7 +76,7 @@ public:
 };
 
 template<typename T, typename A, typename LA>
-class RealHistoryCacheEntry : public InfiniteHistoryCacheEntry<T, A, LA> {
+class RealHistoryCacheEntry : public StandardHistoryCacheEntry<T, A, LA> {
 protected:
 	//vector<A> history;
 	int way;
@@ -144,7 +144,7 @@ template<typename T, typename I, typename A, typename LA>
 class InfiniteHistoryCache : public HistoryCache<T, I, A, LA> {
 friend class RealHistoryCacheEntry<T, A, LA>;
 private:
-	map<I, InfiniteHistoryCacheEntry<T, A, LA>> entries;
+	map<I, StandardHistoryCacheEntry<T, A, LA>> entries;
 protected:
 	int _numAccesses;
 public:

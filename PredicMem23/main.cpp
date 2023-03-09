@@ -122,7 +122,7 @@ int main()
                 });
         }
 
-        TracePredictExperientation experimentation = TracePredictExperientation(outputName);
+        TracePredictExperimentation experimentation = TracePredictExperimentation(outputName);
         experimentation.buildExperiments(tracesInfo, params, 1e6);// 10000);//
         experimentation.performExperiments();
         experimentation.exportResults();

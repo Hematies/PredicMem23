@@ -38,9 +38,18 @@ struct PredictResultsAndCosts {
 	double hitRate;
 	double cacheMissRate;
 	double dictionaryMissRate;
-	double cacheMemoryCosts;
-	double dictionaryMemoryCosts;
-	double modelMemoryCosts;
+	double cacheMemoryCost;
+	double dictionaryMemoryCost;
+	double modelMemoryCost;
+};
+
+struct DFCMPredictResultsAndCosts {
+	double hitRate;
+	double firstTableMissRate;
+	double secondTableMissRate;
+	double firstTableMemoryCost;
+	double secondTableMemoryCost;
+	double totalMemoryCost;
 };
 
 struct TraceInfo {

@@ -169,7 +169,7 @@ public:
 		resultsAndCosts.hitRate = tasaExito;
 		resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
 		resultsAndCosts.cacheMissRate = numCacheMisses / datosEntrada.size();
-		resultsAndCosts.modelMemoryCosts = getModelMemoryCosts();
+		resultsAndCosts.modelMemoryCost = getModelMemoryCosts();
 		return resultsAndCosts;
 	}
 

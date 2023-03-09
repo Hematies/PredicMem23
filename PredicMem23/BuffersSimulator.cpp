@@ -2,54 +2,54 @@
 #include <limits>
 
 template<typename T, typename A, typename LA>
-vector<A> InfiniteHistoryCacheEntry<T, A, LA>::getHistory() {
+vector<A> StandardHistoryCacheEntry<T, A, LA>::getHistory() {
 	return vector<A>(history);
 }
 template<typename T, typename A, typename LA>
-void InfiniteHistoryCacheEntry<T, A, LA>::setHistory(vector<A> h) {
+void StandardHistoryCacheEntry<T, A, LA>::setHistory(vector<A> h) {
 	history = vector<A>(h);
 }
 template<typename T, typename A, typename LA>
-T InfiniteHistoryCacheEntry<T, A, LA>::getTag() {
+T StandardHistoryCacheEntry<T, A, LA>::getTag() {
 	return tag;
 }
 template<typename T, typename A, typename LA>
-void InfiniteHistoryCacheEntry<T, A, LA>::setTag(T t) {
+void StandardHistoryCacheEntry<T, A, LA>::setTag(T t) {
 	tag = t;
 }
 template<typename T, typename A, typename LA>
-LA InfiniteHistoryCacheEntry<T, A, LA>::getLastAccess() {
+LA StandardHistoryCacheEntry<T, A, LA>::getLastAccess() {
 	return lastAccess;
 }
 template<typename T, typename A, typename LA>
-void InfiniteHistoryCacheEntry<T, A, LA>::setLastAccess(LA la) {
+void StandardHistoryCacheEntry<T, A, LA>::setLastAccess(LA la) {
 	lastAccess = la;
 }
 
 template<typename T, typename A, typename LA>
-InfiniteHistoryCacheEntry<T, A, LA>::InfiniteHistoryCacheEntry() {
+StandardHistoryCacheEntry<T, A, LA>::StandardHistoryCacheEntry() {
 	this->history = vector<int>();
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
 
 template<typename T, typename A, typename LA>
-InfiniteHistoryCacheEntry<T, A, LA>::InfiniteHistoryCacheEntry(int numAccesses) {
+StandardHistoryCacheEntry<T, A, LA>::StandardHistoryCacheEntry(int numAccesses) {
 	this->history = vector<int>(numAccesses, -1);
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
 
 template<typename T, typename A, typename LA>
-void InfiniteHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
-	// p = new InfiniteHistoryCacheEntry();
+void StandardHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
+	// p = new StandardHistoryCacheEntry();
 	p->setHistory(history);
 	p->setLastAccess(lastAccess);
 	p->setTag(tag);
 }
 
 template<typename T, typename A, typename LA>
-bool InfiniteHistoryCacheEntry<T, A, LA>::isEntryValid() {
+bool StandardHistoryCacheEntry<T, A, LA>::isEntryValid() {
 	long invalidValue = -1L;
 	bool historyIsValid = true;
 	for (auto value : history)
@@ -58,7 +58,7 @@ bool InfiniteHistoryCacheEntry<T, A, LA>::isEntryValid() {
 }
 
 template<typename T, typename A, typename LA>
-void InfiniteHistoryCacheEntry<T, A, LA>::setEntry(T newTag, LA access, A class_) {
+void StandardHistoryCacheEntry<T, A, LA>::setEntry(T newTag, LA access, A class_) {
 	tag = newTag;
 	lastAccess = access;
 	for (int i = 0; i < history.size() - 1; i++) {
@@ -70,13 +70,13 @@ void InfiniteHistoryCacheEntry<T, A, LA>::setEntry(T newTag, LA access, A class_
 
 template<typename T, typename I, typename A, typename LA >
 InfiniteHistoryCache<T, I, A, LA>::InfiniteHistoryCache() {
-	entries = map<I, InfiniteHistoryCacheEntry<T, A, LA>>();
+	entries = map<I, StandardHistoryCacheEntry<T, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
 InfiniteHistoryCache<T, I, A, LA>::InfiniteHistoryCache(int numAccesses) {
 	this->_numAccesses = numAccesses;
-	entries = map<I, InfiniteHistoryCacheEntry<T, A, LA>>();
+	entries = map<I, StandardHistoryCacheEntry<T, A, LA>>();
 }
 
 /*
@@ -106,8 +106,8 @@ template<typename T, typename I, typename A, typename LA >
 template<typename T, typename I, typename A, typename LA >
 bool InfiniteHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A class_) {
 	bool res = true;
-	InfiniteHistoryCacheEntry<T, A, LA> entry = 
-		InfiniteHistoryCacheEntry<T, A, LA>(_numAccesses);
+	StandardHistoryCacheEntry<T, A, LA> entry = 
+		StandardHistoryCacheEntry<T, A, LA>(_numAccesses);
 	bool entryFound	= getEntry(instruction, &entry);
 	if (!entryFound) {
 		entries[instruction] = entry;
@@ -456,7 +456,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA >::simulate(AccessesDataset<I, LA
 		// First, we ask the cache for the respective instruction history:
 		bool historyIsValid = true;
 		shared_ptr<HistoryCacheEntry<T, A, LA>> history = 
-			shared_ptr< HistoryCacheEntry<T, A, LA>>(new InfiniteHistoryCacheEntry<T, A, LA>());
+			shared_ptr< HistoryCacheEntry<T, A, LA>>(new StandardHistoryCacheEntry<T, A, LA>());
 		bool historyIsFound = historyCache->getEntry(instruction, history.get());
 		LA delta;
 		LA previousAccess;
@@ -527,7 +527,7 @@ template<typename T, typename I, typename A, typename LA>
 bool BuffersSimulator<T, I, A, LA >::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
 	bool historyIsValid = true;
 	auto history = 
-		shared_ptr<HistoryCacheEntry<T, A, LA>>(new InfiniteHistoryCacheEntry<T, A, LA>());
+		shared_ptr<HistoryCacheEntry<T, A, LA>>(new StandardHistoryCacheEntry<T, A, LA>());
 	bool historyIsFound = historyCache->getEntry(instruction, history.get());
 	LA lastAccess;
 	if (!historyIsFound) {
