@@ -42,12 +42,13 @@ class TracePredictExperimentation : public Experimentation{
 private:
 	vector<Experiment*> experiments;
 	string outputFilename;
+	bool countTotalMemory = false;
 	
 public:
 	TraceReader<L64bu, L64bu> traceReader;
 
 	TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename);
-	TracePredictExperimentation(string outputFilename);
+	TracePredictExperimentation(string outputFilename, bool countTotalMemory = false);
 
 	void performExperiments();
 	void exportResults(string filename);
@@ -67,6 +68,7 @@ private:
 	long startLine;
 	long endLine;
 	string startDateTime;
+	bool countTotalMemory = false;
 
 	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> buffersSimulator
 		 = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>();
@@ -78,8 +80,10 @@ private:
 
 public:
 	TracePredictExperiment(TracePredictExperimentation* framework,
-		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
-	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
+		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters,
+		bool countTotalMemory = false);
+	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters,
+		bool countTotalMemory = false);
 
 	shared_ptr<PredictResultsAndCosts> resultsAndCosts;
 

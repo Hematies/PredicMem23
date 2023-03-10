@@ -152,10 +152,18 @@ RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry(int numAccesses, int way)
 
 template<typename T, typename A, typename LA>
 void RealHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
+	/*
 	*p = RealHistoryCacheEntry<T, A, LA>(this->history.size(), this->way);
 	p->setHistory(this->history);
 	p->setLastAccess(this->lastAccess);
 	p->setTag(this->tag);
+	*/
+	RealHistoryCacheEntry<T, A, LA>* aux = (RealHistoryCacheEntry<T, A, LA>*) p;
+	aux->setWay(this->way);
+	aux->setHistory(this->history);
+	aux->setLastAccess(this->lastAccess);
+	aux->setTag(this->tag);
+	
 }
 
 
@@ -512,7 +520,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		historyCache->newAccess(instruction, access, class_);
 		
 		bool noError = true;
-		isCacheMiss = !historyIsValid;
+		// isCacheMiss = !historyIsValid;
+		isCacheMiss = historyIsFound;
 		isDictionaryMiss = !classIsFound;
 		if (!classIsFound || !historyIsValid) {
 			// The access is labeled as miss:

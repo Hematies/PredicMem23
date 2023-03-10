@@ -28,11 +28,11 @@ TracePredictExperimentation::TracePredictExperimentation(vector<Experiment*> exp
 	
 }
 
-TracePredictExperimentation::TracePredictExperimentation(string outputFilename) {
+TracePredictExperimentation::TracePredictExperimentation(string outputFilename,bool countTotalMemory) {
 	this->experiments = vector<Experiment*>();
 	this->outputFilename = outputFilename;
 	this->traceReader = TraceReader<L64bu, L64bu>();
-
+	this->countTotalMemory = countTotalMemory;
 }
 
 void TracePredictExperimentation::performExperiments() {
@@ -174,11 +174,12 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 }
 
 TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
-	struct PredictorParameters params) {
+	struct PredictorParameters params, bool countTotalMemory) {
 	this->traceFilename = traceFilename;
 	this->traceName = traceName;
 	this->startLine = startLine;
 	this->endLine = endLine;
+	this->countTotalMemory = countTotalMemory;
 
 	this->predictorParams = params;
 	auto cacheParams = params.cacheParams;
@@ -199,12 +200,13 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 }
 
 TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* framework, string traceFilename, string traceName, long startLine, long endLine,
-	struct PredictorParameters params) {
+	struct PredictorParameters params, bool countTotalMemory) {
 	this->framework = framework;
 	this->traceFilename = traceFilename;
 	this->traceName = traceName;
 	this->startLine = startLine;
 	this->endLine = endLine;
+	this->countTotalMemory = countTotalMemory;
 
 	this->predictorParams = params;
 	auto cacheParams = params.cacheParams;
@@ -303,9 +305,16 @@ void TracePredictExperiment::performExperiment() {
 
 	if (this->predictorParams.type == PredictorModelType::BufferSVM) {
 		BuffersSVMPredictResultsAndCosts* rc = (BuffersSVMPredictResultsAndCosts*)resultsAndCosts.get();
-		rc->cacheMemoryCost = buffersSimulator.historyCache->getTotalMemoryCost();
-		rc->dictionaryMemoryCost = buffersSimulator.dictionary.getTotalMemoryCost();
+		if (countTotalMemory) {
+			rc->cacheMemoryCost = buffersSimulator.historyCache->getTotalMemoryCost();
+			rc->dictionaryMemoryCost = buffersSimulator.dictionary.getTotalMemoryCost();
+		}
+		else {
+			rc->cacheMemoryCost = buffersSimulator.historyCache->getMemoryCost();
+			rc->dictionaryMemoryCost = buffersSimulator.dictionary.getMemoryCost();
+		}
 		rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
+		
 	}
 
 	dataset.accesses.clear();
@@ -315,6 +324,9 @@ void TracePredictExperiment::performExperiment() {
 	classesDataset.isValid.clear();
 	classesDataset.isCacheMiss.clear();
 	classesDataset.isDictionaryMiss.clear();
+	this->model.reset();
+	buffersSimulator.clean();
+
 }
 
 string TracePredictExperiment::getName() {

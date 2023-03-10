@@ -97,9 +97,9 @@ int main()
         };
 
         CacheParameters cacheParams = {
-            0,// 0,// 9,// 8,// 10, // Infinite cache
-            8,// 8,// 8,// 4,
-            4,// 8
+            8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+            2,// 8,// 8,// 4,
+            4,// 4,// 8
         };
 
         DictionaryParameters dictParams = {
@@ -111,8 +111,8 @@ int main()
         };
 
         PredictorParameters params = {
-            // PredictorModelType::BufferSVM,
-            PredictorModelType::DFCMInfinito,
+            PredictorModelType::BufferSVM,
+            // PredictorModelType::DFCMInfinito,
             cacheParams,
             dictParams
         };

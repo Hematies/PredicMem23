@@ -119,8 +119,8 @@ public:
 	int getLeastRecentWay();
 
 	void clean() {
-		for (RealHistoryCacheEntry<T, A, LA> entry : entries) {
-			entry.reset();
+		for (RealHistoryCacheEntry<T, A, LA>& entry : entries) {
+			entry.clear();
 			isEntryRecentlyUsed.clear();
 		}
 	}
@@ -200,7 +200,10 @@ public:
 	double getTotalMemoryCost();
 
 	void clean() {
-		sets.clear();
+		// sets.clear();
+		// sets = vector<HistoryCacheSet<T, I, A, LA>>();
+		for (auto& set : sets)
+			set.clean();
 	}
 
 	int getNumWays() {
