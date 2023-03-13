@@ -281,11 +281,13 @@ public:
 	Dictionary<Delta> dictionary;
 	int numHistoryAccesses;
 	bool saveHistoryAndClassAfterDictMiss;
+	bool saveHistoryAndClassIfNotValid;
 
 	BuffersSimulator() {
 		this->historyCache = nullptr;
 		this->dictionary = Dictionary<Delta>();
 		this->saveHistoryAndClassAfterDictMiss = false;
+		this->saveHistoryAndClassIfNotValid = false;
 		numHistoryAccesses = 0;
 	}
 

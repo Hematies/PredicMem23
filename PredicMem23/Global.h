@@ -14,6 +14,7 @@ struct CacheParameters {
 	int numIndexBits;
 	int numWays;
 	int numSequenceAccesses;
+	bool saveHistoryAndClassIfNotValid;
 };
 
 struct DictionaryParameters {
@@ -21,7 +22,7 @@ struct DictionaryParameters {
 	int numEntries;
 	int maxConfidence;
 	int numConfidenceJumps;
-	bool saveHistoryAndClassAfterMiss;
+	bool saveHistoryAndClassIfNotValid;
 };
 
 enum class PredictorModelType{ BufferSVM, DFCMInfinito};

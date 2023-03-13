@@ -117,6 +117,7 @@ void TracePredictExperimentation::exportResults(string filename) {
 			cacheParams_->SetAttribute("numIndexBits", cacheParams.numIndexBits);
 			cacheParams_->SetAttribute("numWays", cacheParams.numWays);
 			cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
+			cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
 			experiment_->LinkEndChild(cacheParams_);
 
 			// Third node: related to input, dictionary params:
@@ -126,7 +127,7 @@ void TracePredictExperimentation::exportResults(string filename) {
 			dictParams_->SetAttribute("numEntries", dictParams.numEntries);
 			dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
 			dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
-			dictParams_->SetAttribute("saveHistoryAndClassAfterMiss", dictParams.saveHistoryAndClassAfterMiss);
+			dictParams_->SetAttribute("saveHistoryAndClassIfNotValid", dictParams.saveHistoryAndClassIfNotValid);
 			experiment_->LinkEndChild(dictParams_);
 			
 			trace->LinkEndChild(experiment_);
@@ -190,7 +191,8 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	if (params.type == PredictorModelType::BufferSVM) {
 		this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(cacheType, cacheParams, dictParams);
 		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*)
-			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses));
+			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses, 
+				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
 		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
@@ -212,12 +214,13 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 	auto cacheParams = params.cacheParams;
 	auto dictParams = params.dictParams;
 
-	HistoryCacheType cacheType = (cacheParams.numIndexBits > 0) ? HistoryCacheType::Real : HistoryCacheType::Infinite;
+	HistoryCacheType cacheType = (cacheParams.numIndexBits >= 0) ? HistoryCacheType::Real : HistoryCacheType::Infinite;
 
 	if (params.type == PredictorModelType::BufferSVM) {
 		this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(cacheType, cacheParams, dictParams);
 		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*)
-			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses));
+			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses, 
+				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
 		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());

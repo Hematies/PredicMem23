@@ -62,7 +62,7 @@ int main()
         auto b = proposedBuffersSimulator(dataset, res, cacheParams, dictParams);
 
         PredictorSVM<MultiSVMClassifierOneToAll, int> predictor =
-            PredictorSVM<MultiSVMClassifierOneToAll, int>(res, 8, 6);
+            PredictorSVM<MultiSVMClassifierOneToAll, int>(res, 8, 6, true);
         predictor.simular();
 
     }
@@ -73,6 +73,7 @@ int main()
             //prueba1, prueba2,
             perlbench_s,gcc_s,mcf_s,lbm_s,omnetpp_s,xalancbmk_s,x264_s,deepsjeng_s,leela_s
             //deepsjeng_s
+
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
@@ -84,9 +85,11 @@ int main()
         string outputName = "perlbench_s_distrib_real_cache_.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
-            //cactuBSSN_s, exchange2_s, roms_s
+            //  cactuBSSN_s, exchange2_s, roms_s
             //mcf_s
-            perlbench_s
+            // perlbench_s
+            leela_s
+
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
@@ -97,9 +100,10 @@ int main()
         };
 
         CacheParameters cacheParams = {
-            8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-            2,// 8,// 8,// 4,
-            4,// 4,// 8
+            12,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+            4,// 8,// 8,// 4,
+            6,// 4,// 8
+            true
         };
 
         DictionaryParameters dictParams = {

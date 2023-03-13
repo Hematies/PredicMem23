@@ -312,7 +312,7 @@ void HistoryCacheSet<T, I, A, LA>::updateLRU(int newAccessWay) {
 	}
 	if (areAllEntriesRecent) {
 		isEntryRecentlyUsed = vector<bool>(this->entries.size(), false);
-		isEntryRecentlyUsed[headWay] = true;
+		// isEntryRecentlyUsed[headWay] = true;
 	}
 
 }
@@ -454,13 +454,15 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType history
 	}
 	
 	this->dictionary = Dictionary<Delta>(dictParams.numClasses, dictParams.maxConfidence, dictParams.numConfidenceJumps);
-	this->saveHistoryAndClassAfterDictMiss = dictParams.saveHistoryAndClassAfterMiss;
+	this->saveHistoryAndClassAfterDictMiss = dictParams.saveHistoryAndClassIfNotValid;
+	this->saveHistoryAndClassIfNotValid = cacheParams.saveHistoryAndClassIfNotValid;
 	this->numHistoryAccesses = cacheParams.numSequenceAccesses;
 }
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <T, I, A, LA, Delta >& simulator) {
 	saveHistoryAndClassAfterDictMiss = simulator.saveHistoryAndClassAfterDictMiss;
+	saveHistoryAndClassIfNotValid = simulator.saveHistoryAndClassIfNotValid;
 	numHistoryAccesses = simulator.numHistoryAccesses;
 	dictionary = Dictionary<Delta>(simulator.dictionary);
 	InfiniteHistoryCache<T, I, A, LA> cache = *((InfiniteHistoryCache<T, I, A, LA>*) & simulator.historyCache);
@@ -522,27 +524,36 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		
 		bool noError = true;
 		// isCacheMiss = !historyIsValid;
-		isCacheMiss = historyIsFound;
+		isCacheMiss = !historyIsFound;
 		isDictionaryMiss = !classIsFound;
+		vector<A> history_ = history->getHistory();
+
+		// If we predict via greediness, histories that are found but not valid will be saved:
+		if (!isCacheMiss && !historyIsValid && this->saveHistoryAndClassIfNotValid) {
+			historyIsValid = true;
+			vector<A> aux = vector<A>();
+			for (A elem : history_)
+				aux.push_back(elem == -1? this->dictionary.numClasses : elem);
+			history_ = aux;
+		}
+
+		inputAccesses = vector<A>(history_);
 		if (!classIsFound || !historyIsValid) {
 			// The access is labeled as miss:
 			isValid = false;
 			if (!historyIsValid || !saveHistoryAndClassAfterDictMiss) {
-				inputAccesses = vector<A>(this->numHistoryAccesses, -1);
 				outputAccess = -1;
 			}
 			else {
 				// In the case that only the dictionary, failed, we
 				// will indicate as resulting class the class for
 				// the next iteration after updating the dictionary:
-				inputAccesses = vector<A>(history->getHistory());
 				outputAccess = class_;
 			}
 			
 		}
 		else {
 			isValid = true;
-			inputAccesses = vector<A>(history->getHistory());
 			outputAccess = class_;
 
 			// We test the buffers just in case:

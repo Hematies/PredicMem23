@@ -96,9 +96,11 @@ public:
 						aux = line.substr(index, line.size());
 						int index_ = aux.find(space);
 						L64bu address = stoll(aux.substr(index_, aux.size() - index_), &dummy, 16);
+						bool isRead = aux[0] == 'R';
 
 						res.accessesInstructions.push_back(instruction);
 						res.accesses.push_back(address);
+						
 
 					}
 					k++;
