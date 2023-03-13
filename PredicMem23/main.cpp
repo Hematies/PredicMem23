@@ -85,11 +85,11 @@ int main()
         string outputName = "perlbench_s_distrib_real_cache_.xml";
         vector<string> traceFiles = vector<string>{
             //prueba1, prueba2,
-            //  cactuBSSN_s, exchange2_s, roms_s
+            // cactuBSSN_s, exchange2_s, roms_s
             //mcf_s
             // perlbench_s
-            leela_s
-
+            // leela_s
+            gcc_s
         };
         vector<string> traceNames = vector<string>{
             //"pruebaCorta", "pruebaCCL",
@@ -100,8 +100,8 @@ int main()
         };
 
         CacheParameters cacheParams = {
-            12,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-            4,// 8,// 8,// 4,
+            -1,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+            8,// 8,// 8,// 4,
             6,// 4,// 8
             true
         };
@@ -115,8 +115,8 @@ int main()
         };
 
         PredictorParameters params = {
-            PredictorModelType::BufferSVM,
-            // PredictorModelType::DFCMInfinito,
+            // PredictorModelType::BufferSVM,
+            PredictorModelType::DFCMInfinito,
             cacheParams,
             dictParams
         };

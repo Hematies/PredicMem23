@@ -245,6 +245,8 @@ HistoryCacheSet<T, I, A, LA>::HistoryCacheSet(int numWays, int numTagBits, int n
 	for (int way = 0; way < numWays; way++) {
 		entries.push_back(RealHistoryCacheEntry<T,A,LA>(numAccesses, way));
 	}
+
+	this->entriesConfidence = vector<int>(numWays, 0);
 }
 
 template<typename T, typename I, typename A, typename LA >
@@ -275,6 +277,7 @@ bool HistoryCacheSet<T, I, A, LA>::newAccess(I instruction, LA access, A class_)
 		// If it is not found, we will set one of the least recent entries:
 		res = false;
 		way = getLeastRecentWay();
+		// way = getLeastFrequentWay();
 	}
 
 	// We set the entry and update the LRU system:
@@ -282,6 +285,7 @@ bool HistoryCacheSet<T, I, A, LA>::newAccess(I instruction, LA access, A class_)
 	T tag = instruction >> numIndexBits;
 	entries[way].setEntry(tag, access, class_);
 	updateLRU(way);
+	// updateLFU(way);
 	
 	return res;
 }
@@ -315,6 +319,33 @@ void HistoryCacheSet<T, I, A, LA>::updateLRU(int newAccessWay) {
 		// isEntryRecentlyUsed[headWay] = true;
 	}
 
+}
+
+template<typename T, typename I, typename A, typename LA >
+int HistoryCacheSet<T, I, A, LA>::getLeastFrequentWay() {
+	int tailWay = -1;
+	int min = -1;
+	for (int way = 0; way < this->entries.size(); way++) {
+		if (this->entriesConfidence[way] < min || min < 0) {
+			min = this->entriesConfidence[way];
+			tailWay = way;
+		}
+	}
+
+	return tailWay;
+}
+
+template<typename T, typename I, typename A, typename LA >
+void HistoryCacheSet<T, I, A, LA>::updateLFU(int newAccessWay) {
+	for (int w = 0; w < this->entries.size(); w++) {
+		if (w == newAccessWay) {
+			this->entriesConfidence[w] += (this->numConfidenceLevels + 1) / this->numConfidenceJumps;
+		}
+		else if(this->entriesConfidence[w] > 0) {
+			this->entriesConfidence[w]--;
+		}
+	}
+	
 }
 
 template<typename D>

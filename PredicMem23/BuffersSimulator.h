@@ -108,6 +108,11 @@ protected:
 	int numTagBits;
 	int numAccesses;
 	int headWay;
+
+	vector<int> entriesConfidence = vector<int>();
+	int numConfidenceLevels = 255;
+	int numConfidenceJumps = 8;
+
 public:
 
 	HistoryCacheSet();
@@ -120,7 +125,9 @@ public:
 	int getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
 	bool newAccess(I instruction, LA access, A class_);
 	void updateLRU(int newAccessWay);
+	void updateLFU(int newAccessWay);
 	int getLeastRecentWay();
+	int getLeastFrequentWay();
 
 	void clean() {
 		/*

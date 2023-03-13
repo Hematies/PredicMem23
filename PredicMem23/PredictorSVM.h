@@ -109,7 +109,7 @@ public:
 			}
 
 			salida = datasetClases.outputAccesses[i];
-			esEntradaValida = !datasetClases.isValid[i];
+			esEntradaValida = datasetClases.isValid[i];
 
 			this->datosEntrada.push_back(entrada);
 			this->datosSalida.push_back(salida);
@@ -162,16 +162,16 @@ public:
 			auto haHabidoErrorDiccionario = mascaraErroresDiccionario[i];
 
 			int salidaPredicha = -1;
-			if(!esEntradaPredecible)
+			if(esEntradaPredecible)
 				salidaPredicha = predecir(entrada);
 
 			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
 
 			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
-			if (haHabidoFalloPrediccion) {
+			if (haHabidoFalloPrediccion && esEntradaPredecible) {
 				ajustarPredictor(entrada, salida);
 			}
-			else if (!esEntradaPredecible && !haHabidoErrorDiccionario)
+			else if (esEntradaPredecible && !haHabidoErrorDiccionario)
 				numAciertos++;
 
 			if (haHabidoErrorDiccionario) numDictionaryMisses++;
