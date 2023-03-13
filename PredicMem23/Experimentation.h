@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "BuffersSimulator.h"
 #include "PredictorDFCM.h"
+#include "PredictorDFCMGradoK.h"
 
 class Experiment {
 public:

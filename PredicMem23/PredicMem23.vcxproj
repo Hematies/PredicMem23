@@ -150,6 +150,7 @@
     <ClInclude Include="PredictorDFCM.h" />
     <ClInclude Include="Experimentation.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="PredictorDFCMGradoK.h" />
     <ClInclude Include="PredictorModel.h" />
     <ClInclude Include="PredictorSVM.h" />
     <ClInclude Include="Simulator.h" />

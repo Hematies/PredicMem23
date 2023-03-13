@@ -124,7 +124,6 @@ void TracePredictExperimentation::exportResults(string filename) {
 			auto dictParams = params.dictParams;
 			TiXmlElement* dictParams_ = new TiXmlElement("dictParams");
 			dictParams_->SetAttribute("numClasses", dictParams.numClasses);
-			dictParams_->SetAttribute("numEntries", dictParams.numEntries);
 			dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
 			dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
 			dictParams_->SetAttribute("saveHistoryAndClassIfNotValid", dictParams.saveHistoryAndClassIfNotValid);
@@ -223,7 +222,11 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
-		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+		if(params.cacheParams.numSequenceAccesses > 0)
+			this->model = shared_ptr<PredictorModel<L64bu, int>>(
+				(PredictorModel<L64bu, int>*) new PredictorDFCMInfinitoGradoK<L64bu, L64b>(params.cacheParams.numSequenceAccesses));
+		else
+			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
 	}
 	this->startDateTime = nowDateTime();
 }

@@ -19,7 +19,6 @@ struct CacheParameters {
 
 struct DictionaryParameters {
 	int numClasses;
-	int numEntries;
 	int maxConfidence;
 	int numConfidenceJumps;
 	bool saveHistoryAndClassIfNotValid;
