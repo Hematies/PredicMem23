@@ -74,6 +74,20 @@ public:
 		inicializarPredictor();
 	}
 
+	
+	~PredictorDFCMInfinito() {
+		clean();
+	}
+	
+	void clean() {
+		/*
+		this->tablaInstrHash.clear();
+		this->tablaHashDelta.clear();
+		*/
+		this->tablaInstrHash = {};
+		this->tablaHashDelta = {};
+	}
+	
 	void importarDatos(AccessesDataset<T, T>& datos, BuffersDataset<int>& datasetClases) {
 		this->datos = datos;
 	}

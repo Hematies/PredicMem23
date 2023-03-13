@@ -471,6 +471,7 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA> dataset) {
+// void BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>& res) {
 	// We iterate through the given samples:
 	auto accesses = dataset.accesses;
 	auto instructions = dataset.accessesInstructions;
@@ -617,6 +618,7 @@ proposedBuffersSimulator(AccessesDataset<L64bu, L64bu>& dataset, BuffersDataset<
 	CacheParameters cacheParams, DictionaryParameters dictParams) {
 	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> res = 
 		BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(HistoryCacheType::Infinite, cacheParams, dictParams);
+	// res.simulate(dataset, classesDataset);
 	classesDataset = res.simulate(dataset);
 	return res;
 }

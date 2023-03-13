@@ -45,7 +45,7 @@ public:
 	StandardHistoryCacheEntry();
 	StandardHistoryCacheEntry(int numAccesses);
 	~StandardHistoryCacheEntry() {
-		history.clear();
+		// history.clear();
 	}
 
 	bool isEntryValid();
@@ -85,7 +85,7 @@ public:
 	RealHistoryCacheEntry();
 	RealHistoryCacheEntry(int numAccesses, int way);
 	~RealHistoryCacheEntry() {
-		this->history.clear();
+		// this->history.clear();
 	}
 
 	void copy(HistoryCacheEntry<T, A, LA>*);
@@ -113,16 +113,24 @@ public:
 	HistoryCacheSet();
 	HistoryCacheSet(int numWays, int numTagBits, int numAccesses);
 
+	~HistoryCacheSet() {
+		clean();
+	}
+
 	int getEntry(I instruction, HistoryCacheEntry<T, A, LA>* res);
 	bool newAccess(I instruction, LA access, A class_);
 	void updateLRU(int newAccessWay);
 	int getLeastRecentWay();
 
 	void clean() {
+		/*
 		for (RealHistoryCacheEntry<T, A, LA>& entry : entries) {
 			entry.clear();
 			isEntryRecentlyUsed.clear();
 		}
+		*/
+		entries = vector<RealHistoryCacheEntry<T, A, LA>>();
+		isEntryRecentlyUsed.clear();
 	}
 };
 
@@ -285,6 +293,12 @@ public:
 
 	BuffersSimulator(const BuffersSimulator& b);
 
+	/*
+	~BuffersSimulator() {
+		clean();
+	}
+	*/
+
 	void clean() {
 		if(this->historyCache != nullptr)
 			this->historyCache->clean();
@@ -292,6 +306,7 @@ public:
 	}
 
 	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
+	// void simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>&);
 
 	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);
 

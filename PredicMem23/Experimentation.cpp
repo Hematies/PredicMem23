@@ -316,7 +316,7 @@ void TracePredictExperiment::performExperiment() {
 		rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
 		
 	}
-
+	/*
 	dataset.accesses.clear();
 	dataset.accessesInstructions.clear();
 	classesDataset.inputAccesses.clear();
@@ -324,9 +324,11 @@ void TracePredictExperiment::performExperiment() {
 	classesDataset.isValid.clear();
 	classesDataset.isCacheMiss.clear();
 	classesDataset.isDictionaryMiss.clear();
-	this->model.reset();
-	buffersSimulator.clean();
-
+	*/
+	// this->model->clean();
+	// buffersSimulator.clean();
+	dataset = {};
+	classesDataset = {};
 }
 
 string TracePredictExperiment::getName() {
@@ -334,8 +336,10 @@ string TracePredictExperiment::getName() {
 }
 
 void TracePredictExperiment::clean() {
-	buffersSimulator.clean();
-	model.reset();
+	// buffersSimulator.clean();
+	// model.reset();
+	this->model->clean();
+	this->buffersSimulator.~BuffersSimulator();
 }
 
 PredictorParameters TracePredictExperiment::getPredictorParams() {
