@@ -2,7 +2,6 @@
 #include <iostream>     // std::cout
 #include <fstream>      // std::ifstream
 // #include "BuffersSimulator.h"
-#include<set>
 
 using namespace std;
 
@@ -13,10 +12,6 @@ public:
 	string filename;
 	ifstream file;
 	unsigned long currentLine = 0;
-
-	string endLine = "#eof";
-	string skipLineHeader ="->";
-
 
 	TraceReader() {
 		this->filename = "";
@@ -43,13 +38,10 @@ public:
 		while (!file.eof())
 		{
 			getline(file, line);
-			if (strstr(line.c_str(), skipLineHeader.c_str()) == NULL) {
-				if (line.compare(endLine) == 0) {
-					break;
-				}
-				res++;
+			if (line.compare("#eof") == 0) {
+				break;
 			}
-				
+			res++;
 		}
 		// file.close();
 		// file.open(filename);
@@ -84,28 +76,24 @@ public:
 				getline(file, line);
 
 				// if ((k >= start) && (k < end)) {
-				if ((k >= end) || (line.compare(endLine) == 0)) break;
-				else if(strstr(line.c_str(), skipLineHeader.c_str()) == NULL) {
-					if (k < end) {
-						// Example of line:
-						// 0x7f2974d88093: W 0x7ffeedfc8e88
-						int index = line.find(delimiter);
-						size_t dummy = 0;
-						L64bu instruction = stoll(line.substr(0, index), &dummy, 16);
-						index += delimiter.size();
-						aux = line.substr(index, line.size());
-						int index_ = aux.find(space);
-						L64bu address = stoll(aux.substr(index_, aux.size() - index_), &dummy, 16);
-						bool isRead = aux[0] == 'R';
+				if ((k >= end) || (line.compare("#eof") == 0)) break;
+				else if(k < end) {
+					// Example of line:
+					// 0x7f2974d88093: W 0x7ffeedfc8e88
+					int index = line.find(delimiter);
+					size_t dummy = 0;
+					L64b instruction = stoll(line.substr(0, index), &dummy, 16);
+					index += delimiter.size();
+					aux = line.substr(index, line.size());
+					int index_ = aux.find(space);
+					L64b address = stoll(aux.substr(index_, aux.size() - index_), &dummy, 16);
 
-						res.accessesInstructions.push_back(instruction);
-						res.accesses.push_back(address);
-						
+					res.accessesInstructions.push_back(instruction);
+					res.accesses.push_back(address);
 
-					}
-					k++;
-					currentLine++;
 				}
+				k++;
+				currentLine++;
 				
 			}
 		}
