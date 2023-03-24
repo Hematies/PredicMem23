@@ -4,7 +4,6 @@
 #include <string>
 #include <time.h>
 #include "SVMClassifier.hpp"
-#include <algorithm>
 
 MultiSVMClassifier::MultiSVMClassifier() {
     this->numClasses = 0;
@@ -36,7 +35,7 @@ MultiSVMClassifierOneToAll::MultiSVMClassifierOneToAll(int numFeatures, int numC
     : MultiSVMClassifier(numFeatures, numClasses, c, epochs, learningRate) {
 
     for (int i = 0; i < numClasses; i++) {
-        auto model = SVMSGDClassifier(c, epochs, rand(), learningRate);
+        auto model = SVMSGDClassifier::SVMSGDClassifier(c, epochs, rand(), learningRate);
         model.initWeights(this->numFeatures);
         this->SVMsTable.push_back(model);
     }
@@ -49,13 +48,13 @@ MultiSVMClassifierOneToOne::MultiSVMClassifierOneToOne(int numFeatures, int numC
     for (int i = 0; i < numClasses; i++)
         for (int j = 0; j < numClasses; j++) {
             if (j >= i) {
-                auto model = SVMSGDClassifier(c, epochs, rand(), learningRate);
+                auto model = SVMSGDClassifier::SVMSGDClassifier(c, epochs, rand(), learningRate);
                 model.initWeights(this->numFeatures);
                 this->SVMsTable.push_back(model);
 
             }
             else {
-                auto model = SVMSGDClassifier();
+                auto model = SVMSGDClassifier::SVMSGDClassifier();
                 model.initWeights(this->numFeatures);
                 this->SVMsTable.push_back(model);
             }

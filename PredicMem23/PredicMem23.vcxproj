@@ -141,14 +141,19 @@
     <ClCompile Include="Experimentation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="multi_svm_classifier.cpp" />
+    <ClCompile Include="PredictorDFCM.cpp" />
     <ClCompile Include="PredictorSVM.cpp" />
     <ClCompile Include="svm_classifier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuffersSimulator.h" />
+    <ClInclude Include="PredictorDFCM.h" />
     <ClInclude Include="Experimentation.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="PredictorDFCMGradoK.h" />
+    <ClInclude Include="PredictorModel.h" />
     <ClInclude Include="PredictorSVM.h" />
+    <ClInclude Include="Simulator.h" />
     <ClInclude Include="TraceReader.h" />
     <ClInclude Include="SVMClassifier.hpp" />
   </ItemGroup>

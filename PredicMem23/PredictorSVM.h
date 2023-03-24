@@ -5,23 +5,25 @@
 #include "BuffersSimulator.h"
 //#include "Experimentation.h"
 #include "Global.h"
+#include "PredictorModel.h"
 
 using namespace std;
 
 
 // extern struct PredictResults;
-//extern struct PredictResultsAndCosts;
+extern struct BuffersSVMPredictResultsAndCosts;
 
 template<typename T_pred, typename T_entrada>
-class PredictorSVM
+class PredictorSVM : PredictorModel<L64bu, T_entrada>
 {
 
 private:
 	int numPartesMostrar = 10000;
+	int numClasesEntrada;
 public:
 	vector<vector<float>> datosEntrada = vector<vector<float>>();
 	vector<char> datosSalida = vector<char>();
-	vector<char> mascaraErroresBufferes = vector<char>();
+	vector<char> mascaraEntradasPredecibles = vector<char>();
 	vector<char> mascaraErroresCache = vector<char>();
 	vector<char> mascaraErroresDiccionario = vector<char>();
 
@@ -34,30 +36,51 @@ public:
 	int numElemSecuencia = 0;
 	int numClases = 0;
 
+	bool predictOnNonValidInput;
+	
 	~PredictorSVM() {
+		clean();
+	}
+	
+	void clean() {
+		/*
 		datosEntrada.clear();
 		datosSalida.clear();
-		mascaraErroresBufferes.clear();
+		mascaraEntradasPredecibles.clear();
 		mascaraErroresCache.clear();
 		mascaraErroresDiccionario.clear();
+		*/
+		this->datosEntrada = vector<vector<float>>();
+		this->datosSalida = vector<char>();
+		this->mascaraEntradasPredecibles = vector<char>();
+		this->mascaraErroresCache = vector<char>();
+		this->mascaraErroresDiccionario = vector<char>();
 	}
 
-	PredictorSVM(BuffersDataset<T_entrada> datasetClases, int numElemSecuencia, int numClases) {
+	PredictorSVM(BuffersDataset<T_entrada> datasetClases, int numElemSecuencia, int numClases, bool predictOnNonValidInput) {
 
 		static_assert(std::is_base_of<MultiSVMClassifier, T_pred>::value, "Clase no es subtipo de MultiSVMClassifier");
 
 		this->numElemSecuencia = numElemSecuencia;
 		this->numClases = numClases;
+		this->predictOnNonValidInput = predictOnNonValidInput;
+		if (predictOnNonValidInput) numClasesEntrada++;
+
+
 		importarDatos(datasetClases);
 		inicializarModelo();
 	}
 
-	PredictorSVM(int numElemSecuencia, int numClases) {
+	PredictorSVM(int numElemSecuencia, int numClases, bool predictOnNonValidInput) {
 
 		static_assert(std::is_base_of<MultiSVMClassifier, T_pred>::value, "Clase no es subtipo de MultiSVMClassifier");
 
 		this->numElemSecuencia = numElemSecuencia;
 		this->numClases = numClases;
+		this->predictOnNonValidInput = predictOnNonValidInput;
+		if (predictOnNonValidInput) numClasesEntrada++;
+
+
 		inicializarModelo();
 	}
 
@@ -67,25 +90,30 @@ public:
 
 		this->numElemSecuencia = 0;
 		this->numClases = 0;
+		this->predictOnNonValidInput = true;
+		
 	}
 
+	void importarDatos(AccessesDataset<L64bu, L64bu>& datos, BuffersDataset<T_entrada>& datasetClases) {
+		importarDatos(datasetClases);
+	}
 
-	void importarDatos(BuffersDataset<T_entrada> datasetClases) {
+	void importarDatos(BuffersDataset<T_entrada>& datasetClases) {
 		for (int i = 0; i < datasetClases.inputAccesses.size(); i++) {
 			vector<float> entrada = vector<float>();
 			char salida = -1;
-			char haHabidoErrorBufferes = false;
+			char esEntradaValida = false;
 
 			for (int j = 0; j < datasetClases.inputAccesses[i].size(); j++) {
-				entrada.push_back(((float)datasetClases.inputAccesses[i][j]) / numElemSecuencia + 1.0);
+				entrada.push_back(((float)datasetClases.inputAccesses[i][j]) / numClasesEntrada + 1.0);
 			}
 
 			salida = datasetClases.outputAccesses[i];
-			haHabidoErrorBufferes = !datasetClases.isValid[i];
+			esEntradaValida = datasetClases.isValid[i];
 
 			this->datosEntrada.push_back(entrada);
 			this->datosSalida.push_back(salida);
-			this->mascaraErroresBufferes.push_back(haHabidoErrorBufferes);
+			this->mascaraEntradasPredecibles.push_back(esEntradaValida);
 			this->mascaraErroresCache.push_back(datasetClases.isCacheMiss[i]);
 			this->mascaraErroresDiccionario.push_back(datasetClases.isDictionaryMiss[i]);
 		}
@@ -111,9 +139,9 @@ public:
 		return this->modelo.predict(in)[0];
 	}
 
-	PredictResultsAndCosts simular(bool inicializar = true) {
+	shared_ptr<PredictResultsAndCosts> simular(bool inicializar = true) {
 
-		struct PredictResultsAndCosts resultsAndCosts;
+		BuffersSVMPredictResultsAndCosts resultsAndCosts = BuffersSVMPredictResultsAndCosts();
 		double numDictionaryMisses = 0.0;
 		double numCacheMisses = 0.0;
 
@@ -129,37 +157,35 @@ public:
 		for (int i = 0; i < datosEntrada.size(); i++) {
 			vector<float> entrada = vector<float>(datosEntrada[i].begin(), datosEntrada[i].end());
 			int salida = datosSalida[i];
-			auto haHabidoErrorBufferes = mascaraErroresBufferes[i];
+			auto esEntradaPredecible = mascaraEntradasPredecibles[i];
 			auto haHabidoErrorCache = mascaraErroresCache[i];
 			auto haHabidoErrorDiccionario = mascaraErroresDiccionario[i];
 
 			int salidaPredicha = -1;
-			if(!haHabidoErrorBufferes)
+			if(esEntradaPredecible)
 				salidaPredicha = predecir(entrada);
 
 			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
-			bool haHabidoFallo = haHabidoFalloPrediccion || haHabidoErrorBufferes;
 
 			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
-			if (haHabidoFalloPrediccion) {
+			if (haHabidoFalloPrediccion && esEntradaPredecible) {
 				ajustarPredictor(entrada, salida);
 			}
-			else if (!haHabidoErrorBufferes)
+			else if (esEntradaPredecible && !haHabidoErrorDiccionario)
 				numAciertos++;
-			else {
-				if (haHabidoErrorDiccionario) numDictionaryMisses++;
-				if (haHabidoErrorCache) numCacheMisses++;
-			}
+
+			if (haHabidoErrorDiccionario) numDictionaryMisses++;
+			if (haHabidoErrorCache) numCacheMisses++;
 				
 
 			if (i % numPartesMostrar == 0) {
 			// 
-			// if (!haHabidoErrorBufferes){
+			// if (!esEntradaPredecible){
 				string in = "";
 				for (auto e : entrada)
-					in += to_string((e - 1.0) * numElemSecuencia) + ", ";
+					in += to_string((e - 1.0) * numClasesEntrada) + ", ";
 				std::cout << in << " -> " << salida << " vs " << salidaPredicha << std::endl;
-				std::cout << "Tasa de ï¿½xito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datosEntrada.size() << std::endl;
+				std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datosEntrada.size() << std::endl;
 			}
 
 		}
@@ -169,15 +195,16 @@ public:
 		resultsAndCosts.hitRate = tasaExito;
 		resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
 		resultsAndCosts.cacheMissRate = numCacheMisses / datosEntrada.size();
-		resultsAndCosts.modelMemoryCosts = getModelMemoryCosts();
-		return resultsAndCosts;
+		resultsAndCosts.modelMemoryCost = getModelMemoryCosts();
+		return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*) new BuffersSVMPredictResultsAndCosts(resultsAndCosts));
 	}
 
 	double getModelMemoryCosts() {
 		int numSVMs = this->modelo.SVMsTable.size();
 		int numElements = this->modelo.numFeatures + 1;
 
-		return numElements * numSVMs; // For now, we just return the total number of elements (weights) of the model.
+		return numElements * sizeof(float) * numSVMs; 
+			// For now, we return the total number bytes of the elements (weights) of the model.
 	}
 };
 

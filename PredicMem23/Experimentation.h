@@ -3,6 +3,8 @@
 #include "TraceReader.h"
 #include "Global.h"
 #include "BuffersSimulator.h"
+#include "PredictorDFCM.h"
+#include "PredictorDFCMGradoK.h"
 
 class Experiment {
 public:
@@ -15,9 +17,10 @@ public:
 	virtual string getString() = 0;
 	virtual string getName() = 0;
 	virtual void setName(string) = 0;
-	virtual map<string, double> getResults() = 0;
+	virtual map<string, double> getResultsAndCosts() = 0;
 	virtual void performExperiment() = 0;
-	virtual void setPredictor(BuffersSimulator<L64b, L64b, int, L64b>&, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
+	virtual void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
+	virtual void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>) = 0;
 	virtual void clean() = 0;
 	virtual PredictorParameters getPredictorParams() = 0;
 	virtual void setPredictorParams(PredictorParameters) = 0;
@@ -36,16 +39,17 @@ public:
 
 
 
-class TracePredictExperientation : public Experimentation{
+class TracePredictExperimentation : public Experimentation{
 private:
 	vector<Experiment*> experiments;
 	string outputFilename;
+	bool countTotalMemory = false;
 	
 public:
-	TraceReader<L64b, L64b> traceReader;
+	TraceReader<L64bu, L64bu> traceReader;
 
-	TracePredictExperientation(vector<Experiment*> experiments, string outputFilename);
-	TracePredictExperientation(string outputFilename);
+	TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename);
+	TracePredictExperimentation(string outputFilename, bool countTotalMemory = false);
 
 	void performExperiments();
 	void exportResults(string filename);
@@ -65,20 +69,24 @@ private:
 	long startLine;
 	long endLine;
 	string startDateTime;
+	bool countTotalMemory = false;
 
-	BuffersSimulator<L64b, L64b, int, L64b> buffersSimulator
-		 = BuffersSimulator<L64b, L64b, int, L64b>();
-	PredictorSVM<MultiSVMClassifierOneToAll, int> model;
-
-	TracePredictExperientation* framework;
+	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> buffersSimulator
+		 = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>();
+	// PredictorSVM<MultiSVMClassifierOneToAll, int> model;
+	shared_ptr<PredictorModel<L64bu, int>> model;
+ 
+	TracePredictExperimentation* framework;
 	PredictorParameters predictorParams;
 
 public:
-	TracePredictExperiment(TracePredictExperientation* framework,
-		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
-	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters);
+	TracePredictExperiment(TracePredictExperimentation* framework,
+		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters,
+		bool countTotalMemory = false);
+	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters,
+		bool countTotalMemory = false);
 
-	PredictResultsAndCosts resultsAndCosts;
+	shared_ptr<PredictResultsAndCosts> resultsAndCosts;
 
 
 	long getStartLine();
@@ -91,9 +99,10 @@ public:
 	void setTraceName(string name);
 	string getName();
 	void setName(string);
-	map<string, double> getResults();
+	map<string, double> getResultsAndCosts();
 	void performExperiment();
-	void setPredictor(BuffersSimulator<L64b, L64b, int, L64b>&, PredictorSVM<MultiSVMClassifierOneToAll, int>);
+	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
+	void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>);
 	void clean();
 
 	PredictorParameters getPredictorParams();
