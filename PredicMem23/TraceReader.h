@@ -3,6 +3,7 @@
 #include <fstream>      // std::ifstream
 // #include "BuffersSimulator.h"
 #include<set>
+#include<string.h>
 
 using namespace std;
 

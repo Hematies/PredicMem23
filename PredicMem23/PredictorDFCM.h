@@ -9,9 +9,6 @@
 using namespace std;
 
 
-// extern struct PredictResults;
-extern struct BuffersSVMPredictResultsAndCosts;
-
 template<typename T, typename Delta>
 class PredictorDFCMInfinito : PredictorModel<T, int>
 {
@@ -189,7 +186,7 @@ public:
 				// 
 				// if (!haHabidoErrorBufferes){
 				std::cout << entrada << " -> " << salida << " vs " << salidaPredicha << std::endl;
-				std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datos.accesses.size() << std::endl;
+				std::cout << "Tasa de ï¿½xito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datos.accesses.size() << std::endl;
 			}
 
 		}

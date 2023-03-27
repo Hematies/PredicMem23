@@ -9,10 +9,6 @@
 
 using namespace std;
 
-
-// extern struct PredictResults;
-extern struct BuffersSVMPredictResultsAndCosts;
-
 template<typename T_pred, typename T_entrada>
 class PredictorSVM : PredictorModel<L64bu, T_entrada>
 {
@@ -185,7 +181,7 @@ public:
 				for (auto e : entrada)
 					in += to_string((e - 1.0) * numClasesEntrada) + ", ";
 				std::cout << in << " -> " << salida << " vs " << salidaPredicha << std::endl;
-				std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datosEntrada.size() << std::endl;
+				std::cout << "Tasa de ï¿½xito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datosEntrada.size() << std::endl;
 			}
 
 		}

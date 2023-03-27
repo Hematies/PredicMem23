@@ -4,6 +4,8 @@
 #include <map>
 #include <iostream>
 #include "Global.h"
+#include <math.h>
+#include <memory>
 
 
 using namespace std;
@@ -193,7 +195,7 @@ public:
 };
 
 template<typename T, typename I, typename A, typename LA>
-class RealHistoryCache : public HistoryCache<T, I, A, LA>, public InfiniteHistoryCache<T, I, A, LA> {
+class RealHistoryCache : public InfiniteHistoryCache<T, I, A, LA> {
 protected:
 	// map<I, RealHistoryCache<T, A, LA>> entries;
 	vector<HistoryCacheSet<T, I, A, LA>> sets;
@@ -300,7 +302,16 @@ public:
 
 	BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams, DictionaryParameters dictParams);
 
-	BuffersSimulator(const BuffersSimulator& b);
+	BuffersSimulator(const BuffersSimulator <T, I, A, LA, Delta >& simulator) {
+		saveHistoryAndClassAfterDictMiss = simulator.saveHistoryAndClassAfterDictMiss;
+		saveHistoryAndClassIfNotValid = simulator.saveHistoryAndClassIfNotValid;
+		numHistoryAccesses = simulator.numHistoryAccesses;
+		dictionary = Dictionary<Delta>(simulator.dictionary);
+		InfiniteHistoryCache<T, I, A, LA> cache = *((InfiniteHistoryCache<T, I, A, LA>*) & simulator.historyCache);
+		historyCache = shared_ptr<HistoryCache<T, I, A, LA>>(
+			new InfiniteHistoryCache<T, I, A, LA>(cache));
+
+}
 
 	/*
 	~BuffersSimulator() {

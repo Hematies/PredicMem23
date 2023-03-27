@@ -171,7 +171,7 @@ template<typename T, typename I, typename A, typename LA >
 RealHistoryCache<T, I, A, LA>::RealHistoryCache() {
 	this->numSets = 0;
 	this->numWays = 0;
-	sets = vector<HistoryCacheSet<T, A, LA>>();
+	sets = vector<HistoryCacheSet<T, I, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
@@ -472,11 +472,17 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType history
 		this->historyCache = 
 			shared_ptr<HistoryCache< T, I, A, LA >>(
 				new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses, dictParams.numClasses));
+			// make_shared<HistoryCache< T, I, A, LA >>
+			// 	(new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses, dictParams.numClasses));
 	}
 	else if (historyCacheType == HistoryCacheType::Real) {
 		this->historyCache = 
+			// shared_ptr<HistoryCache< T, I, A, LA >>(p);
 			shared_ptr<HistoryCache< T, I, A, LA >>(new RealHistoryCache<T, I, A, LA>(cacheParams.numIndexBits, 
 				cacheParams.numWays, cacheParams.numSequenceAccesses, dictParams.numClasses));
+			// make_shared<HistoryCache< T, I, A, LA >>
+			// 	(new RealHistoryCache<T, I, A, LA>(
+			// 		cacheParams.numIndexBits, cacheParams.numWays, cacheParams.numSequenceAccesses, dictParams.numClasses));
 	}	
 	else {
 		// this->historyCache = HistoryCache<T, I, A, LA>();
@@ -490,17 +496,17 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType history
 	this->numHistoryAccesses = cacheParams.numSequenceAccesses;
 }
 
-template<typename T, typename I, typename A, typename LA, typename Delta>
-BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <T, I, A, LA, Delta >& simulator) {
-	saveHistoryAndClassAfterDictMiss = simulator.saveHistoryAndClassAfterDictMiss;
-	saveHistoryAndClassIfNotValid = simulator.saveHistoryAndClassIfNotValid;
-	numHistoryAccesses = simulator.numHistoryAccesses;
-	dictionary = Dictionary<Delta>(simulator.dictionary);
-	InfiniteHistoryCache<T, I, A, LA> cache = *((InfiniteHistoryCache<T, I, A, LA>*) & simulator.historyCache);
-	historyCache = shared_ptr<HistoryCache<T, I, A, LA>>(
-		new InfiniteHistoryCache<T, I, A, LA>(cache));
+// template<typename T, typename I, typename A, typename LA, typename Delta>
+// BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <T, I, A, LA, Delta >& simulator) {
+// 	saveHistoryAndClassAfterDictMiss = simulator.saveHistoryAndClassAfterDictMiss;
+// 	saveHistoryAndClassIfNotValid = simulator.saveHistoryAndClassIfNotValid;
+// 	numHistoryAccesses = simulator.numHistoryAccesses;
+// 	dictionary = Dictionary<Delta>(simulator.dictionary);
+// 	InfiniteHistoryCache<T, I, A, LA> cache = *((InfiniteHistoryCache<T, I, A, LA>*) & simulator.historyCache);
+// 	historyCache = shared_ptr<HistoryCache<T, I, A, LA>>(
+// 		new InfiniteHistoryCache<T, I, A, LA>(cache));
 
-}
+// }
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA> dataset) {

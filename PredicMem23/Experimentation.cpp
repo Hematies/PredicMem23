@@ -9,11 +9,12 @@
 #include <algorithm> 
 #include "Experimentation.h"
 
+
 string nowDateTime() {
 	// auto now = std::chrono::system_clock::now();
 	auto t = std::time(nullptr);
 	tm tm;
-	localtime_s(&tm, &t);
+	localtime_r(&t,&tm);
 	std::ostringstream oss;
 	oss << std::put_time(&tm, "%d_%m_%Y_%H_%M_%S");
 	string now = oss.str();
