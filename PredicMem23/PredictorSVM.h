@@ -10,8 +10,6 @@
 using namespace std;
 
 
-// extern struct PredictResults;
-extern struct BuffersSVMPredictResultsAndCosts;
 
 template<typename T_pred, typename T_entrada>
 class PredictorSVM : PredictorModel<L64bu, T_entrada>

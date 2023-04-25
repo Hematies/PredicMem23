@@ -9,9 +9,6 @@
 using namespace std;
 
 
-// extern struct PredictResults;
-extern struct BuffersSVMPredictResultsAndCosts;
-
 template<typename T, typename Delta>
 class PredictorDFCMInfinito : PredictorModel<T, int>
 {
