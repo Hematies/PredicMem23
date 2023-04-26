@@ -387,6 +387,21 @@ int Dictionary<D>::leastReliableClass() {
 	return res;
 }
 
+
+template<typename D>
+int Dictionary<D>::mostReliableClass() {
+	int maxConfidence = -1;
+	int res = -1;
+	for (int i = 0; i < entries.size(); i++) {
+		auto entry = entries[i];
+		if ((res == -1) || (entry.confidence > maxConfidence)) {
+			maxConfidence = entry.confidence;
+			res = i;
+		}
+	}
+	return res;
+}
+
 template<typename D>
 int Dictionary<D>::newDelta(D delta) {
 	int leastReliableClass = this->leastReliableClass();
@@ -488,6 +503,7 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType history
 	this->saveHistoryAndClassAfterDictMiss = dictParams.saveHistoryAndClassIfNotValid;
 	this->saveHistoryAndClassIfNotValid = cacheParams.saveHistoryAndClassIfNotValid;
 	this->numHistoryAccesses = cacheParams.numSequenceAccesses;
+	this->returnMostReliableClassOnCacheMiss = cacheParams.returnMostReliableClassOnCacheMiss;;
 }
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
@@ -495,6 +511,7 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <
 	saveHistoryAndClassAfterDictMiss = simulator.saveHistoryAndClassAfterDictMiss;
 	saveHistoryAndClassIfNotValid = simulator.saveHistoryAndClassIfNotValid;
 	numHistoryAccesses = simulator.numHistoryAccesses;
+	returnMostReliableClassOnCacheMiss = simulator.returnMostReliableClassOnCacheMiss;
 	dictionary = Dictionary<Delta>(simulator.dictionary);
 	InfiniteHistoryCache<T, I, A, LA> cache = *((InfiniteHistoryCache<T, I, A, LA>*) & simulator.historyCache);
 	historyCache = shared_ptr<HistoryCache<T, I, A, LA>>(
@@ -549,6 +566,13 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		bool classIsFound = class_ >= 0;
 		
 
+		// We make a prediction with most reliable class on cache miss. If the option is set, it will be counted on:
+		bool targetClassIsMostReliable = false;
+		if (classIsFound) {
+			auto mostReliableClass = this->dictionary.mostReliableClass();
+			targetClassIsMostReliable = mostReliableClass == class_;
+		}
+
 		// The history and the dictionary are updated:
 		class_ = dictionary.newDelta(delta);
 		historyCache->newAccess(instruction, access, class_);
@@ -599,6 +623,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		res.isValid.push_back(isValid);
 		res.isDictionaryMiss.push_back(isDictionaryMiss);
 		res.isCacheMiss.push_back(isCacheMiss);
+		res.mostReliableClassHitsOnCacheMiss.push_back(targetClassIsMostReliable && this->returnMostReliableClassOnCacheMiss);
 
 		history.reset();
 	}

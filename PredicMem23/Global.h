@@ -15,6 +15,7 @@ struct CacheParameters {
 	int numWays;
 	int numSequenceAccesses;
 	bool saveHistoryAndClassIfNotValid;
+	bool returnMostReliableClassOnCacheMiss;
 };
 
 struct DictionaryParameters {
@@ -141,4 +142,5 @@ struct BuffersDataset {
 	vector<bool> isCacheMiss = vector<bool>();
 	vector<bool> isDictionaryMiss = vector<bool>();
 	vector<bool> isValid = vector<bool>();
+	vector<bool> mostReliableClassHitsOnCacheMiss = vector<bool>();
 };

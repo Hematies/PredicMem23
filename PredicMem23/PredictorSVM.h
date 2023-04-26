@@ -24,6 +24,7 @@ public:
 	vector<char> mascaraEntradasPredecibles = vector<char>();
 	vector<char> mascaraErroresCache = vector<char>();
 	vector<char> mascaraErroresDiccionario = vector<char>();
+	vector<char> mascaraAciertoViaClaseMasFiable = vector<char>();
 
 	long numAciertos = 0;
 	int numMuestrasLote = 1;
@@ -52,7 +53,7 @@ public:
 		this->datosSalida = vector<char>();
 		this->mascaraEntradasPredecibles = vector<char>();
 		this->mascaraErroresCache = vector<char>();
-		this->mascaraErroresDiccionario = vector<char>();
+		this->mascaraAciertoViaClaseMasFiable = vector<char>();
 	}
 
 	PredictorSVM(BuffersDataset<T_entrada> datasetClases, int numElemSecuencia, int numClases, bool predictOnNonValidInput) {
@@ -114,6 +115,7 @@ public:
 			this->mascaraEntradasPredecibles.push_back(esEntradaValida);
 			this->mascaraErroresCache.push_back(datasetClases.isCacheMiss[i]);
 			this->mascaraErroresDiccionario.push_back(datasetClases.isDictionaryMiss[i]);
+			this->mascaraAciertoViaClaseMasFiable.push_back(datasetClases.mostReliableClassHitsOnCacheMiss[i]);
 		}
 	}
 
@@ -158,6 +160,7 @@ public:
 			auto esEntradaPredecible = mascaraEntradasPredecibles[i];
 			auto haHabidoErrorCache = mascaraErroresCache[i];
 			auto haHabidoErrorDiccionario = mascaraErroresDiccionario[i];
+			auto haHabidoAciertoPorClaseMasFiable = mascaraAciertoViaClaseMasFiable[i];
 
 			int salidaPredicha = -1;
 			if(esEntradaPredecible)
@@ -171,7 +174,8 @@ public:
 			}
 			else if (esEntradaPredecible && !haHabidoErrorDiccionario)
 				numAciertos++;
-
+			else if (haHabidoAciertoPorClaseMasFiable) // Otro caso: ha habido acierto pero por predecir la clase más fiable:
+				numAciertos++;
 			if (haHabidoErrorDiccionario) numDictionaryMisses++;
 			if (haHabidoErrorCache) numCacheMisses++;
 				

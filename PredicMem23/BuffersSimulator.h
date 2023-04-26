@@ -263,6 +263,7 @@ public:
 	}
 
 	int leastReliableClass();
+	int mostReliableClass();
 	int newDelta(D delta);
 	int getClass(D delta);
 	void showContent();
@@ -289,12 +290,14 @@ public:
 	int numHistoryAccesses;
 	bool saveHistoryAndClassAfterDictMiss;
 	bool saveHistoryAndClassIfNotValid;
+	bool returnMostReliableClassOnCacheMiss;
 
 	BuffersSimulator() {
 		this->historyCache = nullptr;
 		this->dictionary = Dictionary<Delta>();
 		this->saveHistoryAndClassAfterDictMiss = false;
 		this->saveHistoryAndClassIfNotValid = false;
+		this->returnMostReliableClassOnCacheMiss = false;
 		numHistoryAccesses = 0;
 	}
 
