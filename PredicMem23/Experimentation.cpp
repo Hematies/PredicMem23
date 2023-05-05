@@ -141,9 +141,11 @@ void TracePredictExperimentation::exportResults(string filename) {
 			i++;
 		}
 
+		TiXmlElement* totalResults_ = new TiXmlElement("dictParams");
 		for (auto it = totalResults.begin(); it != totalResults.end(); it++) {
-			trace->SetDoubleAttribute(it->first.c_str(), it->second);
+			totalResults_->SetDoubleAttribute(it->first.c_str(), it->second);
 		}
+		trace->LinkEndChild(totalResults_);
 		traces->LinkEndChild(trace);
 	}
 	doc.LinkEndChild(traces);
