@@ -94,8 +94,13 @@ void TracePredictExperimentation::exportResults(string filename) {
 		map<string, double> totalResults = {};
 
 		int numExperiments = experimentsByTrace[traceName].size();
+		int i = 0;
 		for (auto experiment : experimentsByTrace[traceName]) {
-			TiXmlElement* experiment_ = new TiXmlElement(experiment->getString().c_str());
+			// TiXmlElement* experiment_ = new TiXmlElement(experiment->getString().c_str());
+			string experimentName = "experiment_" + to_string(i);
+			TiXmlElement* experiment_ = new TiXmlElement(experimentName.c_str());
+			experiment_->SetAttribute("start", experiment->getStartLine());
+			experiment_->SetAttribute("end", experiment->getEndLine());
 			auto results = experiment->getResultsAndCosts();
 			auto params = experiment->getPredictorParams();
 
@@ -133,6 +138,7 @@ void TracePredictExperimentation::exportResults(string filename) {
 			for (auto it = results.begin(); it != results.end(); it++) {
 				totalResults[it->first] += it->second / numExperiments;
 			}
+			i++;
 		}
 
 		for (auto it = totalResults.begin(); it != totalResults.end(); it++) {
@@ -262,7 +268,7 @@ void TracePredictExperiment::setName(string name) {
 string TracePredictExperiment::getString() {
 
 	ostringstream res; 
-	res << this->startDateTime << "::" << traceName << "_" << startLine << "_" << endLine;
+	res << traceName << "__" << startLine << "__" << endLine << "__" << this->startDateTime;
 
 	return res.str();
 }
