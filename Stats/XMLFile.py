@@ -1,46 +1,48 @@
+import math
 import xml.etree.ElementTree as ET
 import os
 import xmltodict
 import pandas as pd
+from PredictorType import InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK
 
 globalColumns = [
-    "experimentationFilename",
-    "predictorType",
-    "traceName",
+    ("experimentationFilename", "string"),
+    ("predictorType","string"),
+    ("traceName","string"),
     # "dateTime",
-    "firstAccess", # INCLUSIVE
-    "lastAccess", # NOT INCLUSIVE
-    "hitRate",
-    "totalMemoryCost"
+    ("firstAccess","int"), # INCLUSIVE
+    ("lastAccess","int"), # NOT INCLUSIVE
+    ("hitRate","float"),
+    ("totalMemoryCost", "float")
 ]
 
 cacheColumns = [
-    "numIndexBits",
-    "numWays",
-    "numSequenceAccesses",
-    "saveHistoryAndClassIfNotValid",
-    "cacheMemoryCost",
-    "cacheMissRate"
+    ("numIndexBits","int"),
+    ("numWays","int"),
+    ("numSequenceAccesses","int"),
+    ("saveHistoryAndClassIfNotValid","bool"),
+    ("cacheMemoryCost","float"),
+    ("cacheMissRate","float"),
 ]
 
 dictColumns = [
-    "numClasses",
-    "maxConfidence",
-    "numConfidenceJumps",
-    "saveHistoryAndClassIfNotValid",
-    "dictionaryMemoryCost",
-    "dictionaryMissRate"
+    ("numClasses","int"),
+    ("maxConfidence","int"),
+    ("numConfidenceJumps","int"),
+    ("saveHistoryAndClassIfNotValid","bool"),
+    ("dictionaryMemoryCost","float"),
+    ("dictionaryMissRate","float"),
 ]
 
 DFCMColumns = [
-    "firstTableMissRate",
-    "secondTableMissRate",
-    "firstTableMemoryCost",
-    "secondTableMemoryCost"
+    ("firstTableMissRate","float"),
+    ("secondTableMissRate","float"),
+    ("firstTableMemoryCost","float"),
+    ("secondTableMemoryCost","float"),
 ]
 
 modelColumns = [
-    "modelMemoryCost",
+    ("modelMemoryCost","float"),
 ]
 
 allColumns = []
@@ -57,17 +59,29 @@ stringColumns = [
 ]
 nanString = "-nan(ind)"
 
+possiblePredictorTypes = [InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK]
+
 def initDictTable():
     res = dict()
     for column in allColumns:
-        res[column] = []
+        res[column[0]] = []
 
     return res
 
 def initTableRow():
     res = dict()
     for column in allColumns:
-        res[column] = ""
+        t = column[1]
+        if t == "string":
+            res[column[0]] = ""
+        elif t == "int": # Natural number is assumed
+            res[column[0]] = -1
+        elif t == "float":
+            res[column[0]] = math.nan
+        elif t == "bool":
+            res[column[0]] = False
+        else:
+            raise Exception("One type more is missing")
 
     return res
 
@@ -79,10 +93,34 @@ def addRowsToTableDict(tableDict: dict, rows: list):
             value = ""
             if column in row:
                 value = row[column]
+                value = fixOnWrongValue(value)
             C.append(value)
         res[column] = C
     return res
 
+def setTypeToDataframe(dataframe: pd.DataFrame):
+    columnsAndTypes = dict()
+    for column in allColumns:
+        columnsAndTypes[column[0]] = column[1]
+    return dataframe.astype(columnsAndTypes)
+
+def setTypeToTableDict(tableDict: dict):
+    dataframe = setTypeToDataframe(pd.DataFrame(data=tableDict))
+    return dataframe.to_dict("list")
+
+
+def fixOnWrongValue(value):
+    res = value
+    # 1) Check if value == "-nan(ind)"
+    if(value == "-nan(ind)"):
+        res = "NaN"
+    return res
+
+def checkAndSetPredictorType(dictTable):
+    res = dict(dictTable)
+    for predictorType in possiblePredictorTypes:
+        res = predictorType.setPredictorType(res)
+    return res
 
 class XMLFile:
 
@@ -145,4 +183,6 @@ class XMLFile:
 
                 rows.append(row)
         addRowsToTableDict(dictTable, rows)
+        dictTable = setTypeToTableDict(dictTable)
+        dictTable = checkAndSetPredictorType(dictTable)
         return pd.DataFrame(data=dictTable)
