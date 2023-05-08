@@ -18,8 +18,20 @@ class ListOfPredicates:
 
     def check(self, dictionary):
         res = True
-        for predicate in self.predicates:
-            res = res and predicate.check(dictionary)
+        currentLogicalOp = "and"
+        for predicateOrOp in self.predicates:
+            if isinstance(predicateOrOp, Predicate) or isinstance(predicateOrOp, ListOfPredicates):
+                if currentLogicalOp == "and":
+                    res = res and predicateOrOp.check(dictionary)
+                elif currentLogicalOp == "or":
+                    res = res or predicateOrOp.check(dictionary)
+                else:
+                    raise Exception("Unknown logical operation.")
+                currentLogicalOp = "and" # Default operation
+            elif isinstance(predicateOrOp,str):
+                currentLogicalOp = predicateOrOp
+            else:
+                raise Exception("Unknown logical operation or predicate.")
         return res
 
 
@@ -56,7 +68,12 @@ InfiniteBufferSVM = PredictorType("InfiniteBufferSVM")
 InfiniteBufferSVM.setPredicates(
     ListOfPredicates(
         [
-            Predicate("numIndexBits", op.lt, 0)
+            Predicate("numIndexBits", op.lt, 0),
+            "or",
+            ListOfPredicates([
+                Predicate("numIndexBits", op.le, 0),
+                Predicate("numWays", op.le, 0),
+            ])
         ]
     )
 )
@@ -65,7 +82,12 @@ RealBufferSVM = PredictorType("RealBufferSVM")
 RealBufferSVM.setPredicates(
     ListOfPredicates(
         [
-            Predicate("numIndexBits", op.ge, 0)
+            Predicate("numIndexBits", op.ge, 0),
+            ListOfPredicates([
+                Predicate("numIndexBits", op.gt, 0),
+                "or",
+                Predicate("numWays", op.gt, 0),
+            ])
         ]
     )
 )
