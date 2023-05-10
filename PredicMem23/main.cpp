@@ -45,9 +45,9 @@ int main()
     // Lista de nombres de trazas: 
     vector<string> traceNames = vector<string>{
         // "cactuBSSN_s", "exchange2_s", "roms_s"
+        "cactuBSSN_s",
         "mcf_s",
-        "perlbench_s",
-        "cactuBSSN_s"
+        "perlbench_s"
         // "exchange2_s"
     };
 
@@ -92,49 +92,49 @@ int main()
         switch (test_idx)
         {
         case 9:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_9.xml";
+            outputName = "9_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {10, 2, 8, true};
             dictParams = {4, 255, 8, true};
             break;
 
         case 10:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_10.xml";
+            outputName = "10_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {7, 4, 8, true};
             dictParams = {4, 255, 8, true};
             break;
 
         case 11:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_11.xml";
+            outputName = "11_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {8, 4, 8, true};
             dictParams = {4, 255, 8, true};
             break;
 
         case 12:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_12.xml";
+            outputName = "12_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {10, 4, 8, true};
             dictParams = {4, 255, 8, true};
             break;
 
         case 13:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_13.xml";
+            outputName = "13_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {7, 2, 4, true};
             dictParams = {8, 255, 8, true};
             break;
 
         case 14:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_14.xml";
+            outputName = "14_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {8, 2, 4, true};
             dictParams = {8, 255, 8, true};
             break;
 
         case 15:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_15.xml";
+            outputName = "15_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {10, 2, 4, true};
             dictParams = {8, 255, 8, true};
             break;
 
         case 16:
-            outputName = "mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test_16.xml";
+            outputName = "16_mcf_s-perlbench_s-cactuBSSN_s-distrib_buffer_svm_test.xml";
             cacheParams = {7, 4, 4, true};
             dictParams = {8, 255, 8, true};
             break;
