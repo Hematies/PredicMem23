@@ -567,8 +567,9 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		
 
 		// We make a prediction with most reliable class on cache miss. If the option is set, it will be counted on:
+		// TODO MAL
 		bool targetClassIsMostReliable = false;
-		if (classIsFound) {
+		if (!historyIsFound && classIsFound) {
 			auto mostReliableClass = this->dictionary.mostReliableClass();
 			targetClassIsMostReliable = mostReliableClass == class_;
 		}
