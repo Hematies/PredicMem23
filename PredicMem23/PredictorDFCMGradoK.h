@@ -137,8 +137,6 @@ public:
 
 			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
 			if (haHabidoFallo) {
-				ajustarPredictor(entrada, salida);
-
 				if (haHabidoFalloTablas) {
 					if (!instrEnTabla)
 						numFirstTableMisses++;
@@ -148,6 +146,8 @@ public:
 			}
 			else
 				numAciertos++;
+
+			ajustarPredictor(entrada, salida);
 
 
 			if (i % numPartesMostrar == 0) {
