@@ -24,6 +24,7 @@ public:
 	virtual void clean() = 0;
 	virtual PredictorParameters getPredictorParams() = 0;
 	virtual void setPredictorParams(PredictorParameters) = 0;
+	virtual bool isNull() = 0;
 };
 
 
@@ -70,6 +71,7 @@ private:
 	long endLine;
 	string startDateTime;
 	bool countTotalMemory = false;
+	bool isNull_ = false;
 
 	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> buffersSimulator
 		 = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>();
@@ -104,6 +106,7 @@ public:
 	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
 	void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>);
 	void clean();
+	bool isNull();
 
 	PredictorParameters getPredictorParams();
 	void setPredictorParams(PredictorParameters);
