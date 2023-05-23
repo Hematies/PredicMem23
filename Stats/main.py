@@ -12,7 +12,8 @@ perlbench = Trace("perlbench_s", multiReader.dataframe)
 cactu = Trace("cactuBSSN_s", multiReader.dataframe)
 mcf = Trace("mcf_s", multiReader.dataframe)
 
-perlbench.plotCachePerformance()
-perlbench.plotDictionaryPerformance()
+mcf.plotCachePerformance()
+mcf.plotDictionaryPerformance()
+mcf.plotPredictorModelPerformance()
 
 print("")
