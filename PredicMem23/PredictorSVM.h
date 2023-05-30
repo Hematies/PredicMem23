@@ -166,10 +166,13 @@ public:
 			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
 
 			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
-			if (haHabidoFalloPrediccion && esEntradaPredecible) {
+			bool hayQueAjustar = (haHabidoFalloPrediccion && esEntradaPredecible) || (haHabidoErrorDiccionario && !esEntradaPredecible);
+			if (hayQueAjustar) {
 				ajustarPredictor(entrada, salida);
 			}
-			else if (esEntradaPredecible && !haHabidoErrorDiccionario)
+			
+			bool hayHit = esEntradaPredecible && !haHabidoErrorDiccionario && !haHabidoErrorCache && !haHabidoFalloPrediccion;
+			if (hayHit)
 				numAciertos++;
 
 			if (haHabidoErrorDiccionario) numDictionaryMisses++;
