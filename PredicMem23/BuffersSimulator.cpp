@@ -541,6 +541,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		}
 		else {
 			historyIsValid = false;
+			previousAccess = access;
 			delta = 0;
 		}
 
@@ -581,6 +582,12 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 				// the next iteration after updating the dictionary:
 				outputAccess = class_;
 			}
+
+			// We test the buffers just in case:
+			noError = this->testBuffers(instruction, access, previousAccess);
+
+			if (!noError)
+				cout << "ERROR" << endl;
 			
 		}
 		else {
