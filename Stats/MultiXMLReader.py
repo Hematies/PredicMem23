@@ -9,6 +9,9 @@ class MultiXMLReader:
         self.directoryPath = directoryPath
         self.files = self.getXMLFiles(directoryPath)
         self.dataframe = self.buildDataframe(self.files)
+        self.dataframe['modelHitRate'] = \
+            self.dataframe['hitRate'] / (
+                        (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
 
     def getXMLFiles(self, directoryPath):
         res = []
@@ -27,4 +30,8 @@ class MultiXMLReader:
         for file in files:
             dataframes.append(file.getTraceLevelDataframe())
         return pd.concat(dataframes)
+
+    def groupAndAggregate(self, inputParameters: list, outputParameters: list):
+        map = {param: ['mean', 'std'] for param in outputParameters}
+        return self.dataframe.groupby(inputParameters).agg(map)
 

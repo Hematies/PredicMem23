@@ -3,16 +3,22 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
 from matplotlib import ticker
+import seaborn as sns
+
 
 metricTranslationTable = {
     'hitRate': 'Predictor hit rate',
     'totalMemoryCost': 'Total memory cost',
     'cacheMemoryCost': 'Cache memory cost',
     'cacheMissRate': 'Cache miss rate',
+    'cacheHitRate': 'Input buffer hit rate',
     'dictionaryMemoryCost': 'Dictionary memory cost',
     'dictionaryMissRate': 'Dictionary miss rate',
+    'dictionaryHitRate': 'Dictionary hit rate',
     'firstTableMissRate': 'First table miss rate',
+    'firstTableHitRate': 'First table hit rate',
     'secondTableMissRate': 'Second table miss rate',
+    'secondTableHitRate': 'Second table hit rate',
     'firstTableMemoryCost': 'First table memory cost',
     'secondTableMemoryCost': 'Second table memory cost',
     'modelMemoryCost': 'Model memory cost',
@@ -22,8 +28,8 @@ metricTranslationTable = {
 
 predictorTypeTranslationTable = {
     'InfiniteDFCM': 'Ideal HashOnHash DFCM',
-    'InfiniteBufferSVM': 'Ideal Buffer-SVM',
-    'RealBufferSVM': 'Real Buffer-SVM',
+    'InfiniteBufferSVM': 'Ideal SVM4AP',
+    'RealBufferSVM': 'Real SVM4AP',
     'InfiniteDFCMGradeK': 'Ideal 8-order DFCM'
 }
 
@@ -77,8 +83,20 @@ class TraceComparer:
         self.dataframe['modelHitRate'] = \
             self.dataframe['hitRate'] / (
                     (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
+        self.dataframe['cacheHitRate'] = \
+            (1 - self.dataframe['cacheMissRate'])
+        self.dataframe['dictionaryHitRate'] = \
+            (1 - self.dataframe['dictionaryMissRate'])
+        self.dataframe['firstTableHitRate'] = \
+            (1 - self.dataframe['firstTableMissRate'])
+        self.dataframe['secondTableHitRate'] = \
+            (1 - self.dataframe['secondTableMissRate'])
 
-    def plotPerformanceComparison(self, metric):
+    def groupAndAggregate(self, inputParameters: list, outputParameters: list):
+        map = {param: ['mean', 'std'] for param in outputParameters}
+        return self.dataframe.groupby(inputParameters).agg(map)
+
+    def plotPerformanceComparison(self, metric, includeMean=True):
         dataframe = self.dataframe.round(3)
         dataframe['predictorHitRate'] = dataframe['hitRate']
         dataframe['order'] = dataframe['predictorType']
@@ -99,9 +117,11 @@ class TraceComparer:
 
         # Iterate over each group and plot the bars
         # for name, group in grouped:
+        labels = []
         for group in groupedByPredictor:
             offset = width * multiplier
             g = group[1].sort_values(by=['traceName'])
+            labels.append(predictorTypeTranslationTable[group[0]])
             rects = ax.bar(x + offset,
                            g[metric],
                            width, label=predictorTypeTranslationTable[group[0]])
@@ -116,6 +136,18 @@ class TraceComparer:
             '''
             multiplier += 1
 
+        '''
+        if includeMean:
+            aggregateResults = self.groupAndAggregate(['predictorType'], [metric])
+            # group = aggregateResults[(metric, 'mean')].sort_index(key=lambda index:
+            #    index.sort_values(key=lambda s: predictorTypeOrder[s])[0])
+            group = aggregateResults[(metric, 'mean')]
+            indexes = group.values.tolist()
+            labels.append('Mean')
+            rects = ax.bar(x + offset,
+                           group,
+                           width, label=predictorTypeTranslationTable[group[0]])
+        '''
         # Add some text for labels, title and custom x-axis tick labels, etc.
         # ax.set_ylabel('Metric value')
         # if title != None:
@@ -143,6 +175,22 @@ class TraceComparer:
         # Show the plot
         plt.show()
 
+        plt.figure()
+
+        sns.boxplot(x='predictorType', y='hitRate', data=self.dataframe,
+                    order=['InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM'],
+                    showmeans=includeMean,
+                    meanprops={'marker': 'o',
+                               'markerfacecolor': 'white',
+                               'markeredgecolor': 'black',
+                               'markersize': '8'}
+                    ).set(xlabel=None, ylabel=None)
+        plt.grid(True, axis='y', linestyle='--', alpha=0.4)
+        plt.locator_params(axis='y', nbins=20)
+        plt.xticks([0, 1, 2, 3], labels,
+                   # rotation=30
+                   )
+        plt.show()
 
 
 class WholeTrace:
@@ -153,6 +201,18 @@ class WholeTrace:
         self.dataframe['modelHitRate'] = \
             self.dataframe['hitRate'] / (
                         (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
+        self.dataframe['cacheHitRate'] = \
+            (1 - self.dataframe['cacheMissRate'])
+        self.dataframe['dictionaryHitRate'] = \
+            (1 - self.dataframe['dictionaryMissRate'])
+        self.dataframe['firstTableHitRate'] = \
+            (1 - self.dataframe['firstTableMissRate'])
+        self.dataframe['secondTableHitRate'] = \
+            (1 - self.dataframe['secondTableMissRate'])
+
+    def groupAndAggregate(self, inputParameters: list, outputParameters: list):
+        map = {param: ['mean', 'std'] for param in outputParameters}
+        return self.dataframe.groupby(inputParameters).agg(map)
 
     def plotOneMetricByTraceName(self, metric, title=None):
         dataframe = self.dataframe.round(3)
@@ -198,13 +258,13 @@ class WholeTrace:
                 self.plotOneMetricByTraceName(metric, title)
                 return
             else:
-                metrics = ["cacheMissRate", "dictionaryMissRate",
+                metrics = ["cacheHitRate", "dictionaryHitRate",
                            "modelHitRate", "predictorHitRate"]
         elif self.predictorType == "InfiniteDFCM" or self.predictorType == "InfiniteDFCMGradeK":
             if plotMemoryCosts:
                 metrics = ["firstTableMemoryCost", "secondTableMemoryCost", "totalMemoryCost"]
             else:
-                metrics = ["firstTableMissRate", "secondTableMissRate",
+                metrics = ["firstTableHitRate", "secondTableHitRate",
                            "predictorHitRate"]
         else:
             raise Exception("Unknown predictor type")
