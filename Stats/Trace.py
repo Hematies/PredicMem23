@@ -187,7 +187,8 @@ class TraceComparer:
                     ).set(xlabel=None, ylabel=None)
         plt.grid(True, axis='y', linestyle='--', alpha=0.4)
         plt.locator_params(axis='y', nbins=20)
-        plt.xticks([0, 1, 2, 3], labels,
+        # plt.xticks([0, 1, 2, 3], labels,
+        plt.xticks(list(range(0, len(labels))), labels,
                    # rotation=30
                    )
         plt.show()
