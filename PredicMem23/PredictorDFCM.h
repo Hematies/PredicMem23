@@ -111,9 +111,9 @@ public:
 		}
 		else {
 			delta = acceso - accesoAnterior;
+			escribirTablaHashDelta(hash, delta);
 			hash = hash ^ ((L64b)delta);
 			escribirTablaInstrHash(instruccion, acceso, hash);
-			escribirTablaHashDelta(hash, delta);
 		}
 		
 	}

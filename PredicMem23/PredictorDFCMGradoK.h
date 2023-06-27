@@ -50,7 +50,7 @@ protected:
 		bool estabaEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, deltas, &h);
 		if (estabaEnTabla) {
 			for (int i = 0; i < deltas.size() - 1; i++)
-				deltas[i] = deltas[i - 1];
+				deltas[i] = deltas[i + 1];
 		}
 		deltas[deltas.size() - 1] = nuevoDelta;
 		tablaInstrHash[instruccion] = tuple<T, vector<Delta>>(ultimoAcceso, deltas);
@@ -188,8 +188,8 @@ public:
 		}
 		else {
 			delta = acceso - accesoAnterior;
-			escribirTablaInstrHash(instruccion, acceso, delta);
 			escribirTablaHashDelta(hash, delta);
+			escribirTablaInstrHash(instruccion, acceso, delta);
 		}
 
 	}
