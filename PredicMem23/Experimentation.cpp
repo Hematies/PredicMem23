@@ -207,7 +207,8 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
-		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+		this->model = 
+			shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams));
 	}
 	
 	this->startDateTime = nowDateTime();
@@ -239,7 +240,7 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
 				(PredictorModel<L64bu, int>*) new PredictorDFCMInfinitoGradoK<L64bu, L64b>(params.cacheParams.numSequenceAccesses));
 		else
-			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams));
 	}
 	this->startDateTime = nowDateTime();
 }
@@ -294,7 +295,7 @@ void TracePredictExperiment::setPredictorModel(BuffersSimulator<L64bu, L64bu, in
 	this->model = shared_ptr<PredictorModel<L64bu,int>>((PredictorModel<L64bu, int>*) & model);
 }
 
-void TracePredictExperiment::setPredictorModel(PredictorDFCMInfinito<L64bu, L64b> model) {
+void TracePredictExperiment::setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b> model) {
 	this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) & model);
 }
 

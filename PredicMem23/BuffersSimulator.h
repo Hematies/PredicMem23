@@ -298,7 +298,7 @@ public:
 		numHistoryAccesses = 0;
 	}
 
-	BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams, DictionaryParameters dictParams);
+	BuffersSimulator(HistoryCacheType cacheType, CacheParameters cacheParams, DictionaryParameters dictParams);
 
 	BuffersSimulator(const BuffersSimulator& b);
 

@@ -465,15 +465,15 @@ double Dictionary<D>::getTotalMemoryCost() {
 */
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
-BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams,
+BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType cacheType, CacheParameters cacheParams,
 	DictionaryParameters dictParams) {
 	// We initialize both the cache and the dictionary:
-	if (historyCacheType == HistoryCacheType::Infinite) {
+	if (cacheType == HistoryCacheType::Infinite) {
 		this->historyCache = 
 			shared_ptr<HistoryCache< T, I, A, LA >>(
 				new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses, dictParams.numClasses));
 	}
-	else if (historyCacheType == HistoryCacheType::Real) {
+	else if (cacheType == HistoryCacheType::Real) {
 		this->historyCache = 
 			shared_ptr<HistoryCache< T, I, A, LA >>(new RealHistoryCache<T, I, A, LA>(cacheParams.numIndexBits, 
 				cacheParams.numWays, cacheParams.numSequenceAccesses, dictParams.numClasses));
