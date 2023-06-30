@@ -1,6 +1,12 @@
 #include "BuffersSimulator.h"
 #include <limits>
 
+
+template class StandardHistoryCacheEntry<L64bu, L64bu, L64bu>;
+template class RealHistoryCache<L64bu, L64bu, L64bu, L64bu>;
+template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64bu>;
+
+
 template<typename T, typename A, typename LA>
 vector<A> StandardHistoryCacheEntry<T, A, LA>::getHistory() {
 	return vector<A>(history);
@@ -28,14 +34,14 @@ void StandardHistoryCacheEntry<T, A, LA>::setLastAccess(LA la) {
 
 template<typename T, typename A, typename LA>
 StandardHistoryCacheEntry<T, A, LA>::StandardHistoryCacheEntry() {
-	this->history = vector<int>();
+	this->history = vector<A>();
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
 
 template<typename T, typename A, typename LA>
 StandardHistoryCacheEntry<T, A, LA>::StandardHistoryCacheEntry(int numAccesses) {
-	this->history = vector<int>(numAccesses, -1);
+	this->history = vector<A>(numAccesses, -1);
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
@@ -135,7 +141,7 @@ double InfiniteHistoryCache<T, I, A, LA>::getTotalMemoryCost() {
 
 template<typename T, typename A, typename LA>
 RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry() {
-	this->history = vector<int>();
+	this->history = vector<A>();
 	this->lastAccess = -1L;
 	this->tag = -1L;
 	this->way = -1;
@@ -143,7 +149,7 @@ RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry() {
 
 template<typename T, typename A, typename LA>
 RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry(int numAccesses, int way) {
-	this->history = vector<int>(numAccesses, -1);
+	this->history = vector<A>(numAccesses, -1);
 	this->way = way;
 	this->lastAccess = -1L;
 	this->tag = -1L;
@@ -169,9 +175,8 @@ void RealHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
 
 template<typename T, typename I, typename A, typename LA >
 RealHistoryCache<T, I, A, LA>::RealHistoryCache() {
-	this->numSets = 0;
 	this->numWays = 0;
-	sets = vector<HistoryCacheSet<T, A, LA>>();
+	sets = vector<HistoryCacheSet<T, I, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >

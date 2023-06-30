@@ -226,7 +226,7 @@ public:
 	}
 
 	long getNumSets() {
-		return this->numSets;
+		return this->sets.size();;
 	}
 
 	int getNumIndexBits() {
