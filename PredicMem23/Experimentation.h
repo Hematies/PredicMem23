@@ -20,7 +20,7 @@ public:
 	virtual map<string, double> getResultsAndCosts() = 0;
 	virtual void performExperiment() = 0;
 	virtual void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
-	virtual void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>) = 0;
+	virtual void setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b>) = 0;
 	virtual void clean() = 0;
 	virtual PredictorParameters getPredictorParams() = 0;
 	virtual void setPredictorParams(PredictorParameters) = 0;
@@ -104,7 +104,7 @@ public:
 	map<string, double> getResultsAndCosts();
 	void performExperiment();
 	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
-	void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>);
+	void setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b>);
 	void clean();
 	bool isNull();
 
