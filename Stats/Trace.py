@@ -8,20 +8,20 @@ import seaborn as sns
 
 metricTranslationTable = {
     'hitRate': 'Predictor hit rate',
-    'totalMemoryCost': 'Total memory cost',
-    'cacheMemoryCost': 'Cache memory cost',
+    'totalMemoryCost': "Total", # mean memory capacity",
+    'cacheMemoryCost': 'Cache memory capacity',
     'cacheMissRate': 'Cache miss rate',
     'cacheHitRate': 'Input buffer hit rate',
-    'dictionaryMemoryCost': 'Dictionary memory cost',
+    'dictionaryMemoryCost': 'Dictionary memory capacity',
     'dictionaryMissRate': 'Dictionary miss rate',
     'dictionaryHitRate': 'Dictionary hit rate',
     'firstTableMissRate': 'First table miss rate',
     'firstTableHitRate': 'First table hit rate',
     'secondTableMissRate': 'Second table miss rate',
     'secondTableHitRate': 'Second table hit rate',
-    'firstTableMemoryCost': 'First table memory cost',
-    'secondTableMemoryCost': 'Second table memory cost',
-    'modelMemoryCost': 'Model memory cost',
+    'firstTableMemoryCost': "First table", # 's mean memory capacity",
+    'secondTableMemoryCost': "Second table", # 's mean memory capacity",
+    'modelMemoryCost': 'Model memory capacity',
     'modelHitRate': 'Model hit rate',
     'predictorHitRate': 'Predictor hit rate',
 }
@@ -91,6 +91,7 @@ class TraceComparer:
             (1 - self.dataframe['firstTableMissRate'])
         self.dataframe['secondTableHitRate'] = \
             (1 - self.dataframe['secondTableMissRate'])
+
 
     def groupAndAggregate(self, inputParameters: list, outputParameters: list):
         map = {param: ['mean', 'std'] for param in outputParameters}
@@ -211,9 +212,34 @@ class WholeTrace:
         self.dataframe['secondTableHitRate'] = \
             (1 - self.dataframe['secondTableMissRate'])
 
+
+        # OJO: Ajustar coste en memoria a capacidad para los DFCMs:
+
+        casosDFCMHashOnHash = self.dataframe['predictorType'] == "InfiniteDFCM"
+        casosDFCM8Order = self.dataframe['predictorType'] == "InfiniteDFCMGradeK"
+        dataframe_ = self.dataframe.copy()
+        dataframe_['firstTableMemoryCost'] = \
+            self.dataframe[casosDFCMHashOnHash]['firstTableMemoryCost'] * 2 / 3
+        dataframe_['secondTableMemoryCost'] = \
+            self.dataframe[casosDFCMHashOnHash]['secondTableMemoryCost'] * 1 / 2
+        dataframe_['totalMemoryCost'] = dataframe_['firstTableMemoryCost'] + dataframe_['secondTableMemoryCost']
+        if casosDFCMHashOnHash.any():
+            self.dataframe[casosDFCMHashOnHash] = dataframe_[casosDFCMHashOnHash]
+
+
+        dataframe_ = self.dataframe.copy()
+        dataframe_['firstTableMemoryCost'] = \
+            self.dataframe[casosDFCM8Order]['firstTableMemoryCost'] * (1 + 8) / (2 + 8)
+        dataframe_['secondTableMemoryCost'] = \
+            self.dataframe[casosDFCM8Order]['secondTableMemoryCost'] * 1 / 2
+        dataframe_['totalMemoryCost'] = dataframe_['firstTableMemoryCost'] + dataframe_['secondTableMemoryCost']
+        if casosDFCM8Order.any():
+            self.dataframe[casosDFCM8Order] = dataframe_[casosDFCM8Order]
+
+
     def groupAndAggregate(self, inputParameters: list, outputParameters: list):
-        map = {param: ['mean', 'std'] for param in outputParameters}
-        return self.dataframe.groupby(inputParameters).agg(map)
+            map = {param: ['mean', 'std'] for param in outputParameters}
+            return self.dataframe.groupby(inputParameters).agg(map)
 
     def plotOneMetricByTraceName(self, metric, title=None):
         dataframe = self.dataframe.round(3)
@@ -240,7 +266,7 @@ class WholeTrace:
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax.set_ylabel(metricTranslationTable[metric])
-        ax.set_ylabel("Total memory cost (bytes)")
+        ax.set_ylabel("Total mean memory capacity (bytes)")
         # if title != None:
         #    ax.set_title(title)
         ax.set_xticks(x, grouped.groups.keys())
@@ -303,7 +329,7 @@ class WholeTrace:
         #    ax.set_title(title)
         ax.set_xticks(x + width, grouped.groups.keys())
         if plotMemoryCosts:
-            plt.ylabel("Memory cost (bytes)")
+            plt.ylabel("Mean memory capacity (bytes)")
 
         plt.yticks(fontsize=9)
         plt.xticks(fontsize=10, rotation=30)
