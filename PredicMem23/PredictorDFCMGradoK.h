@@ -311,8 +311,8 @@ public:
 
 
 	double getMemoryCosts(double* firstTableCost, double* secondTableCost) {
-		*firstTableCost = (2 + this->numUltimosDeltas) * sizeof(T) * this->tablaInstrHash.size();
-		*secondTableCost = 2 * sizeof(T) * this->tablaHashDelta.size();
+		*firstTableCost = (2 + this->firstTableCacheParams.numSequenceAccesses) * sizeof(T) * this->tablaInstrHash->getNumEntries();
+		*secondTableCost = 2 * sizeof(T) * this->tablaHashDelta->getNumEntries();
 		return *firstTableCost + *secondTableCost;
 	}
 };

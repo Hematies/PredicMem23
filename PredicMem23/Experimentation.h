@@ -58,8 +58,7 @@ public:
 	vector<Experiment*> getExperiments();
 	void setExperiments(vector<Experiment*>);
 
-	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment, 
-		PredictorParameters secondParams = {});
+	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment);
 
 	map<string, vector<Experiment*>> getExperimentsByTrace();
 };
@@ -85,9 +84,9 @@ private:
 public:
 	TracePredictExperiment(TracePredictExperimentation* framework,
 		string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters,
-		bool countTotalMemory = false, PredictorParameters secondParams = {});
+		bool countTotalMemory = false);
 	TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters,
-		bool countTotalMemory = false, PredictorParameters secondParams = {});
+		bool countTotalMemory = false);
 
 	shared_ptr<PredictResultsAndCosts> resultsAndCosts;
 

@@ -155,7 +155,7 @@ void TracePredictExperimentation::exportResults(string filename) {
 }
 
 void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
-	PredictorParameters params, long numAccessesPerExperiment = 10000000, PredictorParameters secondParams) {
+	PredictorParameters params, long numAccessesPerExperiment = 10000000) {
 
 
 	auto pointer = this;
@@ -171,7 +171,7 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 		while(true) {
 			k1 = k1 > numLines ? numLines : k1;
 			this->experiments.push_back(
-				new TracePredictExperiment(pointer, filename, name, k, k1, this->countTotalMemory, secondParams));
+				new TracePredictExperiment(pointer, filename, name, k, k1, params, this->countTotalMemory));
 			// this->experiments.push_back(make_unique<TracePredictExperiment>(experiment));
 
 			k += numAccessesPerExperiment;
@@ -187,7 +187,7 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 }
 
 TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
-	struct PredictorParameters params, bool countTotalMemory, struct PredictorParameters secondParams) {
+	struct PredictorParameters params, bool countTotalMemory) {
 	this->traceFilename = traceFilename;
 	this->traceName = traceName;
 	this->startLine = startLine;
@@ -209,14 +209,14 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	else {
 		this->model = 
 			shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) 
-				new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, secondParams.cacheParams));
+				new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 	}
 	
 	this->startDateTime = nowDateTime();
 }
 
 TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* framework, string traceFilename, string traceName, long startLine, long endLine,
-	struct PredictorParameters params, bool countTotalMemory, struct PredictorParameters secondParams) {
+	struct PredictorParameters params, bool countTotalMemory) {
 	this->framework = framework;
 	this->traceFilename = traceFilename;
 	this->traceName = traceName;
@@ -239,9 +239,9 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 	else {
 		if(params.cacheParams.numSequenceAccesses > 0)
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, secondParams.cacheParams));
+				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 		else
-			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, secondParams.cacheParams));
+			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 	}
 	this->startDateTime = nowDateTime();
 }

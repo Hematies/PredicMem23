@@ -29,6 +29,7 @@ enum class PredictorModelType{ BufferSVM, DFCMInfinito};
 struct PredictorParameters {
 	PredictorModelType type;
 	CacheParameters cacheParams;
+	CacheParameters additionalCacheParams;
 	DictionaryParameters dictParams;
 };
 

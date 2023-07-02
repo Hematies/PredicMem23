@@ -267,8 +267,8 @@ public:
 	double getMemoryCosts(double* firstTableCost, double* secondTableCost) {
 		// *firstTableCost = tablaInstrHash->getMemoryCost(); // ??????
 		// *secondTableCost = tablaHashDelta->getMemoryCost();
-		*firstTableCost = 3 * sizeof(T) * tablaInstrHash.size();
-		*secondTableCost = 2 * sizeof(T) * tablaHashDelta.size();
+		*firstTableCost = 3 * sizeof(T) * tablaInstrHash->getNumEntries();
+		*secondTableCost = 2 * sizeof(T) * tablaHashDelta->getNumEntries();
 		return *firstTableCost + *secondTableCost;
 	}
 };
