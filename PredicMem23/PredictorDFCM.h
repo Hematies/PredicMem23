@@ -204,8 +204,10 @@ public:
 	}
 
 	double getMemoryCosts(double* firstTableCost, double* secondTableCost) {
-		*firstTableCost = 3 * sizeof(T) * tablaInstrHash.size();
-		*secondTableCost = 2 * sizeof(T) * tablaHashDelta.size();
+		// *firstTableCost = 3 * sizeof(T) * tablaInstrHash.size();
+		// *secondTableCost = 2 * sizeof(T) * tablaHashDelta.size();
+		*firstTableCost = 2 * sizeof(T) * tablaInstrHash.size();
+		*secondTableCost = 1 * sizeof(T) * tablaHashDelta.size();
 		return *firstTableCost + *secondTableCost;
 	}
 };

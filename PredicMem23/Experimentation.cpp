@@ -171,7 +171,7 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 		while(true) {
 			k1 = k1 > numLines ? numLines : k1;
 			this->experiments.push_back(
-				new TracePredictExperiment(pointer, filename, name, k, k1, params));
+				new TracePredictExperiment(pointer, filename, name, k, k1, params, countTotalMemory));
 			// this->experiments.push_back(make_unique<TracePredictExperiment>(experiment));
 
 			k += numAccessesPerExperiment;
