@@ -241,7 +241,8 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
 				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 		else
-			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
+			this->model = shared_ptr<PredictorModel<L64bu, int>>(
+				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 	}
 	this->startDateTime = nowDateTime();
 }

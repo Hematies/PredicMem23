@@ -30,9 +30,9 @@ protected:
 		}
 	}
 
-	bool accederTablaHashDelta(T hash, shared_ptr<HistoryCacheEntry<T, T, T>>* entry) {
-		shared_ptr<HistoryCacheEntry<T, T, T>> secondTableEntry =
-			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
+	bool accederTablaHashDelta(T hash, shared_ptr<HistoryCacheEntry<T, T, Delta>>* entry) {
+		shared_ptr<HistoryCacheEntry<T, T, Delta>> secondTableEntry =
+			shared_ptr< HistoryCacheEntry<T, T, Delta>>(new StandardHistoryCacheEntry<T, T, Delta>());
 		bool entryIsFound = this->tablaHashDelta->getEntry(hash, secondTableEntry.get());
 		if (!entryIsFound) {
 			return false;
@@ -54,8 +54,8 @@ protected:
 	}
 
 	bool escribirTablaHashDelta(T hash, Delta delta) {
-		shared_ptr<HistoryCacheEntry<T, T, T>> secondTableEntry =
-			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
+		shared_ptr<HistoryCacheEntry<T, T, Delta>> secondTableEntry =
+			shared_ptr< HistoryCacheEntry<T, T, Delta>>(new StandardHistoryCacheEntry<T, T, Delta>());
 		bool estabaEnTabla = accederTablaHashDelta(hash, &secondTableEntry);
 		this->tablaHashDelta->newAccess(hash, delta, 0);
 		return estabaEnTabla;
@@ -71,7 +71,7 @@ public:
 	// map<T, Delta> tablaHashDelta;
 
 	shared_ptr <HistoryCache<T, T, T, T>> tablaInstrHash;
-	shared_ptr <HistoryCache<T, T, T, T>> tablaHashDelta;
+	shared_ptr <HistoryCache<T, T, T, Delta>> tablaHashDelta;
 
 	HistoryCacheType historyCacheType;
 	CacheParameters firstTableCacheParams = {};
@@ -119,8 +119,8 @@ public:
 					new InfiniteHistoryCache< T, T, T, T >(1, 1));
 
 			this->tablaHashDelta =
-				shared_ptr<HistoryCache< T, T, T, T >>(
-					new InfiniteHistoryCache< T, T, T, T >(1, 1));
+				shared_ptr<HistoryCache< T, T, T, Delta >>(
+					new InfiniteHistoryCache< T, T, T, Delta >(1, 1));
 		}
 		else if (historyCacheType == HistoryCacheType::Real) {
 			this->tablaInstrHash =
@@ -128,7 +128,7 @@ public:
 					this->firstTableCacheParams.numWays, 1, 1));
 
 			this->tablaHashDelta =
-				shared_ptr<HistoryCache< T, T, T, T >>(new RealHistoryCache< T, T, T, T >(this->secondTableCacheParams.numIndexBits,
+				shared_ptr<HistoryCache< T, T, T, Delta >>(new RealHistoryCache< T, T, T, Delta >(this->secondTableCacheParams.numIndexBits,
 					this->secondTableCacheParams.numWays, 1, 1));
 		}
 		else {
@@ -176,8 +176,8 @@ public:
 
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
-		shared_ptr<HistoryCacheEntry<T, T, T>> secondTableEntry =
-			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
+		shared_ptr<HistoryCacheEntry<T, T, Delta>> secondTableEntry =
+			shared_ptr< HistoryCacheEntry<T, T, Delta>>(new StandardHistoryCacheEntry<T, T, Delta>());
 
 		// *instrEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &hash);
 		*instrEnTabla = accederTablaInstrHash(instruccion, &firstTableEntry);
