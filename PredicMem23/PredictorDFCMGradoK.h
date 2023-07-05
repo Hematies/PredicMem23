@@ -59,7 +59,7 @@ protected:
 		shared_ptr<HistoryCacheEntry<T, T, T>> secondTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
 		bool estabaEnTabla = accederTablaHashDelta(hash, &secondTableEntry);
-		this->tablaInstrHash->newAccess(hash, delta, 0);
+		this->tablaHashDelta->newAccess(hash, delta, 0);
 		return estabaEnTabla;
 	}
 
@@ -150,9 +150,7 @@ public:
 		Delta delta;
 		// bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, &hash);
 		bool hashEnTabla = accederTablaInstrHash(instruccion, &firstTableEntry);
-		accesoAnterior = firstTableEntry->getLastAccess();
-		for (auto delta : firstTableEntry->getHistory())
-			hash = hash ^ delta;
+		
 		if (!hashEnTabla) {
 			accesoAnterior = acceso;
 			hash = 0;
@@ -161,7 +159,10 @@ public:
 			escribirTablaHashDelta(hash, delta);
 		}
 		else {
+			accesoAnterior = firstTableEntry->getLastAccess();
 			delta = acceso - accesoAnterior;
+			for (auto delta : firstTableEntry->getHistory())
+				hash = hash ^ delta;
 			escribirTablaHashDelta(hash, delta);
 			escribirTablaInstrHash(instruccion, acceso, delta);
 		}
@@ -181,20 +182,22 @@ public:
 
 		// *instrEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &hash);
 		*instrEnTabla = accederTablaInstrHash(instruccion, &firstTableEntry);
-		ultimoAcceso = firstTableEntry->getLastAccess();
-		for (auto delta : firstTableEntry->getHistory())
-			hash = hash ^ delta;
 
 		if (!(*instrEnTabla)) return false;
 		else {
+			ultimoAcceso = firstTableEntry->getLastAccess();
+			for (auto delta_ : firstTableEntry->getHistory())
+				hash = hash ^ delta_;
 			Delta delta;
 			// *hashEnTabla = accederTablaHashDelta(hash, &delta);
 			*hashEnTabla = accederTablaHashDelta(hash, &secondTableEntry);
-			delta = secondTableEntry->getLastAccess();
 			if (!(*hashEnTabla)) 
 				return false;
-			else *acceso = 
-				ultimoAcceso + delta;
+			else {
+				delta = secondTableEntry->getLastAccess();
+				*acceso =
+					ultimoAcceso + delta;
+			}
 		}
 		return true;
 	}

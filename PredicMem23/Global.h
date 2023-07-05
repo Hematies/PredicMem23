@@ -24,7 +24,7 @@ struct DictionaryParameters {
 	bool saveHistoryAndClassIfNotValid;
 };
 
-enum class PredictorModelType{ BufferSVM, DFCMInfinito};
+enum class PredictorModelType{ BufferSVM, DFCM};
 
 struct PredictorParameters {
 	PredictorModelType type;
