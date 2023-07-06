@@ -5,6 +5,9 @@
 template class StandardHistoryCacheEntry<L64bu, L64bu, L64bu>;
 template class RealHistoryCache<L64bu, L64bu, L64bu, L64bu>;
 template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64bu>;
+template class StandardHistoryCacheEntry<L64bu, L64bu, L64b>;
+template class RealHistoryCache<L64bu, L64bu, L64bu, L64b>;
+template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64b>;
 
 
 template<typename T, typename A, typename LA>
