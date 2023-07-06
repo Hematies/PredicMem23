@@ -116,7 +116,7 @@ public:
 		if(historyCacheType == HistoryCacheType::Infinite) {
 			this->tablaInstrHash =
 				shared_ptr<HistoryCache< T, T, T, T >>(
-					new InfiniteHistoryCache< T, T, T, T >(1, 1));
+					new InfiniteHistoryCache< T, T, T, T >(this->firstTableCacheParams.numSequenceAccesses, 1));
 
 			this->tablaHashDelta =
 				shared_ptr<HistoryCache< T, T, T, Delta >>(
@@ -145,7 +145,7 @@ public:
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
 
-		T hash;
+		T hash = 0;
 		T accesoAnterior;
 		Delta delta;
 		// bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, &hash);
@@ -170,7 +170,7 @@ public:
 	}
 
 	bool predecir(T instruccion, T* acceso, bool* instrEnTabla, bool* hashEnTabla) {
-		T hash;
+		T hash = 0;
 		T ultimoAcceso;
 		*instrEnTabla = false;
 		*hashEnTabla = false;
