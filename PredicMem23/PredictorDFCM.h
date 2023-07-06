@@ -22,7 +22,7 @@ protected:
 			return false;
 		}
 		else {
-			auto tupla = tablaInstrHash[instruccion];
+			auto tupla = tablaInstrHash.find(instruccion)->second;
 			*ultimoAcceso = get<0>(tupla);
 			*hash = get<1>(tupla);
 			return true;
@@ -34,7 +34,7 @@ protected:
 			return false;
 		}
 		else {
-			*delta = tablaHashDelta[hash];
+			*delta = tablaHashDelta.find(hash)->second;
 			return true;
 		}
 	}
