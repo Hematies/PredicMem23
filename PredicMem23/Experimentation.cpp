@@ -8,6 +8,7 @@
 #include "tinyxml.h"
 #include <algorithm> 
 #include "Experimentation.h"
+#include<omp.h>
 
 string nowDateTime() {
 	// auto now = std::chrono::system_clock::now();
@@ -36,6 +37,9 @@ TracePredictExperimentation::TracePredictExperimentation(string outputFilename,b
 }
 
 void TracePredictExperimentation::performExperiments() {
+
+	omp_set_num_threads(this->numWorkingThreads);
+#pragma omp parallel for
 	for (auto& experiment : this->experiments) {
 		cout << "\n=========";
 		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
@@ -313,8 +317,12 @@ void TracePredictExperiment::performExperiment() {
 	if (!isSameFile || !isFileOpen)
 		*traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
 
-	// Next, we read the trace and extract the working dataset:
-	auto dataset = traceReader->readLines(startLine, endLine);
+	AccessesDataset<L64bu, L64bu> dataset;
+#pragma omp critical
+	{
+		// Next, we read the trace and extract the working dataset:
+		dataset = traceReader->readLines(startLine, endLine);
+	}
 	BuffersDataset<int> classesDataset;
 
 	if (dataset.accesses.size() > 0) {
