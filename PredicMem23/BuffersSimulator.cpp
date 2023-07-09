@@ -402,11 +402,11 @@ int Dictionary<D>::newDelta(D delta) {
 	bool classIsFound = false;
 	for (int i = 0; i < entries.size(); i++) {
 		auto entry = &entries[i];
-		if (entry->delta == delta) {
-			if (!classIsFound) {
-				class_ = i;
-				classIsFound = true;
-			}
+		if (entry->delta == delta && !classIsFound) {
+			
+			class_ = i;
+			classIsFound = true;
+
 			entry->confidence += (this->maxConfidence + 1) / this->numConfidenceJumps;
 			if (entry->confidence > this->maxConfidence)
 				entry->confidence = this->maxConfidence;
@@ -525,6 +525,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		vector<bool>()
 	};
 
+	double numFallosDiccionario = 0.0;
+
 	for (int k = 0; k < accesses.size(); k++) {
 		auto access = accesses[k];
 		auto instruction = instructions[k];
@@ -556,7 +558,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		// First, we ask the dictionary for the class/word assigned to the delta of the access:
 		auto class_ = dictionary.getClass(delta);
 		bool classIsFound = class_ >= 0;
-		
+		isDictionaryMiss = !classIsFound;
+
 
 		// The history and the dictionary are updated:
 		class_ = dictionary.newDelta(delta);
@@ -565,7 +568,6 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		bool noError = true;
 		// isCacheMiss = !historyIsValid;
 		isCacheMiss = !historyIsFound;
-		isDictionaryMiss = !classIsFound;
 		vector<A> history_ = history->getHistory();
 
 		// If we predict via greediness, histories that are found but not valid will be saved:
@@ -615,8 +617,12 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		res.isDictionaryMiss.push_back(isDictionaryMiss);
 		res.isCacheMiss.push_back(isCacheMiss);
 
+		numFallosDiccionario += isDictionaryMiss;
+
 		history.reset();
 	}
+
+	printf("\nFallos de diccionario: %f", (double)numFallosDiccionario / accesses.size());
 
 	return res;
 

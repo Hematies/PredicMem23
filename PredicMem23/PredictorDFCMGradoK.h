@@ -145,7 +145,7 @@ public:
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
 
-		T hash = 0;
+		T hash;
 		T accesoAnterior;
 		Delta delta;
 		// bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, &hash);
@@ -161,6 +161,7 @@ public:
 		else {
 			accesoAnterior = firstTableEntry->getLastAccess();
 			delta = acceso - accesoAnterior;
+			hash = 0;
 			for (auto delta_ : firstTableEntry->getHistory())
 				hash = hash ^ delta_;
 			escribirTablaHashDelta(hash, delta);
@@ -170,7 +171,7 @@ public:
 	}
 
 	bool predecir(T instruccion, T* acceso, bool* instrEnTabla, bool* hashEnTabla) {
-		T hash = 0;
+		T hash;
 		T ultimoAcceso;
 		*instrEnTabla = false;
 		*hashEnTabla = false;
@@ -186,6 +187,7 @@ public:
 		if (!(*instrEnTabla)) return false;
 		else {
 			ultimoAcceso = firstTableEntry->getLastAccess();
+			hash = 0;
 			for (auto delta_ : firstTableEntry->getHistory())
 				hash = hash ^ delta_;
 			Delta delta;
