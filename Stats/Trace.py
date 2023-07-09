@@ -30,6 +30,8 @@ predictorTypeTranslationTable = {
     'InfiniteDFCM': 'Ideal HashOnHash DFCM',
     'InfiniteBufferSVM': 'Ideal SVM4AP',
     'RealBufferSVM': 'Real SVM4AP',
+    'RealBufferSVM_4_4': 'Real SVM4AP 4-4',
+    'RealBufferSVM_8_8': 'Real SVM4AP 8-8',
     'InfiniteDFCMGradeK': 'Ideal 8-order DFCM'
 }
 
@@ -37,6 +39,8 @@ predictorTypeOrder = {
     'InfiniteDFCM': 0,
     'InfiniteBufferSVM': 2,
     'RealBufferSVM': 3,
+    'RealBufferSVM_4_4': 4,
+    'RealBufferSVM_8_8': 5,
     'InfiniteDFCMGradeK': 1
 }
 
@@ -113,7 +117,7 @@ class TraceComparer:
         fig, ax = plt.subplots(layout='constrained')
 
         x = np.arange(len(groupedByTrace))  # the label locations
-        width = 0.2  # the width of the bars
+        width = 0.15  # the width of the bars
         multiplier = 0
 
         # Iterate over each group and plot the bars
@@ -165,7 +169,7 @@ class TraceComparer:
 
         plt.legend(  # bbox_to_anchor=(0.75, 1.15),
             bbox_to_anchor=(0., 1.02, 1., .102),
-            ncol=len(groupedByPredictor), fontsize=8)
+            ncol=3, fontsize=8)
 
         '''
         if plotMemoryCosts:
@@ -177,9 +181,17 @@ class TraceComparer:
         plt.show()
 
         plt.figure()
-
+        tuples = [(p[0], predictorTypeOrder[p[0]]) for p in groupedByPredictor]
+        order = list(
+            sorted(tuples, key=lambda t: t[1])
+        )
+        order = list(map(lambda t: t[0], order))
         sns.boxplot(x='predictorType', y='hitRate', data=self.dataframe,
-                    order=['InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM'],
+                    order=order,
+                    #[
+                    #    'InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM',
+                    #    'RealBufferSVM_4_4', 'RealBufferSVM_8_8',
+                    #],
                     showmeans=includeMean,
                     meanprops={'marker': 'o',
                                'markerfacecolor': 'white',
@@ -190,7 +202,7 @@ class TraceComparer:
         plt.locator_params(axis='y', nbins=20)
         # plt.xticks([0, 1, 2, 3], labels,
         plt.xticks(list(range(0, len(labels))), labels,
-                   # rotation=30
+                   rotation=15
                    )
         plt.show()
 
@@ -278,7 +290,7 @@ class WholeTrace:
         dataframe = self.dataframe.round(3)
         dataframe['predictorHitRate'] = dataframe['hitRate']
         metrics = []
-        if self.predictorType == "InfiniteBufferSVM" or self.predictorType == "RealBufferSVM":
+        if "BufferSVM" in self.predictorType:
             if plotMemoryCosts:
                 # metrics = ["cacheMemoryCost", "dictionaryMemoryCost", "modelMemoryCost"]
                 metric = "totalMemoryCost"

@@ -44,6 +44,7 @@ svmHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['modelHitR
 idealSVM = WholeTrace("InfiniteBufferSVM", multiReader.dataframe)
 idealSVM.plotPerformanceByTraceName(False, "Ideal BufferSVM precision")
 idealSVM.plotPerformanceByTraceName(True, "Ideal BufferSVM memory cost")
+# resIdealSVM = idealSVM.groupAndAggregate([], ['hitRate'])
 
 idealDFCM = WholeTrace("InfiniteDFCM", multiReader.dataframe)
 idealDFCM.plotPerformanceByTraceName(False, "Ideal HashOnHash DFCM precision")
@@ -58,7 +59,10 @@ idealDFCMGradeK.plotPerformanceByTraceName(True, "Ideal 8-order DFCM memory cost
 
 
 multiReader = MultiXMLReader(testOnAllAppsDir)
-realSVM = WholeTrace("RealBufferSVM", multiReader.dataframe)
+realSVM = WholeTrace("RealBufferSVM_8_8", multiReader.dataframe)
+realSVM.plotPerformanceByTraceName(False, "Real BufferSVM precision")
+
+realSVM = WholeTrace("RealBufferSVM_4_4", multiReader.dataframe)
 realSVM.plotPerformanceByTraceName(False, "Real BufferSVM precision")
 
 comparator = TraceComparer(MultiXMLReader(testOnAllAppsDir).dataframe)

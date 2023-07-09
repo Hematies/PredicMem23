@@ -27,7 +27,7 @@ class ListOfPredicates:
                     res = res or predicateOrOp.check(dictionary)
                 else:
                     raise Exception("Unknown logical operation.")
-                currentLogicalOp = "and" # Default operation
+                # currentLogicalOp = "and" # Default operation
             elif isinstance(predicateOrOp,str):
                 currentLogicalOp = predicateOrOp
             else:
@@ -87,7 +87,59 @@ RealBufferSVM.setPredicates(
                 Predicate("numIndexBits", op.gt, 0),
                 "or",
                 Predicate("numWays", op.gt, 0),
-            ])
+            ]),
+            # In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
+            ListOfPredicates([
+                Predicate("numSequenceAccesses", op.ne, 4),
+                "and",
+                Predicate("numClasses", op.ne, 4),
+            ]),
+            # In order to differentiate with RealBufferSVM of 8-length sequences and 8 classes:
+            ListOfPredicates([
+                Predicate("numSequenceAccesses", op.ne, 8),
+                "and",
+                Predicate("numClasses", op.ne, 8),
+            ]),
+        ]
+    )
+)
+
+RealBufferSVM_4_4 = PredictorType("RealBufferSVM_4_4")
+RealBufferSVM_4_4.setPredicates(
+    ListOfPredicates(
+        [
+            Predicate("numIndexBits", op.ge, 0),
+            ListOfPredicates([
+                Predicate("numIndexBits", op.gt, 0),
+                "or",
+                Predicate("numWays", op.gt, 0),
+            ]),
+            # In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
+            ListOfPredicates([
+                Predicate("numSequenceAccesses", op.eq, 4),
+                "and",
+                Predicate("numClasses", op.eq, 4),
+            ]),
+        ]
+    )
+)
+
+RealBufferSVM_8_8 = PredictorType("RealBufferSVM_8_8")
+RealBufferSVM_8_8.setPredicates(
+    ListOfPredicates(
+        [
+            Predicate("numIndexBits", op.ge, 0),
+            ListOfPredicates([
+                Predicate("numIndexBits", op.gt, 0),
+                "or",
+                Predicate("numWays", op.gt, 0),
+            ]),
+            # In order to differentiate with RealBufferSVM of 8-length sequences and 8 classes:
+            ListOfPredicates([
+                Predicate("numSequenceAccesses", op.eq, 8),
+                "and",
+                Predicate("numClasses", op.eq, 8),
+            ]),
         ]
     )
 )
