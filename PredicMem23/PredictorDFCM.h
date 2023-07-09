@@ -22,7 +22,7 @@ protected:
 			return false;
 		}
 		else {
-			auto tupla = tablaInstrHash.find(instruccion)->second;
+			auto tupla = this->tablaInstrHash.find(instruccion)->second;
 			*ultimoAcceso = get<0>(tupla);
 			*hash = get<1>(tupla);
 			return true;
@@ -41,14 +41,15 @@ protected:
 
 	bool escribirTablaInstrHash(T instruccion, T ultimoAcceso, T hash) {
 		T h;
-		bool estabaEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &h);
-		tablaInstrHash[instruccion] = tuple<T,T>(ultimoAcceso, hash);
+		T u;
+		bool estabaEnTabla = this->accederTablaInstrHash(instruccion, &u, &h);
+		this->tablaInstrHash[instruccion] = tuple<T,T>(ultimoAcceso, hash);
 		return estabaEnTabla;
 	}
 
 	bool escribirTablaHashDelta(T hash, Delta delta) {
 		Delta d;
-		bool estabaEnTabla = accederTablaHashDelta(hash, &d);
+		bool estabaEnTabla = this->accederTablaHashDelta(hash, &d);
 		this->tablaHashDelta[hash] = delta;
 		return estabaEnTabla;
 	}
@@ -91,8 +92,8 @@ public:
 	}
 
 	void inicializarPredictor() {
-		tablaInstrHash = {};
-		tablaHashDelta = {};
+		this->tablaInstrHash = {};
+		this->tablaHashDelta = {};
 	}
 
 
@@ -105,15 +106,15 @@ public:
 		if (!hashEnTabla) {
 			hash = 0;
 			delta = 0;
-			escribirTablaInstrHash(instruccion, acceso, hash);
+			this->escribirTablaInstrHash(instruccion, acceso, hash);
 		}
 		else {
 			delta = acceso - accesoAnterior;
-			escribirTablaHashDelta(hash, delta);
+			this->escribirTablaHashDelta(hash, delta);
 			T hash_ = hash;
 			hash = hash ^ ((T)delta);
-			printf("\n%llu = %llu xor %llu", hash, hash_, (T)delta);
-			escribirTablaInstrHash(instruccion, acceso, hash);
+			// printf("\n%llu = %llu xor %llu", hash, hash_, (T)delta);
+			this->escribirTablaInstrHash(instruccion, acceso, hash);
 		}
 		
 	}
