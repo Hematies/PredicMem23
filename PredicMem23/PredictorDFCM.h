@@ -30,11 +30,11 @@ protected:
 	}
 
 	bool accederTablaHashDelta(T hash, Delta* delta) {
-		if (tablaHashDelta.find(hash) == tablaHashDelta.end()) {
+		if (this->tablaHashDelta.find(hash) == this->tablaHashDelta.end()) {
 			return false;
 		}
 		else {
-			*delta = tablaHashDelta.find(hash)->second;
+			*delta = this->tablaHashDelta.find(hash)->second;
 			return true;
 		}
 	}
@@ -49,7 +49,7 @@ protected:
 	bool escribirTablaHashDelta(T hash, Delta delta) {
 		Delta d;
 		bool estabaEnTabla = accederTablaHashDelta(hash, &d);
-		tablaHashDelta[hash] = delta;
+		this->tablaHashDelta[hash] = delta;
 		return estabaEnTabla;
 	}
 
@@ -103,16 +103,16 @@ public:
 		Delta delta;
 		bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, &hash);
 		if (!hashEnTabla) {
-			accesoAnterior = acceso;
 			hash = 0;
 			delta = 0;
-			escribirTablaInstrHash(instruccion, accesoAnterior, hash);
-			escribirTablaHashDelta(hash, delta);
+			escribirTablaInstrHash(instruccion, acceso, hash);
 		}
 		else {
 			delta = acceso - accesoAnterior;
 			escribirTablaHashDelta(hash, delta);
-			hash = hash ^ ((L64b)delta);
+			T hash_ = hash;
+			hash = hash ^ ((T)delta);
+			printf("\n%llu = %llu xor %llu", hash, hash_, (T)delta);
 			escribirTablaInstrHash(instruccion, acceso, hash);
 		}
 		
