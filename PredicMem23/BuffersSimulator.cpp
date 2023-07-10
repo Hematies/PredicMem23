@@ -545,14 +545,22 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 			delta = 0;
 		}
 
-		// First, we ask the dictionary for the class/word assigned to the delta of the access:
-		auto class_ = dictionary.getClass(delta);
-		bool classIsFound = class_ >= 0;
 		
 
 		// The history and the dictionary are updated:
-		class_ = dictionary.newDelta(delta);
-		historyCache->newAccess(instruction, access, class_);
+		if (historyIsFound) {
+
+			// First, we ask the dictionary for the class/word assigned to the delta of the access:
+			auto class_ = dictionary.getClass(delta);
+			bool classIsFound = class_ >= 0;
+
+			class_ = dictionary.newDelta(delta);
+			historyCache->newAccess(instruction, access, class_);
+		}
+		else {
+			historyCache->newAccess(instruction, access, -1);
+		}
+		
 		
 		bool noError = true;
 		// isCacheMiss = !historyIsValid;
