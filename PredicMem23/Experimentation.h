@@ -62,7 +62,7 @@ public:
 
 	map<string, vector<Experiment*>> getExperimentsByTrace();
 
-	int numWorkingThreads = 4;
+	int numWorkingThreads = 8;
 };
 
 class TracePredictExperiment : public Experiment {
