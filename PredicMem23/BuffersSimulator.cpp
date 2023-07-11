@@ -389,16 +389,13 @@ int Dictionary<D>::leastReliableClass() {
 
 template<typename D>
 int Dictionary<D>::newDelta(D delta) {
-	int leastReliableClass = this->leastReliableClass();
 	int class_ = -1;
 	bool classIsFound = false;
 	for (int i = 0; i < entries.size(); i++) {
 		auto entry = &entries[i];
-		if (entry->delta == delta) {
-			if (!classIsFound) {
-				class_ = i;
-				classIsFound = true;
-			}
+		if (entry->delta == delta && !classIsFound) {
+			class_ = i;
+			classIsFound = true;
 			entry->confidence += (this->maxConfidence + 1) / this->numConfidenceJumps;
 			if (entry->confidence > this->maxConfidence)
 				entry->confidence = this->maxConfidence;
@@ -409,7 +406,7 @@ int Dictionary<D>::newDelta(D delta) {
 	}
 
 	// classIsFound = class_ >= 0;
-
+	int leastReliableClass = this->leastReliableClass();
 	if(!classIsFound){
 		class_ = leastReliableClass;
 		auto entry = &entries[class_];
@@ -418,7 +415,6 @@ int Dictionary<D>::newDelta(D delta) {
 
 		// this->showContent();
 	}
-
 	return class_;
 }
 
@@ -548,19 +544,22 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		
 
 		// The history and the dictionary are updated:
+		bool classIsFound;
+		int class_;
 		if (historyIsFound) {
 
 			// First, we ask the dictionary for the class/word assigned to the delta of the access:
-			auto class_ = dictionary.getClass(delta);
-			bool classIsFound = class_ >= 0;
+			class_ = dictionary.getClass(delta);
+			classIsFound = class_ >= 0;
 
 			class_ = dictionary.newDelta(delta);
-			historyCache->newAccess(instruction, access, class_);
 		}
 		else {
-			historyCache->newAccess(instruction, access, -1);
+			classIsFound = false;
+			class_ = -1;
 		}
-		
+		historyCache->newAccess(instruction, access, class_);
+
 		
 		bool noError = true;
 		// isCacheMiss = !historyIsValid;
@@ -578,7 +577,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		}
 
 		inputAccesses = vector<A>(history_);
-		if (!classIsFound || !historyIsValid) {
+		if (!classIsFound || !historyIsValid || !historyIsFound) {
 			// The access is labeled as miss:
 			isValid = false;
 			if (!historyIsValid || !saveHistoryAndClassAfterDictMiss) {
@@ -631,27 +630,52 @@ bool BuffersSimulator<T, I, A, LA, Delta>::testBuffers(I instruction, LA current
 	LA lastAccess;
 	if (!historyIsFound) {
 		history.reset();
+		printf("\naaa");
 		return false;
 	}
 
 	historyIsValid = history->isEntryValid();
 	lastAccess = history->getLastAccess();
 	if (lastAccess != currentAccess) {
+		printf("\nbbb");
 		return false;
 	}
 	Delta delta = lastAccess - previousAccess;
 	auto savedClass = history->getHistory()[history->getHistory().size() - 1];
 
+	bool noDeltaKnownYet = savedClass == -1;
+
 	auto class_ = dictionary.getClass(delta);
 	bool classIsFound = class_ >= 0;
 	history.reset();
-	if (!classIsFound) {
+	if (!classIsFound && !noDeltaKnownYet) {
+		printf("\nccc");
 		return false;
 	}
 
 	bool classesAreSame = (savedClass == class_);
 	bool deltasAreSame = (delta == dictionary.entries[savedClass].delta);
-	return classesAreSame && deltasAreSame;
+	if (!deltasAreSame && !noDeltaKnownYet){
+		printf("\nDelta: %d", delta);
+		printf("\nSaved delta: %d", dictionary.entries[savedClass].delta);
+		return false;
+
+	}
+
+	if(!classesAreSame && !noDeltaKnownYet){
+
+		printf("\nClass is found: %d", classIsFound);
+		return false;
+	}
+
+	if (noDeltaKnownYet) 
+		return true;
+	
+	else {
+		// printf("\nClass: %d", class_);
+		// printf("\nSaved class: %d", savedClass);
+		return classesAreSame;
+	}
 	// return deltasAreSame;
 }
 
