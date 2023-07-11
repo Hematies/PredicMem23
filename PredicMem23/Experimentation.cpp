@@ -47,7 +47,7 @@ void TracePredictExperimentation::performExperiments() {
 		experiment->clean();
 	}
 	*/
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic,1) ordered
 	for (int i = 0; i < experiments.size(); i++) {
 		auto& experiment = experiments[i];
 		cout << "\n=========";
@@ -319,7 +319,7 @@ bool TracePredictExperiment::isNull() {
 void TracePredictExperiment::performExperiment() {
 	this->startDateTime = nowDateTime();
 	AccessesDataset<L64bu, L64bu> dataset;
-#pragma omp critical
+#pragma omp ordered
 	{
 	// First, we check that we don't have to instantiate a new TraceReader:
 	TraceReader<L64bu, L64bu>* traceReader = &this->framework->traceReader;
