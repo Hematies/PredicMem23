@@ -8,6 +8,7 @@
 #include "tinyxml.h"
 #include <algorithm> 
 #include "Experimentation.h"
+#include<omp.h>
 
 string nowDateTime() {
 	// auto now = std::chrono::system_clock::now();
@@ -36,12 +37,25 @@ TracePredictExperimentation::TracePredictExperimentation(string outputFilename,b
 }
 
 void TracePredictExperimentation::performExperiments() {
+
+	omp_set_num_threads(this->numWorkingThreads);
+	/*
 	for (auto& experiment : this->experiments) {
 		cout << "\n=========";
 		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
 		experiment->performExperiment();
 		experiment->clean();
 	}
+	*/
+#pragma omp parallel for schedule(dynamic,1) ordered
+	for (int i = 0; i < experiments.size(); i++) {
+		auto& experiment = experiments[i];
+		cout << "\n=========";
+		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
+		experiment->performExperiment();
+		experiment->clean();
+	}
+
 }
 
 vector<Experiment*> TracePredictExperimentation::getExperiments() {
@@ -307,7 +321,9 @@ bool TracePredictExperiment::isNull() {
 
 void TracePredictExperiment::performExperiment() {
 	this->startDateTime = nowDateTime();
-
+	AccessesDataset<L64bu, L64bu> dataset;
+#pragma omp ordered
+	{
 	// First, we check that we don't have to instantiate a new TraceReader:
 	TraceReader<L64bu, L64bu>* traceReader = &this->framework->traceReader;
 	bool isSameFile = traceReader->filename == this->traceFilename;
@@ -317,7 +333,8 @@ void TracePredictExperiment::performExperiment() {
 		*traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
 
 	// Next, we read the trace and extract the working dataset:
-	auto dataset = traceReader->readLines(startLine, endLine);
+	dataset = traceReader->readLines(startLine, endLine);
+	}
 	BuffersDataset<int> classesDataset;
 
 	if (dataset.accesses.size() > 0) {
