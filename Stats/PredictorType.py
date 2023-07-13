@@ -35,11 +35,80 @@ class ListOfPredicates:
         return res
 
 
+defaultOrderLevels = [['Infinite', 'Real'], ['DFCM HashOnHash', 'order', 'SVM']]
+class PredictorsHelper:
+    def __init__(self, predictorTypes: list, orderLevels: list = defaultOrderLevels):
+        self.predictorTypes = {predictor.predictorTypeName: predictor for predictor in predictorTypes}
+        self.orderLevels = orderLevels
+
+    def getOrderedPredictors(self, groupsSemiOrderedPredictors: dict, orderLevels):
+        res_ = groupsSemiOrderedPredictors
+
+        # First case: there are more than one order level left (of more priority), so we send the work to the stack and
+        # receive and intermediary result.
+        if len(orderLevels) > 1:
+            res_ = self.getOrderedPredictors(groupsSemiOrderedPredictors, list(orderLevels[0:-1]))
+        # The results are groups of ordered predictors (dictionary) which have to be reordered separately:
+        res__ = []
+        orderLevel = orderLevels[-1]
+        orders = {k: orderLevel[k] for k in range(0, len(orderLevel))}
+        for group in res_:
+            newGroups = []
+            for order in orders.items():
+                newGroup = [predictor for predictor in group if order[1] in predictor.predictorTypeName]
+                newGroup = sorted(newGroup, key = lambda p: p.predictorTypeName)
+                newGroups.append(newGroup)
+            res__.extend(newGroups)
+
+        # Second case: this was the last sort, so the final result is the merge of all sorted groups:
+        if len(orderLevels) <= 1:
+            return [element for element in group for group in res__]
+        else:
+            return res__
+
+
+
+    def getPredictorFamily(self, predictorType):
+        name = predictorType.predictorTypeName
+        res = name
+        if 'Real' in name:
+            res = name[name.find('Real') + len('Real') :]
+        elif 'Infinite' in name:
+            res = name[name.find('Infinite') + len('Infinite'):]
+        if '_' in res:
+            res = res.split('_')[0].strip()
+        return res
+
+    def getPredictorTranslation(self, predictorType):
+        realAttribute = 'Real' if self.isPredictorReal(predictorType) else 'Infinite'
+        family = self.getPredictorFamily(predictorType)
+        attributes = self.getPredictorAttributes(predictorType)
+        res = realAttribute + ' ' + family + ' '
+        for k in range(0, len(attributes.values())):
+            res = res + attributes.values()[k]
+            if k < len(attributes.values()) - 1:
+                res = res + '-'
+        return res
+
+    def getPredictorAttributes(self, predictorType):
+        res = list(predictorType.attributes)
+        predictorTypeName:str = predictorType.predictorTypeName
+        parts = predictorTypeName.split('_')[1:]
+        return {predictorType.attributes[k]: int(parts[k].strip()) for k in range(0, len(parts))}
+
+
+    def isPredictorReal(self, predictorTypeName):
+        return ("Real" in predictorTypeName)
+
 class PredictorType:
 
     def __init__(self, predictorTypeName):
         self.predictorTypeName = predictorTypeName
         self.predicates = None
+        self.attributes = []
+
+    def setAttributes(self, attributes: list):
+        self.attributes = list(attributes)
 
     def setPredicates(self, predicates: ListOfPredicates):
         self.predicates = copy(predicates)
@@ -62,6 +131,10 @@ class PredictorType:
         for i in range(0, numRows):
             if mask[i]:
                 res["predictorType"][i] = self.predictorTypeName
+                surname = ""
+                for column in tableDict.keys():
+                    if str(column) in self.attributes:
+                        surname = surname + '_' + tableDict[column][i]
         return res
 
 InfiniteBufferSVM = PredictorType("InfiniteBufferSVM")
