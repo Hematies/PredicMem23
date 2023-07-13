@@ -4,7 +4,7 @@ import os
 import xmltodict
 import pandas as pd
 from PredictorType import InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK, \
-    RealBufferSVM_4_4, RealBufferSVM_8_8
+    RealBufferSVM_4_4, RealBufferSVM_8_8, RealDFCM, RealDFCMGradeK
 
 globalColumns = [
     ("experimentationFilename", "string"),
@@ -61,7 +61,8 @@ stringColumns = [
 nanString = "-nan(ind)"
 
 possiblePredictorTypes = [InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK,
-                          RealBufferSVM_4_4, RealBufferSVM_8_8]
+                          RealBufferSVM_4_4, RealBufferSVM_8_8,
+                          RealDFCM, RealDFCMGradeK]
 
 def initDictTable():
     res = dict()

@@ -61,7 +61,7 @@ class PredictorType:
         numRows = len(mask)
         for i in range(0, numRows):
             if mask[i]:
-                res["predictorType"] = self.predictorTypeName
+                res["predictorType"][i] = self.predictorTypeName
         return res
 
 InfiniteBufferSVM = PredictorType("InfiniteBufferSVM")
@@ -114,6 +114,7 @@ RealBufferSVM_4_4.setPredicates(
                 "or",
                 Predicate("numWays", op.gt, 0),
             ]),
+
             # In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
             ListOfPredicates([
                 Predicate("numSequenceAccesses", op.eq, 4),
@@ -144,7 +145,7 @@ RealBufferSVM_8_8.setPredicates(
     )
 )
 
-# For now, we only work with DFCMs of infinite size:
+# DFCMs of infinite size:
 InfiniteDFCM = PredictorType("InfiniteDFCM")
 InfiniteDFCM.setPredicates(
     ListOfPredicates(
@@ -165,4 +166,37 @@ InfiniteDFCMGradeK.setPredicates(
     )
 )
 
+# Real DFCMs:
+RealDFCM = PredictorType("RealDFCM")
+RealDFCM.setPredicates(
+    ListOfPredicates(
+        [
+            Predicate("numIndexBits", op.ge, 0),
+            ListOfPredicates([
+                Predicate("numIndexBits", op.gt, 0),
+                "or",
+                Predicate("numWays", op.gt, 0),
+            ]),
+            Predicate("firstTableMemoryCost", op.ge, 0),
+            Predicate("numSequenceAccesses", op.le, 0),
+
+        ]
+    )
+)
+
+RealDFCMGradeK = PredictorType("RealDFCMGradeK")
+RealDFCMGradeK.setPredicates(
+    ListOfPredicates(
+        [
+            Predicate("numIndexBits", op.ge, 0),
+            ListOfPredicates([
+                Predicate("numIndexBits", op.gt, 0),
+                "or",
+                Predicate("numWays", op.gt, 0),
+            ]),
+            Predicate("firstTableMemoryCost", op.ge, 0),
+            Predicate("numSequenceAccesses", op.gt, 0),
+        ]
+    )
+)
 

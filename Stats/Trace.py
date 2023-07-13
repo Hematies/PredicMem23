@@ -32,16 +32,20 @@ predictorTypeTranslationTable = {
     'RealBufferSVM': 'Real SVM4AP',
     'RealBufferSVM_4_4': 'Real SVM4AP 4-4',
     'RealBufferSVM_8_8': 'Real SVM4AP 8-8',
-    'InfiniteDFCMGradeK': 'Ideal 8-order DFCM'
+    'InfiniteDFCMGradeK': 'Ideal 8-order DFCM',
+    'RealDFCM': 'Real HashOnHash DFCM',
+    'RealDFCMGradeK': 'Real 8-order DFCM'
 }
 
 predictorTypeOrder = {
     'InfiniteDFCM': 0,
     'InfiniteBufferSVM': 2,
     'RealBufferSVM': 3,
-    'RealBufferSVM_4_4': 4,
-    'RealBufferSVM_8_8': 5,
-    'InfiniteDFCMGradeK': 1
+    'RealBufferSVM_4_4': 6,
+    'RealBufferSVM_8_8': 7,
+    'InfiniteDFCMGradeK': 1,
+    'RealDFCM': 4,
+    'RealDFCMGradeK': 5
 }
 
 class ExploratoryTrace:
