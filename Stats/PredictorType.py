@@ -66,8 +66,6 @@ class PredictorsHelper:
         else:
             return res__
 
-
-
     def getPredictorFamily(self, predictorType):
         name = predictorType.predictorTypeName
         res = name
@@ -134,7 +132,7 @@ class PredictorType:
                 surname = ""
                 for column in tableDict.keys():
                     if str(column) in self.attributes:
-                        surname = surname + '_' + tableDict[column][i]
+                        surname = surname + '_' + str(tableDict[column][i])
         return res
 
 InfiniteBufferSVM = PredictorType("InfiniteBufferSVM")
@@ -150,18 +148,11 @@ InfiniteBufferSVM.setPredicates(
         ]
     )
 )
+InfiniteBufferSVM.setAttributes(['numSequenceAccesses', 'numClasses'])
 
 RealBufferSVM = PredictorType("RealBufferSVM")
-RealBufferSVM.setPredicates(
-    ListOfPredicates(
-        [
-            Predicate("numIndexBits", op.ge, 0),
-            ListOfPredicates([
-                Predicate("numIndexBits", op.gt, 0),
-                "or",
-                Predicate("numWays", op.gt, 0),
-            ]),
-            # In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
+'''
+# In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
             ListOfPredicates([
                 Predicate("numSequenceAccesses", op.ne, 4),
                 "and",
@@ -173,12 +164,8 @@ RealBufferSVM.setPredicates(
                 "and",
                 Predicate("numClasses", op.ne, 8),
             ]),
-        ]
-    )
-)
-
-RealBufferSVM_4_4 = PredictorType("RealBufferSVM_4_4")
-RealBufferSVM_4_4.setPredicates(
+'''
+RealBufferSVM.setPredicates(
     ListOfPredicates(
         [
             Predicate("numIndexBits", op.ge, 0),
@@ -188,35 +175,10 @@ RealBufferSVM_4_4.setPredicates(
                 Predicate("numWays", op.gt, 0),
             ]),
 
-            # In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
-            ListOfPredicates([
-                Predicate("numSequenceAccesses", op.eq, 4),
-                "and",
-                Predicate("numClasses", op.eq, 4),
-            ]),
         ]
     )
 )
-
-RealBufferSVM_8_8 = PredictorType("RealBufferSVM_8_8")
-RealBufferSVM_8_8.setPredicates(
-    ListOfPredicates(
-        [
-            Predicate("numIndexBits", op.ge, 0),
-            ListOfPredicates([
-                Predicate("numIndexBits", op.gt, 0),
-                "or",
-                Predicate("numWays", op.gt, 0),
-            ]),
-            # In order to differentiate with RealBufferSVM of 8-length sequences and 8 classes:
-            ListOfPredicates([
-                Predicate("numSequenceAccesses", op.eq, 8),
-                "and",
-                Predicate("numClasses", op.eq, 8),
-            ]),
-        ]
-    )
-)
+RealBufferSVM.setAttributes(['numSequenceAccesses', 'numClasses', 'numIndexBits', 'numWays'])
 
 # DFCMs of infinite size:
 InfiniteDFCM = PredictorType("InfiniteDFCM")
@@ -238,17 +200,18 @@ InfiniteDFCMGradeK.setPredicates(
         ]
     )
 )
+InfiniteDFCMGradeK.setAttributes(['numSequenceAccesses'])
 
 # Real DFCMs:
 RealDFCM = PredictorType("RealDFCM")
 RealDFCM.setPredicates(
     ListOfPredicates(
         [
-            Predicate("numIndexBits", op.ge, 0),
+            Predicate("firstTableNumIndexBits", op.ge, 0),
             ListOfPredicates([
-                Predicate("numIndexBits", op.gt, 0),
+                Predicate("firstTableNumIndexBits", op.gt, 0),
                 "or",
-                Predicate("numWays", op.gt, 0),
+                Predicate("firstTableNumWays", op.gt, 0),
             ]),
             Predicate("firstTableMemoryCost", op.ge, 0),
             Predicate("numSequenceAccesses", op.le, 0),
@@ -256,6 +219,7 @@ RealDFCM.setPredicates(
         ]
     )
 )
+RealDFCM.setAttributes(['firstTableNumIndexBits', 'firstTableNumWays', 'secondTableNumIndexBits', 'secondTableNumWays'])
 
 RealDFCMGradeK = PredictorType("RealDFCMGradeK")
 RealDFCMGradeK.setPredicates(
@@ -272,12 +236,13 @@ RealDFCMGradeK.setPredicates(
         ]
     )
 )
+RealDFCMGradeK.setAttributes(["numSequenceAccesses", 'firstTableNumIndexBits', 'firstTableNumWays',
+                              'secondTableNumIndexBits', 'secondTableNumWays'])
+
 
 predictorHelper = PredictorsHelper([
     InfiniteBufferSVM,
     RealBufferSVM,
-    RealBufferSVM_4_4,
-    RealBufferSVM_8_8,
     InfiniteDFCM,
     InfiniteDFCMGradeK,
     RealDFCM,
