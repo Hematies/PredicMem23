@@ -273,3 +273,14 @@ RealDFCMGradeK.setPredicates(
     )
 )
 
+predictorHelper = PredictorsHelper([
+    InfiniteBufferSVM,
+    RealBufferSVM,
+    RealBufferSVM_4_4,
+    RealBufferSVM_8_8,
+    InfiniteDFCM,
+    InfiniteDFCMGradeK,
+    RealDFCM,
+    RealDFCMGradeK,
+], defaultOrderLevels)
+
