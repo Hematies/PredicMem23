@@ -576,6 +576,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		bool noError = true;
 		// isCacheMiss = !historyIsValid;
 		isCacheMiss = !historyIsFound;
+		isDictionaryMiss = !classIsFound;
 		vector<A> history_ = history->getHistory();
 
 		// If we predict via greediness, histories that are found but not valid will be saved:
