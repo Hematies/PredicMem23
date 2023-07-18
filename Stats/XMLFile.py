@@ -3,11 +3,13 @@ import xml.etree.ElementTree as ET
 import os
 import xmltodict
 import pandas as pd
-from PredictorType import InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK, RealDFCM, RealDFCMGradeK
+from PredictorType import InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK, RealDFCM, RealDFCMGradeK, \
+    PredictorsHelper, defaultOrderLevels, possiblePredictorTypes
 
 globalColumns = [
     ("experimentationFilename", "string"),
     ("predictorType","string"),
+    ("predictorPrettyName","string"),
     ("traceName","string"),
     # "dateTime",
     ("firstAccess","int"), # INCLUSIVE
@@ -63,8 +65,6 @@ stringColumns = [
 ]
 nanString = "-nan(ind)"
 
-possiblePredictorTypes = [InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK,
-                          RealDFCM, RealDFCMGradeK]
 
 def initDictTable():
     res = dict()

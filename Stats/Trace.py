@@ -4,49 +4,7 @@ import seaborn as sb
 import numpy as np
 from matplotlib import ticker
 import seaborn as sns
-
-
-metricTranslationTable = {
-    'hitRate': 'Predictor hit rate',
-    'totalMemoryCost': "Total", # mean memory capacity",
-    'cacheMemoryCost': 'Cache memory capacity',
-    'cacheMissRate': 'Cache miss rate',
-    'cacheHitRate': 'Input buffer hit rate',
-    'dictionaryMemoryCost': 'Dictionary memory capacity',
-    'dictionaryMissRate': 'Dictionary miss rate',
-    'dictionaryHitRate': 'Dictionary hit rate',
-    'firstTableMissRate': 'First table miss rate',
-    'firstTableHitRate': 'First table hit rate',
-    'secondTableMissRate': 'Second table miss rate',
-    'secondTableHitRate': 'Second table hit rate',
-    'firstTableMemoryCost': "First table", # 's mean memory capacity",
-    'secondTableMemoryCost': "Second table", # 's mean memory capacity",
-    'modelMemoryCost': 'Model memory capacity',
-    'modelHitRate': 'Model hit rate',
-    'predictorHitRate': 'Predictor hit rate',
-}
-
-predictorTypeTranslationTable = {
-    'InfiniteDFCM': 'Ideal HashOnHash DFCM',
-    'InfiniteBufferSVM': 'Ideal SVM4AP',
-    'RealBufferSVM': 'Real SVM4AP',
-    'RealBufferSVM_4_4': 'Real SVM4AP 4-4',
-    'RealBufferSVM_8_8': 'Real SVM4AP 8-8',
-    'InfiniteDFCMGradeK': 'Ideal 8-order DFCM',
-    'RealDFCM': 'Real HashOnHash DFCM',
-    'RealDFCMGradeK': 'Real 8-order DFCM'
-}
-
-predictorTypeOrder = {
-    'InfiniteDFCM': 0,
-    'InfiniteBufferSVM': 2,
-    'RealBufferSVM': 3,
-    'RealBufferSVM_4_4': 6,
-    'RealBufferSVM_8_8': 7,
-    'InfiniteDFCMGradeK': 1,
-    'RealDFCM': 4,
-    'RealDFCMGradeK': 5
-}
+from PredictorType import metricTranslationTable, PredictorsHelper, possiblePredictorTypes, defaultOrderLevels
 
 class ExploratoryTrace:
 
@@ -100,6 +58,9 @@ class TraceComparer:
         self.dataframe['secondTableHitRate'] = \
             (1 - self.dataframe['secondTableMissRate'])
 
+        self.predictorsManager = PredictorsHelper(possiblePredictorTypes, defaultOrderLevels)
+        self.predictorsManager.setPredictors( self.dataframe.to_dict("list"))
+        self.dataframe = self.predictorsManager.setPredictorsNameAndTranslatedToDataframe(self.dataframe)
 
     def groupAndAggregate(self, inputParameters: list, outputParameters: list):
         map = {param: ['mean', 'std'] for param in outputParameters}
@@ -109,19 +70,21 @@ class TraceComparer:
         dataframe = self.dataframe.round(3)
         dataframe['predictorHitRate'] = dataframe['hitRate']
         dataframe['order'] = dataframe['predictorType']
-        dataframe = dataframe.replace({"order": predictorTypeOrder})
+        dataframe = dataframe.replace({"order":
+               self.predictorsManager.getPredictorsOrder(self.predictorsManager.predictors)})
         dataframe = dataframe.sort_values(by=['order'])
         metrics = []
         # Group the DataFrame by 'Category'
         groupedByTrace = dataframe.groupby('traceName', sort=False)
-        groupedByPredictor = dataframe.groupby('predictorType', sort=False)
+        groupedByPredictor = dataframe.groupby('predictorPrettyName', sort=False)
 
         # Create a figure and axis
         # fig, ax = plt.subplots(layout='constrained')
         fig, ax = plt.subplots(layout='constrained')
 
         x = np.arange(len(groupedByTrace))  # the label locations
-        width = 0.15  # the width of the bars
+        # width = 0.15  # the width of the bars
+        width = 0.08  # the width of the bars
         multiplier = 0
 
         # Iterate over each group and plot the bars
@@ -130,10 +93,13 @@ class TraceComparer:
         for group in groupedByPredictor:
             offset = width * multiplier
             g = group[1].sort_values(by=['traceName'])
-            labels.append(predictorTypeTranslationTable[group[0]])
+            # labels.append(predictorTypeTranslationTable[group[0]])
+            labels.append(group[0])
             rects = ax.bar(x + offset,
                            g[metric],
-                           width, label=predictorTypeTranslationTable[group[0]])
+                           width,
+                           # label=predictorTypeTranslationTable[group[0]])
+                           label=group[0])
             '''
             if plotMemoryCosts:
                 ax.bar_label(rects, padding=5, fontsize=6, rotation=30,
@@ -185,7 +151,8 @@ class TraceComparer:
         plt.show()
 
         plt.figure()
-        tuples = [(p[0], predictorTypeOrder[p[0]]) for p in groupedByPredictor]
+        tuples = [(p[0],
+                   self.predictorsManager.getPredictorsOrder(self.predictorsManager.predictors)[p[0]]) for p in groupedByPredictor]
         order = list(
             sorted(tuples, key=lambda t: t[1])
         )
