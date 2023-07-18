@@ -15,7 +15,12 @@ class Predicate:
         if not self.variable in dictionary:
             return False
         else:
-            return self.operator(dictionary[self.variable], self.value)
+            if self.operator == op.eq and math.isnan(self.value):
+                return math.isnan(dictionary[self.variable])
+            elif self.operator == op.ne and math.isnan(self.value):
+                return not math.isnan(dictionary[self.variable])
+            else:
+                return self.operator(dictionary[self.variable], self.value)
 
 class ListOfPredicates:
     def __init__(self, listOfPredictates: list):
@@ -40,7 +45,7 @@ class ListOfPredicates:
         return res
 
 
-defaultOrderLevels = [['Infinite', 'Real'], ['DFCMHashOnHash', 'GradeK', 'SVM']]
+defaultOrderLevels = [['Infinite', 'Real'], ['HashOnHash', 'GradeK', 'SVM']]
 class PredictorsHelper:
     def __init__(self, predictorTypes: list, orderLevels: list = defaultOrderLevels):
         self.predictorTypes = {predictor.predictorTypeName: predictor for predictor in predictorTypes}
@@ -206,15 +211,20 @@ class Predictor:
         return res
         
 
+BufferSVMPredicate = Predicate("firstTableMemoryCost", op.eq, float('nan'))
+DFCMPredicate = Predicate("firstTableMemoryCost", op.ne, float('nan'))
 InfiniteBufferSVM = PredictorType("Infinite BufferSVM")
 InfiniteBufferSVM.setPredicates(
     ListOfPredicates(
         [
-            Predicate("numIndexBits", op.lt, 0),
+            ListOfPredicates([
+                Predicate("numIndexBits", op.lt, 0),
+                BufferSVMPredicate]),
             "or",
             ListOfPredicates([
                 Predicate("numIndexBits", op.le, 0),
                 Predicate("numWays", op.le, 0),
+                BufferSVMPredicate
             ]),
         ]
     )
@@ -245,7 +255,7 @@ RealBufferSVM.setPredicates(
                 "or",
                 Predicate("numWays", op.gt, 0),
             ]),
-
+            BufferSVMPredicate
         ]
     )
 )
@@ -257,7 +267,8 @@ InfiniteDFCM.setPredicates(
     ListOfPredicates(
         [
             Predicate("firstTableMemoryCost", op.ge, 0),
-            Predicate("numSequenceAccesses", op.le, 0)
+            Predicate("numSequenceAccesses", op.le, 0),
+            DFCMPredicate
         ]
     )
 )
@@ -267,7 +278,8 @@ InfiniteDFCMGradeK.setPredicates(
     ListOfPredicates(
         [
             Predicate("firstTableMemoryCost", op.ge, 0),
-            Predicate("numSequenceAccesses", op.gt, 0)
+            Predicate("numSequenceAccesses", op.gt, 0),
+            DFCMPredicate
         ]
     )
 )
@@ -286,7 +298,7 @@ RealDFCM.setPredicates(
             ]),
             Predicate("firstTableMemoryCost", op.ge, 0),
             Predicate("numSequenceAccesses", op.le, 0),
-
+            DFCMPredicate
         ]
     )
 )
@@ -296,14 +308,15 @@ RealDFCMGradeK = PredictorType("Real DFCM GradeK")
 RealDFCMGradeK.setPredicates(
     ListOfPredicates(
         [
-            Predicate("numIndexBits", op.ge, 0),
+            Predicate("firstTableNumIndexBits", op.ge, 0),
             ListOfPredicates([
-                Predicate("numIndexBits", op.gt, 0),
+                Predicate("firstTableNumIndexBits", op.gt, 0),
                 "or",
-                Predicate("numWays", op.gt, 0),
+                Predicate("firstTableNumWays", op.gt, 0),
             ]),
             Predicate("firstTableMemoryCost", op.ge, 0),
             Predicate("numSequenceAccesses", op.gt, 0),
+            DFCMPredicate
         ]
     )
 )

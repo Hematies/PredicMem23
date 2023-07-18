@@ -35,11 +35,11 @@ perlbench_ = perlbench.groupAndAggregate(['numSequenceAccesses', 'numClasses'], 
 multiReader = MultiXMLReader(testOnAllAppsDir)
 
 
-hitRateResults = multiReader.groupAndAggregate(['predictorType'], ['hitRate'])
+hitRateResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['hitRate'])
 # firstTableHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['firstTableHitRate'])
 # secondTableHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['secondTableHitRate'])
-dictionaryHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['dictionaryMissRate'])
-svmHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['modelHitRate'])
+dictionaryHitRateResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['dictionaryMissRate'])
+svmHitRateResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['modelHitRate'])
 
 idealSVM = WholeTrace("InfiniteBufferSVM", multiReader.dataframe)
 idealSVM.plotPerformanceByTraceName(False, "Ideal BufferSVM precision")

@@ -1,5 +1,6 @@
 import pandas as pd
 
+from PredictorType import PredictorsHelper, defaultOrderLevels, possiblePredictorTypes
 from XMLFile import XMLFile
 import os
 
@@ -12,6 +13,22 @@ class MultiXMLReader:
         self.dataframe['modelHitRate'] = \
             self.dataframe['hitRate'] / (
                         (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
+
+        self.dataframe['modelHitRate'] = \
+            self.dataframe['hitRate'] / (
+                    (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
+        self.dataframe['cacheHitRate'] = \
+            (1 - self.dataframe['cacheMissRate'])
+        self.dataframe['dictionaryHitRate'] = \
+            (1 - self.dataframe['dictionaryMissRate'])
+        self.dataframe['firstTableHitRate'] = \
+            (1 - self.dataframe['firstTableMissRate'])
+        self.dataframe['secondTableHitRate'] = \
+            (1 - self.dataframe['secondTableMissRate'])
+
+        self.predictorsManager = PredictorsHelper(possiblePredictorTypes, defaultOrderLevels)
+        self.predictorsManager.setPredictors(self.dataframe.to_dict("list"))
+        self.dataframe = self.predictorsManager.setPredictorsNameAndTranslatedToDataframe(self.dataframe)
 
     def getXMLFiles(self, directoryPath):
         res = []
@@ -27,8 +44,10 @@ class MultiXMLReader:
 
     def buildDataframe(self, files):
         dataframes = []
+        i = 0
         for file in files:
             dataframes.append(file.getTraceLevelDataframe())
+            i = i + 1
         return pd.concat(dataframes)
 
     def groupAndAggregate(self, inputParameters: list, outputParameters: list):

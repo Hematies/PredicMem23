@@ -46,6 +46,7 @@ class ExploratoryTrace:
 class TraceComparer:
     def __init__(self, dataframe):
         self.dataframe = dataframe
+        '''
         self.dataframe['modelHitRate'] = \
             self.dataframe['hitRate'] / (
                     (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
@@ -57,11 +58,11 @@ class TraceComparer:
             (1 - self.dataframe['firstTableMissRate'])
         self.dataframe['secondTableHitRate'] = \
             (1 - self.dataframe['secondTableMissRate'])
-
+        '''
         self.predictorsManager = PredictorsHelper(possiblePredictorTypes, defaultOrderLevels)
         self.predictorsManager.setPredictors( self.dataframe.to_dict("list"))
-        self.dataframe = self.predictorsManager.setPredictorsNameAndTranslatedToDataframe(self.dataframe)
-
+        # self.dataframe = self.predictorsManager.setPredictorsNameAndTranslatedToDataframe(self.dataframe)
+        
     def groupAndAggregate(self, inputParameters: list, outputParameters: list):
         map = {param: ['mean', 'std'] for param in outputParameters}
         return self.dataframe.groupby(inputParameters).agg(map)
@@ -69,7 +70,7 @@ class TraceComparer:
     def plotPerformanceComparison(self, metric, includeMean=True):
         dataframe = self.dataframe.round(3)
         dataframe['predictorHitRate'] = dataframe['hitRate']
-        dataframe['order'] = dataframe['predictorType']
+        dataframe['order'] = dataframe['predictorPrettyName']
         dataframe = dataframe.replace({"order":
                self.predictorsManager.getPredictorsOrder(self.predictorsManager.predictors)})
         dataframe = dataframe.sort_values(by=['order'])
@@ -84,7 +85,7 @@ class TraceComparer:
 
         x = np.arange(len(groupedByTrace))  # the label locations
         # width = 0.15  # the width of the bars
-        width = 0.08  # the width of the bars
+        width = 0.07  # the width of the bars
         multiplier = 0
 
         # Iterate over each group and plot the bars
@@ -157,7 +158,7 @@ class TraceComparer:
             sorted(tuples, key=lambda t: t[1])
         )
         order = list(map(lambda t: t[0], order))
-        sns.boxplot(x='predictorType', y='hitRate', data=self.dataframe,
+        sns.boxplot(x='predictorPrettyName', y='hitRate', data=self.dataframe,
                     order=order,
                     #[
                     #    'InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM',
