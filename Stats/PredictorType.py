@@ -4,6 +4,67 @@ from copy import copy
 
 import pandas as pd
 
+globalColumns = [
+    ("experimentationFilename", "string"),
+    ("predictorType","string"),
+    ("predictorPrettyName","string"),
+    ("traceName","string"),
+    # "dateTime",
+    ("firstAccess","int"), # INCLUSIVE
+    ("lastAccess","int"), # NOT INCLUSIVE
+    ("hitRate","float"),
+    ("totalMemoryCost", "float")
+]
+
+cacheColumns = [
+    ("numIndexBits","int"),
+    ("numWays","int"),
+    ("numSequenceAccesses","int"),
+    ("saveHistoryAndClassIfNotValid","bool"),
+    ("cacheMemoryCost","float"),
+    ("cacheMissRate","float"),
+]
+
+dictColumns = [
+    ("numClasses","int"),
+    ("maxConfidence","int"),
+    ("numConfidenceJumps","int"),
+    ("saveHistoryAndClassIfNotValid","bool"),
+    ("dictionaryMemoryCost","float"),
+    ("dictionaryMissRate","float"),
+]
+
+DFCMColumns = [
+    ("firstTableNumIndexBits","int"),
+    ("firstTableNumWays","int"),
+    ("secondTableNumIndexBits","int"),
+    ("secondTableNumWays","int"),
+    ("firstTableMissRate","float"),
+    ("secondTableMissRate","float"),
+    ("firstTableMemoryCost","float"),
+    ("secondTableMemoryCost","float"),
+]
+
+modelColumns = [
+    ("modelMemoryCost","float"),
+]
+
+allColumns = []
+allColumns.extend(globalColumns)
+allColumns.extend(cacheColumns)
+allColumns.extend(dictColumns)
+allColumns.extend(DFCMColumns)
+allColumns.extend(modelColumns)
+
+stringColumns = [
+    "experimentationFilename",
+    "predictorType",
+    "traceName"
+]
+nanString = "-nan(ind)"
+
+
+
 
 class Predicate:
     def __init__(self, variable: str, operator, value: object):
@@ -119,7 +180,23 @@ class PredictorsHelper:
             res.append(rowDictionary)
         return pd.DataFrame(res)
 
+    def setPredictorsMemoryCostsToDataframe(self, dataframe: pd.DataFrame):
+        tableDict = dataframe.to_dict("list")
+        numRows = len(list(tableDict.values())[0])
+        res = []
+        for i in range(0, numRows):
+            rowDictionary = dict()
+            for column in tableDict.items():
+                rowDictionary[column[0]] = column[1][i]
+            for predictorType in self.predictorTypes.values():
+                if predictorType.predicates.check(rowDictionary):
+                    predictor = Predictor(predictorType, rowDictionary)
+                    # break
 
+            for memoryCostType, memoryCost in predictor.getPredictorMemoryCosts(rowDictionary).items():
+                rowDictionary[memoryCostType] = memoryCost
+            res.append(rowDictionary)
+        return pd.DataFrame(res)
 
     # def getPredictorsTranslationTable(self):
 
@@ -170,6 +247,7 @@ class PredictorType:
 
     def isPredictorReal(self):
         return ("Real" in self.predictorTypeName)
+
     def getPredictorFamily(self):
         name = self.predictorTypeName
         res = name
@@ -180,6 +258,33 @@ class PredictorType:
         if '_' in res:
             res = res.split('_')[0].strip()
         return res
+
+def computeCacheNumEntries(numIndexBits: int, numWays: int):
+    return math.pow(2, numIndexBits) * numWays
+
+def computeEntryCapacity(numWords: int, numWordBits=64, numSequenceElements = -1, numSVMClasses = -1):
+    numWordsBits = numWords * numWordBits
+    numSequenceBits = 0
+    if numSequenceElements >= 0 and numSVMClasses >= 0:
+        numTotalClasses = numSVMClasses + 1
+        numClassBits = math.ceil(math.log2(numTotalClasses))
+        numSequenceBits = numClassBits * numSequenceElements
+    elif numSequenceElements >= 0:
+        numSequenceBits = numWordBits * numSequenceElements
+    numTotalBits = numWordsBits + numSequenceBits
+    return float(numTotalBits) / 8.0
+
+def computeEntryCost(numIndexBits: int, numWords: int, numWordBits=64, numSequenceElements = -1, numSVMClasses = -1):
+    numTagBits = numWordBits - numIndexBits
+    return (float(numTagBits) / 8.0) + computeEntryCapacity(numWords, numWordBits, numSequenceElements, numSVMClasses)
+
+def computeCacheCapacity(numIndexBits: int, numWays: int, numWords: int, numWordBits=64, numSequenceElements = -1, numSVMClasses = -1):
+    return computeCacheNumEntries(numIndexBits,numWays) * \
+           computeEntryCapacity(numIndexBits, numWords, numWordBits, numSequenceElements, numSVMClasses)
+
+def computeCacheCost(numIndexBits: int, numWays: int, numWords: int, numWordBits=64, numSequenceElements = -1, numSVMClasses = -1):
+    return computeCacheNumEntries(numIndexBits,numWays) * \
+           computeEntryCost(numIndexBits, numWords, numWordBits, numSequenceElements, numSVMClasses)
 
 class Predictor:
     def __init__(self, predictorType: PredictorType, data: dict):
@@ -209,7 +314,55 @@ class Predictor:
                     if str(column) in self.attributes:
                         surname = surname + '_' + str(tableDict[column][i])
         return res
-        
+
+    def getPredictorMemoryCosts(self, rowDict: dict):
+        translatedName = self.getPredictorTranslation()
+        allColumns_ = list(filter(lambda t: "emoryCost" in t[0], allColumns))
+        res = {column: rowDict[column] for column, type in allColumns_}
+        if not 'Infinite' in translatedName:
+            if 'BufferSVM' in translatedName:
+                res["totalMemoryCost"] -= res["cacheMemoryCost"]
+                res["cacheMemoryCost"] = \
+                    computeCacheCost(
+                        rowDict["numIndexBits"],
+                        rowDict["numWays"],
+                        1,
+                        numSequenceElements=rowDict["numSequenceAccesses"],
+                        numSVMClasses=rowDict["numClasses"])
+                res["totalMemoryCost"] += res["cacheMemoryCost"]
+            elif 'HashOnHash' in translatedName:
+                res["totalMemoryCost"] -= res["firstTableMemoryCost"]
+                res["firstTableMemoryCost"] = \
+                    computeCacheCost(
+                        rowDict["firstTableNumIndexBits"],
+                        rowDict["firstTableNumWays"],
+                        2)
+                res["totalMemoryCost"] -= res["secondTableMemoryCost"]
+                res["secondTableMemoryCost"] = \
+                    computeCacheCost(
+                        rowDict["secondTableNumIndexBits"],
+                        rowDict["secondTableNumWays"],
+                        1)
+                res["totalMemoryCost"] += res["firstTableMemoryCost"] + res["secondTableMemoryCost"]
+            elif 'GradeK':
+                res["totalMemoryCost"] -= res["firstTableMemoryCost"]
+                res["firstTableMemoryCost"] = \
+                    computeCacheCost(
+                        rowDict["firstTableNumIndexBits"],
+                        rowDict["firstTableNumWays"],
+                        0,
+                        numSequenceElements=rowDict["numSequenceAccesses"],
+                        )
+                res["totalMemoryCost"] -= res["secondTableMemoryCost"]
+                res["secondTableMemoryCost"] = \
+                    computeCacheCost(
+                        rowDict["secondTableNumIndexBits"],
+                        rowDict["secondTableNumWays"],
+                        1)
+                res["totalMemoryCost"] += res["firstTableMemoryCost"] + res["secondTableMemoryCost"]
+            else:
+                pass
+        return res
 
 BufferSVMPredicate = Predicate("firstTableMemoryCost", op.eq, float('nan'))
 DFCMPredicate = Predicate("firstTableMemoryCost", op.ne, float('nan'))
@@ -348,6 +501,7 @@ metricTranslationTable = {
     'modelMemoryCost': 'Model memory capacity',
     'modelHitRate': 'Model hit rate',
     'predictorHitRate': 'Predictor hit rate',
+    'yield': 'Hit rate / Memory cost',
 }
 
 '''

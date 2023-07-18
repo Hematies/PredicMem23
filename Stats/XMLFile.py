@@ -4,66 +4,7 @@ import os
 import xmltodict
 import pandas as pd
 from PredictorType import InfiniteBufferSVM, RealBufferSVM, InfiniteDFCM, InfiniteDFCMGradeK, RealDFCM, RealDFCMGradeK, \
-    PredictorsHelper, defaultOrderLevels, possiblePredictorTypes
-
-globalColumns = [
-    ("experimentationFilename", "string"),
-    ("predictorType","string"),
-    ("predictorPrettyName","string"),
-    ("traceName","string"),
-    # "dateTime",
-    ("firstAccess","int"), # INCLUSIVE
-    ("lastAccess","int"), # NOT INCLUSIVE
-    ("hitRate","float"),
-    ("totalMemoryCost", "float")
-]
-
-cacheColumns = [
-    ("numIndexBits","int"),
-    ("numWays","int"),
-    ("numSequenceAccesses","int"),
-    ("saveHistoryAndClassIfNotValid","bool"),
-    ("cacheMemoryCost","float"),
-    ("cacheMissRate","float"),
-]
-
-dictColumns = [
-    ("numClasses","int"),
-    ("maxConfidence","int"),
-    ("numConfidenceJumps","int"),
-    ("saveHistoryAndClassIfNotValid","bool"),
-    ("dictionaryMemoryCost","float"),
-    ("dictionaryMissRate","float"),
-]
-
-DFCMColumns = [
-    ("firstTableNumIndexBits","int"),
-    ("firstTableNumWays","int"),
-    ("secondTableNumIndexBits","int"),
-    ("secondTableNumWays","int"),
-    ("firstTableMissRate","float"),
-    ("secondTableMissRate","float"),
-    ("firstTableMemoryCost","float"),
-    ("secondTableMemoryCost","float"),
-]
-
-modelColumns = [
-    ("modelMemoryCost","float"),
-]
-
-allColumns = []
-allColumns.extend(globalColumns)
-allColumns.extend(cacheColumns)
-allColumns.extend(dictColumns)
-allColumns.extend(DFCMColumns)
-allColumns.extend(modelColumns)
-
-stringColumns = [
-    "experimentationFilename",
-    "predictorType",
-    "traceName"
-]
-nanString = "-nan(ind)"
+    PredictorsHelper, defaultOrderLevels, possiblePredictorTypes, allColumns
 
 
 def initDictTable():

@@ -29,6 +29,8 @@ class MultiXMLReader:
         self.predictorsManager = PredictorsHelper(possiblePredictorTypes, defaultOrderLevels)
         self.predictorsManager.setPredictors(self.dataframe.to_dict("list"))
         self.dataframe = self.predictorsManager.setPredictorsNameAndTranslatedToDataframe(self.dataframe)
+        self.dataframe = self.predictorsManager.setPredictorsMemoryCostsToDataframe(self.dataframe)
+        self.dataframe["yield"] = self.dataframe["hitRate"] / self.dataframe["totalMemoryCost"]
 
     def getXMLFiles(self, directoryPath):
         res = []

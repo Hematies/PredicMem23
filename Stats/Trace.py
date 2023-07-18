@@ -68,7 +68,10 @@ class TraceComparer:
         return self.dataframe.groupby(inputParameters).agg(map)
 
     def plotPerformanceComparison(self, metric, includeMean=True):
-        dataframe = self.dataframe.round(3)
+        if self.dataframe[metric].min() > 0.001:
+            dataframe = self.dataframe.round(3)
+        else:
+            dataframe = self.dataframe
         dataframe['predictorHitRate'] = dataframe['hitRate']
         dataframe['order'] = dataframe['predictorPrettyName']
         dataframe = dataframe.replace({"order":
@@ -158,7 +161,7 @@ class TraceComparer:
             sorted(tuples, key=lambda t: t[1])
         )
         order = list(map(lambda t: t[0], order))
-        sns.boxplot(x='predictorPrettyName', y='hitRate', data=self.dataframe,
+        sns.boxplot(x='predictorPrettyName', y=metric, data=self.dataframe,
                     order=order,
                     #[
                     #    'InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM',

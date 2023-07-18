@@ -14,6 +14,8 @@ multiReader = MultiXMLReader(configExplorationFilesDir)
 
 comparator = TraceComparer(MultiXMLReader(testOnAllAppsDir).dataframe)
 comparator.plotPerformanceComparison("hitRate")
+comparator.plotPerformanceComparison("totalMemoryCost")
+comparator.plotPerformanceComparison("yield")
 
 perlbench = ExploratoryTrace("perlbench_s", multiReader.dataframe)
 cactu = ExploratoryTrace("cactuBSSN_s", multiReader.dataframe)
@@ -34,8 +36,9 @@ perlbench_ = perlbench.groupAndAggregate(['numSequenceAccesses', 'numClasses'], 
 
 multiReader = MultiXMLReader(testOnAllAppsDir)
 
-
+yieldResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['yield'])
 hitRateResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['hitRate'])
+memoryResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['totalMemoryCost'])
 # firstTableHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['firstTableHitRate'])
 # secondTableHitRateResults = multiReader.groupAndAggregate(['predictorType'], ['secondTableHitRate'])
 dictionaryHitRateResults = multiReader.groupAndAggregate(['predictorPrettyName'], ['dictionaryMissRate'])
