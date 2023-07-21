@@ -1,6 +1,15 @@
 #include "BuffersSimulator.h"
 #include <limits>
 
+
+template class StandardHistoryCacheEntry<L64bu, L64bu, L64bu>;
+template class RealHistoryCache<L64bu, L64bu, L64bu, L64bu>;
+template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64bu>;
+template class StandardHistoryCacheEntry<L64bu, L64bu, L64b>;
+template class RealHistoryCache<L64bu, L64bu, L64bu, L64b>;
+template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64b>;
+
+
 template<typename T, typename A, typename LA>
 vector<A> StandardHistoryCacheEntry<T, A, LA>::getHistory() {
 	return vector<A>(history);
@@ -28,14 +37,14 @@ void StandardHistoryCacheEntry<T, A, LA>::setLastAccess(LA la) {
 
 template<typename T, typename A, typename LA>
 StandardHistoryCacheEntry<T, A, LA>::StandardHistoryCacheEntry() {
-	this->history = vector<int>();
+	this->history = vector<A>();
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
 
 template<typename T, typename A, typename LA>
 StandardHistoryCacheEntry<T, A, LA>::StandardHistoryCacheEntry(int numAccesses) {
-	this->history = vector<int>(numAccesses, -1);
+	this->history = vector<A>(numAccesses, -1);
 	this->lastAccess = -1L;
 	this->tag = -1L;
 }
@@ -135,7 +144,7 @@ double InfiniteHistoryCache<T, I, A, LA>::getTotalMemoryCost() {
 
 template<typename T, typename A, typename LA>
 RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry() {
-	this->history = vector<int>();
+	this->history = vector<A>();
 	this->lastAccess = -1L;
 	this->tag = -1L;
 	this->way = -1;
@@ -143,7 +152,7 @@ RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry() {
 
 template<typename T, typename A, typename LA>
 RealHistoryCacheEntry<T, A, LA>::RealHistoryCacheEntry(int numAccesses, int way) {
-	this->history = vector<int>(numAccesses, -1);
+	this->history = vector<A>(numAccesses, -1);
 	this->way = way;
 	this->lastAccess = -1L;
 	this->tag = -1L;
@@ -169,9 +178,8 @@ void RealHistoryCacheEntry<T, A, LA>::copy(HistoryCacheEntry<T, A, LA>* p) {
 
 template<typename T, typename I, typename A, typename LA >
 RealHistoryCache<T, I, A, LA>::RealHistoryCache() {
-	this->numSets = 0;
 	this->numWays = 0;
-	sets = vector<HistoryCacheSet<T, A, LA>>();
+	sets = vector<HistoryCacheSet<T, I, A, LA>>();
 }
 
 template<typename T, typename I, typename A, typename LA >
@@ -394,8 +402,10 @@ int Dictionary<D>::newDelta(D delta) {
 	for (int i = 0; i < entries.size(); i++) {
 		auto entry = &entries[i];
 		if (entry->delta == delta && !classIsFound) {
+			
 			class_ = i;
 			classIsFound = true;
+
 			entry->confidence += (this->maxConfidence + 1) / this->numConfidenceJumps;
 			if (entry->confidence > this->maxConfidence)
 				entry->confidence = this->maxConfidence;
@@ -461,15 +471,15 @@ double Dictionary<D>::getTotalMemoryCost() {
 */
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
-BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams,
+BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType cacheType, CacheParameters cacheParams,
 	DictionaryParameters dictParams) {
 	// We initialize both the cache and the dictionary:
-	if (historyCacheType == HistoryCacheType::Infinite) {
+	if (cacheType == HistoryCacheType::Infinite) {
 		this->historyCache = 
 			shared_ptr<HistoryCache< T, I, A, LA >>(
 				new InfiniteHistoryCache<T, I, A, LA>(cacheParams.numSequenceAccesses, dictParams.numClasses));
 	}
-	else if (historyCacheType == HistoryCacheType::Real) {
+	else if (cacheType == HistoryCacheType::Real) {
 		this->historyCache = 
 			shared_ptr<HistoryCache< T, I, A, LA >>(new RealHistoryCache<T, I, A, LA>(cacheParams.numIndexBits, 
 				cacheParams.numWays, cacheParams.numSequenceAccesses, dictParams.numClasses));
@@ -512,6 +522,8 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		vector<bool>(),
 		vector<bool>()
 	};
+
+	double numFallosDiccionario = 0.0;
 
 	for (int k = 0; k < accesses.size(); k++) {
 		auto access = accesses[k];
@@ -614,8 +626,12 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 		res.isDictionaryMiss.push_back(isDictionaryMiss);
 		res.isCacheMiss.push_back(isCacheMiss);
 
+		numFallosDiccionario += isDictionaryMiss;
+
 		history.reset();
 	}
+
+	printf("\nFallos de diccionario: %f", (double)numFallosDiccionario / accesses.size());
 
 	return res;
 
