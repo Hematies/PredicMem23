@@ -217,8 +217,7 @@ void SVMSGDClassifier::fit(vector<vector<double>>& data, vector<int>& label) {
             }
             b = b - (this->learningRate * gradient_b);
         }
-
-
+       
     }
 
     // for(unsigned int i = 0; i < w.size(); i++) {

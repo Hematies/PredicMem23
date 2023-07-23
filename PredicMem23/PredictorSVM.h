@@ -120,7 +120,7 @@ public:
 	void inicializarModelo() {
 		// double c = 0.5;
 		double c = 1.0;
-		double learningRate = 0.5;
+		double learningRate = 0.7;
 		// double c = 0.8;
 		modelo = T_pred(this->numElemSecuencia, this->numClases, c, 1, learningRate);
 		// ajustarPredictor(std::vector<float>(datosEntrada[0].size(), 0.0), 0);
@@ -166,7 +166,8 @@ public:
 			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
 
 			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
-			bool hayQueAjustar = (haHabidoFalloPrediccion && esEntradaPredecible) || (haHabidoErrorDiccionario && !esEntradaPredecible);
+			// bool hayQueAjustar = (haHabidoFalloPrediccion && esEntradaPredecible) || (haHabidoErrorDiccionario && !esEntradaPredecible);
+			bool hayQueAjustar = !haHabidoErrorCache && (haHabidoFalloPrediccion || haHabidoErrorDiccionario);
 			if (hayQueAjustar) {
 				ajustarPredictor(entrada, salida);
 			}
