@@ -118,13 +118,6 @@ int main()
         true
     };
 
-    CacheParameters additionalCacheParams = {
-        10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        4,// 8,// 8,// 4,
-        6,// 4,// 8
-        true
-    };
-
     // Parámetros de diccionario: (1) núm. de clases (ergo, núm. de entradas), (2) máx. nivel de confianza, (3) núm. de saltos 
     // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
     // haya habido miss en el diccionario.
