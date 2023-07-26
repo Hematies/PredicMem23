@@ -47,8 +47,8 @@ int main()
     // outputName = "PruebaDFCMInfinito_cambio_acceso_mapa.xml";
     // outputName = "PruebaOrden8Infinito";
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
-    // outputName = "PruebaDFCMRealPrimeraTabla256Conjuntos6ViasSegundaTabla64Conjuntos2Vias.xml";
-    outputName = "PruebaBufferSVM256Conjuntos6Vias4Clases.xml";
+    // outputName = "PruebaDFCMRealPrimeraTabla128Conjuntos6ViasSegundaTabla128Conjuntos2Vias.xml";
+    outputName = "PruebaBufferSVM512Conjuntos6Vias4Clases.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
@@ -104,7 +104,7 @@ int main()
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
     cacheParams = {
-        8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        9,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
         6,// 8,// 8,// 4,
         4,// 8,// 4,// 8
         true
@@ -133,6 +133,7 @@ int main()
         // o el DFCM-infinito.
         // PredictorModelType::DFCM,
         cacheParams,
+        additionalCacheParams,
         dictParams
     };
 
