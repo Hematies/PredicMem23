@@ -253,10 +253,12 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 	else {
 		if(params.cacheParams.numSequenceAccesses > 0)
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
+				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+					this->countTotalMemory));
 		else
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
+				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+					this->countTotalMemory));
 	}
 	this->startDateTime = nowDateTime();
 }
@@ -361,6 +363,7 @@ void TracePredictExperiment::performExperiment() {
 			rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
 
 		}
+		
 	}
 	else this->isNull_ = true;
 
