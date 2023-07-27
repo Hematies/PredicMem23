@@ -47,8 +47,9 @@ int main()
     // outputName = "PruebaDFCMInfinito_cambio_acceso_mapa.xml";
     // outputName = "PruebaOrden8Infinito";
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
-    // outputName = "PruebaDFCMRealPrimeraTabla256Conjuntos6ViasSegundaTabla64Conjuntos2Vias.xml";
-    outputName = "PruebaBufferSVM256Conjuntos6Vias4Clases.xml";
+    outputName = "PruebaDFCMRealPrimeraTabla512Conjuntos6ViasSegundaTabla128Conjuntos4Vias.xml";
+    // outputName = "PruebaBufferSVM512Conjuntos6Vias8Clases.xml";
+    // outputName = "PruebaDFCM___.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
@@ -72,7 +73,7 @@ int main()
 
     };
 
-    // traceFiles = vector<string>{ mcf_s };
+    //  traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -104,16 +105,16 @@ int main()
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
     cacheParams = {
-        8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        9,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
         6,// 8,// 8,// 4,
-        4,// 8,// 4,// 8
+        -1,// 8,// 4,// 8
         true
     };
 
 
     CacheParameters additionalCacheParams = {
         7,// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        2,// 8,// 8,// 4,
+        4,// 8,// 8,// 4,
         -1,// 4,// 8
         true
     };
@@ -122,22 +123,23 @@ int main()
     // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
     // haya habido miss en el diccionario.
     dictParams = {
-        4,
+        8,
         255,
         8,
         true
     };
 
     PredictorParameters params = {
-        PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
+        // PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
         // o el DFCM-infinito.
-        // PredictorModelType::DFCM,
+        PredictorModelType::DFCM,
         cacheParams,
         additionalCacheParams,
         dictParams
     };
 
     unsigned long numAccessesPerTrace = 1e9;
+    // unsigned long numAccessesPerTrace = 1e7;
     unsigned long numAccessesPerExperiment = 1e6;
     vector<TraceInfo> tracesInfo = vector<TraceInfo>();
     for (int i = 0; i < traceNames.size(); i++) {
