@@ -192,15 +192,15 @@ void computeGradients(vector<double>& w, double b, vector<vector<double>>& x, ve
     *pointer_db = resultingGradient_b;
 }
 
-void SVMSGDClassifier::fit(vector<vector<double>>& data, vector<int>& label) {
-    srand(seed);
+void SVMSGDClassifier::fit(vector<vector<double>>& data, vector<int>& label, bool resetHyperplanePriorToFit) {
 
     if (w.size() == 0)
         w.resize(data[0].size());
 
-    for (unsigned int t = 1; t <= epochs; t++) {
+    if (resetHyperplanePriorToFit)
+        initWeights(w.size());
 
-        unsigned int idx = rand() % data.size();
+    for (unsigned int idx = 0; idx <= label.size(); idx++) {
 
         if (label[idx] != 0) {
 

@@ -40,7 +40,7 @@ public:
 	SVMSGDClassifier();
 	SVMSGDClassifier(double c, unsigned int epochs, unsigned int seed, double learningRate);
 	void initWeights(int numFeatures);
-	void fit(vector<vector<double>>& data, vector<int>& label);
+	void fit(vector<vector<double>>& data, vector<int>& label, bool resetHyperplanePriorToFit = false);
 	vector<double> computeDistanceToPlane(vector<vector<double>>& data);
 };
 
@@ -68,7 +68,7 @@ public:
 
 	vector<int> predict(vector<vector<double>>& data);
 
-	void fit(vector<vector<double>>& data, vector<int>& label);
+	void fit(vector<vector<double>>& data, vector<int>& label, bool resetHyperplanePriorToFit = false);
 
 
 };
@@ -83,7 +83,7 @@ public:
 
 	vector<int> predict(vector<vector<double>>& data);
 
-	void fit(vector<vector<double>>& data, vector<int>& label);
+	void fit(vector<vector<double>>& data, vector<int>& label, bool resetHyperplanePriorToFit = false);
 
 };
 
@@ -97,7 +97,7 @@ public:
 
 	vector<int> predict(vector<vector<double>>& data);
 
-	void fit(vector<vector<double>>& data, vector<int>& label);
+	void fit(vector<vector<double>>& data, vector<int>& label, bool resetHitHyperplanePriorToFit = false);
 
 };
 

@@ -126,10 +126,10 @@ public:
 		// ajustarPredictor(std::vector<float>(datosEntrada[0].size(), 0.0), 0);
 	}
 
-	void ajustarPredictor(vector<float> entrada, int salida) {
+	void ajustarPredictor(vector<float> entrada, int salida, bool hayMissDiccionario = false) {
 		auto in = vector<vector<double>>{ vector<double>(entrada.begin(), entrada.end()) };
 		auto out = vector<int>{ salida };
-		this->modelo.fit(in, out);
+		this->modelo.fit(in, out, hayMissDiccionario);
 	}
 
 	int predecir(vector<float> entrada) {
@@ -169,7 +169,7 @@ public:
 			// bool hayQueAjustar = (haHabidoFalloPrediccion && esEntradaPredecible) || (haHabidoErrorDiccionario && !esEntradaPredecible);
 			bool hayQueAjustar = !haHabidoErrorCache && (haHabidoFalloPrediccion || haHabidoErrorDiccionario);
 			if (hayQueAjustar) {
-				ajustarPredictor(entrada, salida);
+				ajustarPredictor(entrada, salida, haHabidoErrorDiccionario);
 			}
 			
 			bool hayHit = esEntradaPredecible && !haHabidoErrorDiccionario && !haHabidoErrorCache && !haHabidoFalloPrediccion;

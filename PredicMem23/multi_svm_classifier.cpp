@@ -69,7 +69,7 @@ void MultiSVMClassifier::initWeights(int numFeatures) {
 }
 
 
-void MultiSVMClassifierOneToAll::fit(vector<vector<double>> & data, vector<int> & label) {
+void MultiSVMClassifierOneToAll::fit(vector<vector<double>> & data, vector<int> & label, bool resetHitHyperplanePriorToFit) {
     
     // For each classifier, we build the real-label vector fpr the entirety of given data:
     for (int k = 0; k < SVMsTable.size(); k++) {
@@ -81,12 +81,13 @@ void MultiSVMClassifierOneToAll::fit(vector<vector<double>> & data, vector<int> 
         else realLabels = vector<int>{ k == label[0]? -1 : +1 };
 
         // Then, we fit each classifier with the resulting real-label vector:
-        SVMsTable[k].fit(data, realLabels);
+        bool reset = resetHitHyperplanePriorToFit && (k == label[0]) && (label.size() == 1);
+        SVMsTable[k].fit(data, realLabels, reset);
     }
 
 }
 
-void MultiSVMClassifierOneToOne::fit(vector<vector<double>>& data, vector<int>& label) {
+void MultiSVMClassifierOneToOne::fit(vector<vector<double>>& data, vector<int>& label, bool resetHitHyperplanePriorToFit) {
 
     // For each classifier, we build the real-label vector for the entirety of given data:
     
@@ -112,9 +113,8 @@ void MultiSVMClassifierOneToOne::fit(vector<vector<double>>& data, vector<int>& 
                     realLabels = vector<int>{ res };
                 }
 
-                
-
                 // Then, we fit each classifier with the resulting real-label vector:
+                bool reset = resetHitHyperplanePriorToFit && (k == label[0] || j == label[0]) && (label.size() == 1);
                 SVMsTable[predictorIndex].fit(data, realLabels);
             }
         }
