@@ -200,7 +200,7 @@ void SVMSGDClassifier::fit(vector<vector<double>>& data, vector<int>& label, boo
     if (resetHyperplanePriorToFit)
         initWeights(w.size());
 
-    for (unsigned int idx = 0; idx <= label.size(); idx++) {
+    for (unsigned int idx = 0; idx < label.size(); idx++) {
 
         if (label[idx] != 0) {
 
