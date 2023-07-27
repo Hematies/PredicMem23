@@ -175,10 +175,45 @@ class TraceComparer:
                     ).set(xlabel=None, ylabel=None)
         plt.grid(True, axis='y', linestyle='--', alpha=0.4)
         plt.locator_params(axis='y', nbins=20)
+
         # plt.xticks([0, 1, 2, 3], labels,
         plt.xticks(list(range(0, len(labels))), labels,
                    rotation=15
                    )
+        plt.show()
+
+    # https://sirinnes.wordpress.com/2013/04/25/pareto-frontier-graphic-via-python/
+    def plotParettoFront(self, metric1, metric2, max1: bool, max2: bool):
+        group = self.groupAndAggregate(['predictorPrettyName'], [metric1, metric2])
+        values1 = group[(metric1, 'mean')].to_list()
+        values2 = group[(metric2, 'mean')].to_list()
+        labels = group.index.to_list()
+
+        '''Pareto frontier selection process'''
+        sorted_list = sorted([[values1[i], values2[i]] for i in range(len(values1))], reverse=max1)
+        pareto_front = [sorted_list[0]]
+        for pair in sorted_list[1:]:
+            if max2:
+                if pair[1] >= pareto_front[-1][1]:
+                    pareto_front.append(pair)
+            else:
+                if pair[1] <= pareto_front[-1][1]:
+                    pareto_front.append(pair)
+
+        '''Plotting process'''
+        # plt.scatter(values1, values2)
+        fig, ax = plt.subplots()
+
+        for i in range(0, len(labels)):
+            ax.scatter(values1[i], values2[i], label=labels[i], s=50)
+        pf_X = [pair[0] for pair in pareto_front]
+        pf_Y = [pair[1] for pair in pareto_front]
+        plt.plot(pf_X, pf_Y)
+        plt.xlabel(metricTranslationTable[metric1])
+        plt.ylabel(metricTranslationTable[metric2])
+        plt.legend(  # bbox_to_anchor=(0.75, 1.15),
+            bbox_to_anchor=(0., 1.02, 1., .102),
+            ncol=3, fontsize=8)
         plt.show()
 
 

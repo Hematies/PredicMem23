@@ -481,7 +481,7 @@ RealDFCMGradeK.setAttributes(["numSequenceAccesses", 'firstTableNumIndexBits', '
 
 metricTranslationTable = {
     'hitRate': 'Predictor hit rate',
-    'totalMemoryCost': "Total", # mean memory capacity",
+    'totalMemoryCost': "Total memory cost", # mean memory capacity",
     'cacheMemoryCost': 'Cache memory capacity',
     'cacheMissRate': 'Input buffer miss rate',
     'cacheHitRate': 'Input buffer hit rate',
@@ -496,8 +496,8 @@ metricTranslationTable = {
     'firstTableNumWays': 'First table num. ways',
     'secondTableNumIndexBits': 'Second table num. index. bits',
     'secondTableWays': 'Second table num. ways',
-    'firstTableMemoryCost': "First table", # 's mean memory capacity",
-    'secondTableMemoryCost': "Second table", # 's mean memory capacity",
+    'firstTableMemoryCost': "First table's memory cost", # 's mean memory capacity",
+    'secondTableMemoryCost': "Second table's memory cost", # 's mean memory capacity",
     'modelMemoryCost': 'Model memory capacity',
     'modelHitRate': 'Model hit rate',
     'predictorHitRate': 'Predictor hit rate',
