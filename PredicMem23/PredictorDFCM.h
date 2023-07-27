@@ -78,21 +78,25 @@ public:
 	CacheParameters secondTableCacheParams = {};
 
 
+	bool countMemoryCapacity = false;
+
 	PredictorDFCMHashOnHash(AccessesDataset<T,T>& datos, HistoryCacheType historyCacheType, CacheParameters firstTableCacheParams = {},
-		CacheParameters secondTableCacheParams = {}) {
+		CacheParameters secondTableCacheParams = {}, bool countTotalMemoryCost = true) {
 		this->datos = datos;
 		this->historyCacheType = historyCacheType;
 		this->firstTableCacheParams = firstTableCacheParams;
 		this->secondTableCacheParams = secondTableCacheParams;
 		inicializarPredictor();
+		this->countMemoryCapacity = !countTotalMemoryCost;
 	}
 
 	PredictorDFCMHashOnHash(HistoryCacheType historyCacheType,CacheParameters firstTableCacheParams = {},
-		CacheParameters secondTableCacheParams = {}) {
+		CacheParameters secondTableCacheParams = {}, bool countTotalMemoryCost = true) {
 		this->historyCacheType = historyCacheType;
 		this->firstTableCacheParams = firstTableCacheParams;
 		this->secondTableCacheParams = secondTableCacheParams;
 		inicializarPredictor();
+		this->countMemoryCapacity = !countTotalMemoryCost;
 	}
 
 	
@@ -260,17 +264,34 @@ public:
 		resultsAndCosts.firstTableMissRate = numFirstTableMisses / datos.accesses.size();
 		resultsAndCosts.secondTableMissRate = numSecondTableMisses / datos.accesses.size();
 		double firstTableCost, secondTableCost;
-		resultsAndCosts.totalMemoryCost = getMemoryCosts(&firstTableCost, &secondTableCost);
+		if(this->countMemoryCapacity)
+			resultsAndCosts.totalMemoryCost = getMemoryCosts(&firstTableCost, &secondTableCost);
+		else
+			resultsAndCosts.totalMemoryCost = getTotalMemoryCosts(&firstTableCost, &secondTableCost);
 		resultsAndCosts.firstTableMemoryCost = firstTableCost;
 		resultsAndCosts.secondTableMemoryCost = secondTableCost;
 		return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*)new DFCMPredictResultsAndCosts(resultsAndCosts));
 	}
 
+	double getTotalMemoryCosts(double* firstTableCost, double* secondTableCost) {
+		int wordSize = sizeof(T) * 8;
+		int firstTableNumTagBits = wordSize - this->firstTableCacheParams.numIndexBits;
+		double firstTableEntryNumBits = firstTableNumTagBits + wordSize * 2 
+			+ 1; // LRU bit
+		int secondTableNumTagBits = wordSize - this->secondTableCacheParams.numIndexBits;
+		double secondTableEntryNumBits = secondTableNumTagBits + wordSize 
+			+ 1; // LRU bit
+		*firstTableCost = firstTableEntryNumBits * tablaInstrHash->getNumEntries() / 8.0;
+		*secondTableCost = secondTableEntryNumBits * tablaHashDelta->getNumEntries() / 8.0;
+		return *firstTableCost + *secondTableCost;
+	}
+
 	double getMemoryCosts(double* firstTableCost, double* secondTableCost) {
-		// *firstTableCost = tablaInstrHash->getMemoryCost(); // ??????
-		// *secondTableCost = tablaHashDelta->getMemoryCost();
-		*firstTableCost = 3 * sizeof(T) * tablaInstrHash->getNumEntries();
-		*secondTableCost = 2 * sizeof(T) * tablaHashDelta->getNumEntries();
+		int wordSize = sizeof(T) * 8;
+		double firstTableEntryNumBits =  wordSize * 2;
+		double secondTableEntryNumBits =  wordSize; 
+		*firstTableCost = firstTableEntryNumBits * tablaInstrHash->getNumEntries() / 8.0;
+		*secondTableCost = secondTableEntryNumBits * tablaHashDelta->getNumEntries() / 8.0;
 		return *firstTableCost + *secondTableCost;
 	}
 };

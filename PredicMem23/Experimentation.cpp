@@ -135,20 +135,35 @@ void TracePredictExperimentation::exportResults(string filename) {
 				// Second node: related to input, cache params:
 				auto cacheParams = params.cacheParams;
 				TiXmlElement* cacheParams_ = new TiXmlElement("cacheParams");
-				cacheParams_->SetAttribute("numIndexBits", cacheParams.numIndexBits);
-				cacheParams_->SetAttribute("numWays", cacheParams.numWays);
-				cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
-				cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
-				experiment_->LinkEndChild(cacheParams_);
+				if (experiment->getPredictorParams().type == PredictorModelType::BufferSVM) {
+					cacheParams_->SetAttribute("numIndexBits", cacheParams.numIndexBits);
+					cacheParams_->SetAttribute("numWays", cacheParams.numWays);
+					cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
+					cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
+					experiment_->LinkEndChild(cacheParams_);
+				}
+				else {
+					auto additionalCacheParams = params.additionalCacheParams;
+					cacheParams_->SetAttribute("firstTableNumIndexBits", cacheParams.numIndexBits);
+					cacheParams_->SetAttribute("secondTableNumIndexBits", additionalCacheParams.numIndexBits);
+					cacheParams_->SetAttribute("firstTableNumWays", cacheParams.numWays);
+					cacheParams_->SetAttribute("secondTableNumWays", additionalCacheParams.numWays);
+					cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
+					cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
+					experiment_->LinkEndChild(cacheParams_);
+				}
+				
 
 				// Third node: related to input, dictionary params:
-				auto dictParams = params.dictParams;
-				TiXmlElement* dictParams_ = new TiXmlElement("dictParams");
-				dictParams_->SetAttribute("numClasses", dictParams.numClasses);
-				dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
-				dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
-				dictParams_->SetAttribute("saveHistoryAndClassIfNotValid", dictParams.saveHistoryAndClassIfNotValid);
-				experiment_->LinkEndChild(dictParams_);
+				if (experiment->getPredictorParams().type == PredictorModelType::BufferSVM) {
+					auto dictParams = params.dictParams;
+					TiXmlElement* dictParams_ = new TiXmlElement("dictParams");
+					dictParams_->SetAttribute("numClasses", dictParams.numClasses);
+					dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
+					dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
+					dictParams_->SetAttribute("saveHistoryAndClassIfNotValid", dictParams.saveHistoryAndClassIfNotValid);
+					experiment_->LinkEndChild(dictParams_);
+				}
 			
 				trace->LinkEndChild(experiment_);
 				for (auto it = results.begin(); it != results.end(); it++) {
@@ -253,10 +268,12 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 	else {
 		if(params.cacheParams.numSequenceAccesses > 0)
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
+				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+					this->countTotalMemory));
 		else
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
+				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+					this->countTotalMemory));
 	}
 	this->startDateTime = nowDateTime();
 }
@@ -292,7 +309,7 @@ void TracePredictExperiment::setName(string name) {
 string TracePredictExperiment::getString() {
 
 	ostringstream res; 
-	res << this->startDateTime << "::" << traceName << "_" << startLine << "_" << endLine;
+	res << "part_" << this->startDateTime << "__" << traceName << "_" << startLine << "_" << endLine;
 
 	return res.str();
 }
@@ -361,6 +378,7 @@ void TracePredictExperiment::performExperiment() {
 			rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
 
 		}
+		
 	}
 	else this->isNull_ = true;
 

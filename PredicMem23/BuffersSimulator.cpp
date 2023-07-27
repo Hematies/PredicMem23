@@ -131,14 +131,15 @@ bool InfiniteHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A cl
 template<typename T, typename I, typename A, typename LA >
 double InfiniteHistoryCache<T, I, A, LA>::getMemoryCost() {
 	double costPerEntry = sizeof(LA); // Last access value
-	double numBitsClass = ceil(log10(this->numClasses) / log10(2));
+	double numBitsClass = ceil(log10(this->numClasses + 1) / log10(2));
 	costPerEntry += (numAccesses * numBitsClass) / 8;
 	return costPerEntry * this->entries.size();
 }
 
 template<typename T, typename I, typename A, typename LA >
 double InfiniteHistoryCache<T, I, A, LA>::getTotalMemoryCost() {
-	double extraCostPerEntry = sizeof(I); // Instruction as tag
+	// double extraCostPerEntry = sizeof(I); // Instruction as tag
+	double extraCostPerEntry = 0;
 	return extraCostPerEntry * this->entries.size() + getMemoryCost();
 }
 
@@ -221,7 +222,7 @@ bool RealHistoryCache<T, I, A, LA>::newAccess(I instruction, LA access, A class_
 template<typename T, typename I, typename A, typename LA >
 double RealHistoryCache<T, I, A, LA>::getMemoryCost() {
 	double costPerEntry = sizeof(LA); // Last access value;
-	double numBitsClass = ceil(log10(this->numClasses) / log10(2));
+	double numBitsClass = ceil(log10(this->numClasses + 1) / log10(2));
 	costPerEntry += (this->numAccesses * numBitsClass) / 8;
 	return costPerEntry * this->getNumEntries();
 }
@@ -229,7 +230,7 @@ double RealHistoryCache<T, I, A, LA>::getMemoryCost() {
 template<typename T, typename I, typename A, typename LA >
 double RealHistoryCache<T, I, A, LA>::getTotalMemoryCost() {
 	double extraCostPerEntry = std::numeric_limits<T>::digits - this->numIndexBits; // Tag bits
-	extraCostPerEntry += this->numAccesses; // LRU bits
+	extraCostPerEntry += 1; // LRU bit
 	extraCostPerEntry = extraCostPerEntry / 8;
 	return extraCostPerEntry * this->getNumEntries() + getMemoryCost();
 }
@@ -455,20 +456,6 @@ void Dictionary<D>::showContent() {
 	cout << "-----" << endl;
 }
 
-/*
-template<typename D >
-double Dictionary<D>::getMemoryCost() {
-	double costPerEntry = sizeof(D); // Delta value. There are no class bits.
-	return costPerEntry * this->entries.size();
-}
-*/
-/*
-template<typename D>
-double Dictionary<D>::getTotalMemoryCost() {
-	double extraCostPerEntry = ceil(log10(this->maxConfidence) / log10(2)); // Confidence value bits
-	return (extraCostPerEntry / 8) * this->entries.size() + getMemoryCost();
-}
-*/
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(HistoryCacheType cacheType, CacheParameters cacheParams,
