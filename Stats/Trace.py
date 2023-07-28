@@ -183,22 +183,34 @@ class TraceComparer:
         plt.show()
 
     # https://sirinnes.wordpress.com/2013/04/25/pareto-frontier-graphic-via-python/
-    def plotParettoFront(self, metric1, metric2, max1: bool, max2: bool):
+
+    def __getParettoFront(self, values1, values2, max1, max2):
+        if len(values1) <= 0 or len(values2) <=0:
+            return [], []
+        sorted_list = sorted([[values1[i], values2[i]] for i in range(len(values1))], reverse=max1)
+        sorted_list_indexes = sorted([i for i in range(len(values1))], key = lambda i: [values1[i], values2[i]], reverse=max1)
+        pareto_front = [sorted_list[0]]
+        pareto_front_nodes = set()
+        pareto_front_nodes.add(sorted_list_indexes[0])
+        i = 1
+        for pair in sorted_list[1:]:
+            if max2:
+                if pair[1] >= pareto_front[-1][1]:
+                    pareto_front.append(pair)
+                    pareto_front_nodes.add(sorted_list_indexes[i])
+            else:
+                if pair[1] <= pareto_front[-1][1]:
+                    pareto_front.append(pair)
+                    pareto_front_nodes.add(sorted_list_indexes[i])
+            i = i + 1
+        return pareto_front_nodes, pareto_front
+
+    def plotParettoFront(self, metric1, metric2, max1: bool, max2: bool, plotAllFronts = False):
         group = self.groupAndAggregate(['predictorPrettyName'], [metric1, metric2])
         values1 = group[(metric1, 'mean')].to_list()
         values2 = group[(metric2, 'mean')].to_list()
         labels = group.index.to_list()
 
-        '''Pareto frontier selection process'''
-        sorted_list = sorted([[values1[i], values2[i]] for i in range(len(values1))], reverse=max1)
-        pareto_front = [sorted_list[0]]
-        for pair in sorted_list[1:]:
-            if max2:
-                if pair[1] >= pareto_front[-1][1]:
-                    pareto_front.append(pair)
-            else:
-                if pair[1] <= pareto_front[-1][1]:
-                    pareto_front.append(pair)
 
         '''Plotting process'''
         # plt.scatter(values1, values2)
@@ -206,9 +218,27 @@ class TraceComparer:
 
         for i in range(0, len(labels)):
             ax.scatter(values1[i], values2[i], label=labels[i], s=50)
-        pf_X = [pair[0] for pair in pareto_front]
-        pf_Y = [pair[1] for pair in pareto_front]
-        plt.plot(pf_X, pf_Y)
+
+        '''Pareto frontier selection process'''
+        all_pareto_front_nodes = []
+        pareto_back_nodes = [i for i in range(0, len(values1)) if not i in all_pareto_front_nodes]
+        pareto_fronts = []
+        while len(pareto_back_nodes) > 0:
+            values1_ = [values1[i] for i in pareto_back_nodes]
+            values2_ = [values2[i] for i in pareto_back_nodes]
+            pareto_front_nodes, pareto_front = self.__getParettoFront(values1_, values2_, max1, max2)
+            pareto_front_nodes = [pareto_back_nodes[k] for k in pareto_front_nodes]
+            all_pareto_front_nodes.extend(pareto_front_nodes)
+            pareto_back_nodes = [i for i in range(0, len(values1)) if not i in all_pareto_front_nodes]
+            pareto_fronts.append(pareto_front)
+            if not plotAllFronts:
+                break
+
+        for pareto_f in pareto_fronts:
+            pf_X = [pair[0] for pair in pareto_f]
+            pf_Y = [pair[1] for pair in pareto_f]
+            plt.plot(pf_X, pf_Y)
+
         plt.xlabel(metricTranslationTable[metric1])
         plt.ylabel(metricTranslationTable[metric2])
         plt.legend(  # bbox_to_anchor=(0.75, 1.15),

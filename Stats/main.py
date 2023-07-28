@@ -12,7 +12,7 @@ testOnAllAppsDir = "testOnAllApps/"
 
 multiReader = MultiXMLReader(configExplorationFilesDir)
 comparator = TraceComparer(MultiXMLReader(testOnAllAppsDir).dataframe)
-comparator.plotParettoFront("totalMemoryCost", "hitRate", False, True)
+comparator.plotParettoFront("totalMemoryCost", "hitRate", False, True, True)
 comparator.plotPerformanceComparison("hitRate")
 comparator.plotPerformanceComparison("totalMemoryCost")
 comparator.plotPerformanceComparison("yield")
