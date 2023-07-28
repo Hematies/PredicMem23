@@ -72,7 +72,7 @@ int main()
 
     };
 
-    // traceFiles = vector<string>{ mcf_s };
+    //  traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -106,14 +106,14 @@ int main()
     cacheParams = {
         10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
         6,// 8,// 8,// 4,
-        4,// 8,// 4,// 8
+        -1,// 8,// 4,// 8
         true
     };
 
 
     CacheParameters additionalCacheParams = {
         7,// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        2,// 8,// 8,// 4,
+        4,// 8,// 8,// 4,
         -1,// 4,// 8
         true
     };
@@ -122,22 +122,23 @@ int main()
     // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
     // haya habido miss en el diccionario.
     dictParams = {
-        4,
+        8,
         255,
         8,
         true
     };
 
     PredictorParameters params = {
-        PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
+        // PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
         // o el DFCM-infinito.
-        // PredictorModelType::DFCM,
+        PredictorModelType::DFCM,
         cacheParams,
         additionalCacheParams,
         dictParams
     };
 
     unsigned long numAccessesPerTrace = 1e9;
+    // unsigned long numAccessesPerTrace = 1e7;
     unsigned long numAccessesPerExperiment = 1e6;
     vector<TraceInfo> tracesInfo = vector<TraceInfo>();
     for (int i = 0; i < traceNames.size(); i++) {
