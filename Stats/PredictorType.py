@@ -106,7 +106,7 @@ class ListOfPredicates:
         return res
 
 
-defaultOrderLevels = [['Infinite', 'Real'], ['HashOnHash', 'GradeK', 'SVM']]
+defaultOrderLevels = [['Infinite', ''], ['HoH', 'K-order', 'SVM']]
 class PredictorsHelper:
     def __init__(self, predictorTypes: list, orderLevels: list = defaultOrderLevels):
         self.predictorTypes = {predictor.predictorTypeName: predictor for predictor in predictorTypes}
@@ -252,9 +252,9 @@ class PredictorType:
         name = self.predictorTypeName
         res = name
         if 'Real' in name:
-            res = name[name.find('Real') + len('Real') :]
+            res = name[name.find('Real') + len('Real') + 1:]
         elif 'Infinite' in name:
-            res = name[name.find('Infinite') + len('Infinite'):]
+            res = name[name.find('Infinite') + len('Infinite') + 1:]
         if '_' in res:
             res = res.split('_')[0].strip()
         return res
@@ -295,7 +295,8 @@ class Predictor:
         realAttribute = 'Real' if self.predictorType.isPredictorReal() else 'Infinite'
         family = self.predictorType.getPredictorFamily()
         attributes = self.attributes
-        res = realAttribute + ' ' + family + ' '
+        res = '' if self.predictorType.isPredictorReal() else realAttribute + ' '
+        res = res + family + ' '
         for k in range(0, len(attributes.values())):
             res = res + str(list(attributes.values())[k])
             if k < len(attributes.values()) - 1:
@@ -320,7 +321,7 @@ class Predictor:
         allColumns_ = list(filter(lambda t: "emoryCost" in t[0], allColumns))
         res = {column: rowDict[column] for column, type in allColumns_}
         if not 'Infinite' in translatedName:
-            if 'BufferSVM' in translatedName:
+            if 'SVM4AP' in translatedName:
                 res["totalMemoryCost"] -= res["cacheMemoryCost"]
                 res["cacheMemoryCost"] = \
                     computeCacheCost(
@@ -330,7 +331,7 @@ class Predictor:
                         numSequenceElements=rowDict["numSequenceAccesses"],
                         numSVMClasses=rowDict["numClasses"])
                 res["totalMemoryCost"] += res["cacheMemoryCost"]
-            elif 'HashOnHash' in translatedName:
+            elif 'HoH' in translatedName:
                 res["totalMemoryCost"] -= res["firstTableMemoryCost"]
                 res["firstTableMemoryCost"] = \
                     computeCacheCost(
@@ -344,7 +345,7 @@ class Predictor:
                         rowDict["secondTableNumWays"],
                         1)
                 res["totalMemoryCost"] += res["firstTableMemoryCost"] + res["secondTableMemoryCost"]
-            elif 'GradeK':
+            elif 'K-order':
                 res["totalMemoryCost"] -= res["firstTableMemoryCost"]
                 res["firstTableMemoryCost"] = \
                     computeCacheCost(
@@ -384,7 +385,7 @@ InfiniteBufferSVM.setPredicates(
 )
 InfiniteBufferSVM.setAttributes(['numSequenceAccesses', 'numClasses'])
 
-RealBufferSVM = PredictorType("Real BufferSVM")
+RealBufferSVM = PredictorType("Real SVM4AP")
 '''
 # In order to differentiate with RealBufferSVM of 4-length sequences and 4 classes:
             ListOfPredicates([
@@ -415,7 +416,7 @@ RealBufferSVM.setPredicates(
 RealBufferSVM.setAttributes(['numSequenceAccesses', 'numClasses', 'numIndexBits', 'numWays'])
 
 # DFCMs of infinite size:
-InfiniteDFCM = PredictorType("Infinite DFCM HashOnHash")
+InfiniteDFCM = PredictorType("Infinite DFCM HoH")
 InfiniteDFCM.setPredicates(
     ListOfPredicates(
         [
@@ -426,7 +427,7 @@ InfiniteDFCM.setPredicates(
     )
 )
 
-InfiniteDFCMGradeK = PredictorType("Infinite DFCM GradeK")
+InfiniteDFCMGradeK = PredictorType("Infinite DFCM K-order")
 InfiniteDFCMGradeK.setPredicates(
     ListOfPredicates(
         [
@@ -439,7 +440,7 @@ InfiniteDFCMGradeK.setPredicates(
 InfiniteDFCMGradeK.setAttributes(['numSequenceAccesses'])
 
 # Real DFCMs:
-RealDFCM = PredictorType("Real DFCM HashOnHash")
+RealDFCM = PredictorType("Real DFCM HoH")
 RealDFCM.setPredicates(
     ListOfPredicates(
         [
@@ -457,7 +458,7 @@ RealDFCM.setPredicates(
 )
 RealDFCM.setAttributes(['firstTableNumIndexBits', 'firstTableNumWays', 'secondTableNumIndexBits', 'secondTableNumWays'])
 
-RealDFCMGradeK = PredictorType("Real DFCM GradeK")
+RealDFCMGradeK = PredictorType("Real DFCM K-order")
 RealDFCMGradeK.setPredicates(
     ListOfPredicates(
         [

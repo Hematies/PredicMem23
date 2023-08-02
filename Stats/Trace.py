@@ -142,8 +142,8 @@ class TraceComparer:
         plt.grid(True, axis='y', linestyle='--')
 
         plt.legend(  # bbox_to_anchor=(0.75, 1.15),
-            bbox_to_anchor=(0., 1.02, 1., .102),
-            ncol=3, fontsize=8)
+            bbox_to_anchor=(0., 1, 1., 0),
+            ncol=3, fontsize=6)
 
         '''
         if plotMemoryCosts:
@@ -178,7 +178,8 @@ class TraceComparer:
 
         # plt.xticks([0, 1, 2, 3], labels,
         plt.xticks(list(range(0, len(labels))), labels,
-                   rotation=15
+                   rotation=30,
+                   fontsize=6
                    )
         plt.show()
 
@@ -216,13 +217,20 @@ class TraceComparer:
         # plt.scatter(values1, values2)
         fig, ax = plt.subplots()
 
+        markers = {'SVM': "s", 'HoH': "^", 'K-order': "v", 'default': "."}
         for i in range(0, len(labels)):
-            ax.scatter(values1[i], values2[i], label=labels[i], s=50)
+            marker = markers["default"]
+            for l in markers.keys():
+                if l in labels[i]:
+                    marker = markers[l]
+                    break
+            ax.scatter(values1[i], values2[i], label=labels[i], s=30, marker=marker)
 
         '''Pareto frontier selection process'''
         all_pareto_front_nodes = []
         pareto_back_nodes = [i for i in range(0, len(values1)) if not i in all_pareto_front_nodes]
         pareto_fronts = []
+        pareto_fronts_indexes = []
         while len(pareto_back_nodes) > 0:
             values1_ = [values1[i] for i in pareto_back_nodes]
             values2_ = [values2[i] for i in pareto_back_nodes]
@@ -231,6 +239,7 @@ class TraceComparer:
             all_pareto_front_nodes.extend(pareto_front_nodes)
             pareto_back_nodes = [i for i in range(0, len(values1)) if not i in all_pareto_front_nodes]
             pareto_fronts.append(pareto_front)
+            pareto_fronts_indexes.append(pareto_front_nodes)
             if not plotAllFronts:
                 break
 
@@ -242,8 +251,8 @@ class TraceComparer:
         plt.xlabel(metricTranslationTable[metric1])
         plt.ylabel(metricTranslationTable[metric2])
         plt.legend(  # bbox_to_anchor=(0.75, 1.15),
-            bbox_to_anchor=(0., 1.02, 1., .102),
-            ncol=3, fontsize=8)
+            bbox_to_anchor=(0., 1, 1., 0),
+            ncol=3, fontsize=6)
         plt.show()
 
 
