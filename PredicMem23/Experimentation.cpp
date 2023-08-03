@@ -215,6 +215,15 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	}
 }
 
+void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
+	PredictorParametersDomain params, long numAccessesPerExperiment = 10000000) {
+	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
+	for (auto& predictorParams : allPredictorParams) {
+		this->buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+	}
+
+}
+
 TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
 	struct PredictorParameters params, bool countTotalMemory) {
 	this->traceFilename = traceFilename;

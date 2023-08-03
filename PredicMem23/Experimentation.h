@@ -59,6 +59,7 @@ public:
 	void setExperiments(vector<Experiment*>);
 
 	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment);
+	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParametersDomain, long numAccessesPerExperiment);
 
 	map<string, vector<Experiment*>> getExperimentsByTrace();
 

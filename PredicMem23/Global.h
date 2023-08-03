@@ -1,7 +1,12 @@
 #pragma once
 #include<stdio.h>
+#include <string>
+#include <map>
+#include <vector>
 
 using namespace std;
+using std::vector;
+using std::map;
 
 #define L64bu unsigned long long
 #define L64b long long
@@ -17,11 +22,26 @@ struct CacheParameters {
 	bool saveHistoryAndClassIfNotValid;
 };
 
+struct CacheParametersDomain {
+	vector<int> numIndexBits;
+	vector<int> numWays;
+	vector<int> numSequenceAccesses;
+	vector<bool> saveHistoryAndClassIfNotValid;
+};
+
+
 struct DictionaryParameters {
 	int numClasses;
 	int maxConfidence;
 	int numConfidenceJumps;
 	bool saveHistoryAndClassIfNotValid;
+};
+
+struct DictionaryParametersDomain {
+	vector<int> numClasses;
+	vector<int> maxConfidence;
+	vector<int> numConfidenceJumps;
+	vector<bool> saveHistoryAndClassIfNotValid;
 };
 
 enum class PredictorModelType{ BufferSVM, DFCM};
@@ -33,6 +53,14 @@ struct PredictorParameters {
 	DictionaryParameters dictParams;
 };
 
+struct PredictorParametersDomain {
+	vector<PredictorModelType> types;
+	CacheParametersDomain cacheParams;
+	CacheParametersDomain additionalCacheParams;
+	DictionaryParametersDomain dictParams;
+};
+
+vector<PredictorParameters> decomposePredictorParametersDomain(PredictorParametersDomain paramsDomain);
 
 class PredictResultsAndCosts {
 public:
