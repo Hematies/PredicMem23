@@ -1,13 +1,17 @@
 #include "Global.h"
 
 
-vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>& base, CacheParametersDomain& domain, vector<string> params) {
+vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>& base, CacheParametersDomain& domain, vector<string> params,
+	bool isAdditionalCache) {
 	string currentParam = params[0];
 	auto res = vector<PredictorParameters>();
 	if (currentParam == "numIndexBits") {
 		for (auto& value : domain.numIndexBits) {
 			for (PredictorParameters predictorParams : base) {
-				predictorParams.cacheParams.numIndexBits = value;
+				if(!isAdditionalCache)
+					predictorParams.cacheParams.numIndexBits = value;
+				else
+					predictorParams.additionalCacheParams.numIndexBits = value;
 				res.push_back(predictorParams);
 			}
 		}
@@ -15,7 +19,10 @@ vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>
 	else if (currentParam == "numWays") {
 		for (auto& value : domain.numWays) {
 			for (PredictorParameters predictorParams : base) {
-				predictorParams.cacheParams.numWays = value;
+				if (!isAdditionalCache)
+					predictorParams.cacheParams.numWays = value;
+				else
+					predictorParams.additionalCacheParams.numWays = value;
 				res.push_back(predictorParams);
 			}
 		}
@@ -23,7 +30,10 @@ vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>
 	else if (currentParam == "numSequenceAccesses") {
 		for (auto& value : domain.numSequenceAccesses) {
 			for (PredictorParameters predictorParams : base) {
-				predictorParams.cacheParams.numSequenceAccesses = value;
+				if (!isAdditionalCache)
+					predictorParams.cacheParams.numSequenceAccesses = value;
+				else
+					predictorParams.additionalCacheParams.numSequenceAccesses = value;
 				res.push_back(predictorParams);
 			}
 		}
@@ -31,7 +41,10 @@ vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>
 	else if (currentParam == "saveHistoryAndClassIfNotValid") {
 		for (auto value : domain.saveHistoryAndClassIfNotValid) {
 			for (PredictorParameters predictorParams : base) {
-				predictorParams.cacheParams.saveHistoryAndClassIfNotValid = value;
+				if (!isAdditionalCache)
+					predictorParams.cacheParams.saveHistoryAndClassIfNotValid = value;
+				else
+					predictorParams.additionalCacheParams.saveHistoryAndClassIfNotValid = value;
 				res.push_back(predictorParams);
 			}
 		}
@@ -40,7 +53,7 @@ vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>
 
 	if (params.size() > 1) {
 		params.erase(params.begin());
-		res = decomposeCacheParameters(res, domain, params);
+		res = decomposeCacheParameters(res, domain, params, isAdditionalCache);
 	}
 
 	return res;
@@ -48,9 +61,10 @@ vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>
 
 
 
-vector<PredictorParameters> decomposeCacheParametersBegin(vector<PredictorParameters>& base, CacheParametersDomain& domain) {
+vector<PredictorParameters> decomposeCacheParametersBegin(vector<PredictorParameters>& base, CacheParametersDomain& domain,
+	bool isAdditionalCache) {
 	vector<string> params = vector<string>{ "numIndexBits", "numWays", "numSequenceAccesses", "saveHistoryAndClassIfNotValid" };
-	return decomposeCacheParameters(base, domain, params);
+	return decomposeCacheParameters(base, domain, params, isAdditionalCache);
 }
 
 
@@ -113,8 +127,8 @@ vector<PredictorParameters> decomposePredictorParametersDomain(PredictorParamete
 		base.push_back(params);
 	}
 
-	base = decomposeCacheParametersBegin(base, paramsDomain.cacheParams);
-	base = decomposeCacheParametersBegin(base, paramsDomain.additionalCacheParams);
+	base = decomposeCacheParametersBegin(base, paramsDomain.cacheParams, false);
+	base = decomposeCacheParametersBegin(base, paramsDomain.additionalCacheParams, true);
 	base = decomposeDictionaryParametersBegin(base, paramsDomain.dictParams);
 
 	return base;
