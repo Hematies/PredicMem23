@@ -178,12 +178,19 @@ int main()
             numAccessesPerTrace
             });
     }
-
+    /*
     TracePredictExperimentation experimentation = TracePredictExperimentation(outputName, countTotalMemory);
     // experimentation.buildExperiments(tracesInfo, params, numAccessesPerExperiment);
     experimentation.buildExperiments(tracesInfo, paramsDomain, numAccessesPerExperiment);
     experimentation.performExperiments();
     experimentation.exportResults();
+    */
+    vector<TracePredictExperimentation> experimentations =
+        TracePredictExperimentation::createAndBuildExperimentations(tracesInfo, paramsDomain, numAccessesPerExperiment, outputName, countTotalMemory);
+    for (auto& experimentation : experimentations) {
+        experimentation.performExperiments();
+        experimentation.exportResults();
+    }
 
     printf("");
 

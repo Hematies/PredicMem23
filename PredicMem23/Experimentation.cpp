@@ -9,6 +9,8 @@
 #include <algorithm> 
 #include "Experimentation.h"
 #include<omp.h>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 string nowDateTime() {
 	// auto now = std::chrono::system_clock::now();
@@ -215,13 +217,25 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	}
 }
 
-void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
-	PredictorParametersDomain params, long numAccessesPerExperiment = 10000000) {
-	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
-	for (auto& predictorParams : allPredictorParams) {
-		this->buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
-	}
 
+
+vector<TracePredictExperimentation> TracePredictExperimentation::createAndBuildExperimentations(vector<TraceInfo> tracesInfo,
+	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
+	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
+	int i = 0;
+	// std::string baseName = outputFilename.substr(outputFilename.find_last_of("/\\") + 1);
+	auto path = fs::path(outputFilename);
+	string directory = path.parent_path().string();
+	std::string baseName = path.stem().string();
+	std::string extension = path.extension().string();
+	auto res = vector<TracePredictExperimentation>();
+	for (auto& predictorParams : allPredictorParams) {
+		string file = directory + "\\" + baseName + "_" + to_string(i) + extension;
+		res.push_back(TracePredictExperimentation(file, countTotalMemory));
+		res[i].buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		i++;
+	}
+	return res;
 }
 
 TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
