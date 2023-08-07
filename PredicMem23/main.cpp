@@ -71,7 +71,7 @@ int main()
 
     };
 
-    //  traceFiles = vector<string>{ mcf_s };
+    traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -94,7 +94,7 @@ int main()
         "roms_s",
 
     };
-    // traceNames = vector<string>{ "mcf_s" };
+    traceNames = vector<string>{ "mcf_s" };
 
     bool countTotalMemory = false;
 
@@ -185,8 +185,8 @@ int main()
     experimentation.performExperiments();
     experimentation.exportResults();
     */
-    vector<TracePredictExperimentation> experimentations =
-        TracePredictExperimentation::createAndBuildExperimentations(tracesInfo, paramsDomain, numAccessesPerExperiment, outputName, countTotalMemory);
+    vector<TracePredictExperimentation> experimentations = vector<TracePredictExperimentation>();
+    TracePredictExperimentation::createAndBuildExperimentations(experimentations, tracesInfo, paramsDomain, numAccessesPerExperiment, outputName, countTotalMemory);
     for (auto& experimentation : experimentations) {
         experimentation.performExperiments();
         experimentation.exportResults();

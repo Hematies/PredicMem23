@@ -51,7 +51,7 @@ void TracePredictExperimentation::performExperiments() {
 	*/
 #pragma omp parallel for schedule(dynamic,1) ordered
 	for (int i = 0; i < experiments.size(); i++) {
-		auto& experiment = experiments[i];
+		auto experiment = this->experiments[i];
 		cout << "\n=========";
 		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
 		experiment->performExperiment();
@@ -202,7 +202,7 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 		while(true) {
 			k1 = k1 > numLines ? numLines : k1;
 			this->experiments.push_back(
-				new TracePredictExperiment(pointer, filename, name, k, k1, params, this->countTotalMemory));
+				new TracePredictExperiment(this, filename, name, k, k1, params, this->countTotalMemory));
 			// this->experiments.push_back(make_unique<TracePredictExperiment>(experiment));
 
 			k += numAccessesPerExperiment;
@@ -219,7 +219,7 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 
 
 
-vector<TracePredictExperimentation> TracePredictExperimentation::createAndBuildExperimentations(vector<TraceInfo> tracesInfo,
+ void TracePredictExperimentation::createAndBuildExperimentations(vector<TracePredictExperimentation>& res, vector<TraceInfo> tracesInfo,
 	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
 	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
 	int i = 0;
@@ -228,14 +228,19 @@ vector<TracePredictExperimentation> TracePredictExperimentation::createAndBuildE
 	string directory = path.parent_path().string();
 	std::string baseName = path.stem().string();
 	std::string extension = path.extension().string();
-	auto res = vector<TracePredictExperimentation>();
+	res = vector<TracePredictExperimentation>(allPredictorParams.size());
 	for (auto& predictorParams : allPredictorParams) {
-		string file = directory + "\\" + baseName + "_" + to_string(i) + extension;
-		res.push_back(TracePredictExperimentation(file, countTotalMemory));
+		ostringstream file_;
+		file_ << directory << "\\" << baseName << "_" << to_string(i) << extension;
+		string file = file_.str();
+		// res.push_back(TracePredictExperimentation(file, countTotalMemory));
+		res[i] = TracePredictExperimentation(file, countTotalMemory);
 		res[i].buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		// auto t = TracePredictExperimentation(file, countTotalMemory);
+		// t.buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		// res.push_back(t);
 		i++;
 	}
-	return res;
 }
 
 TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, 
@@ -365,15 +370,20 @@ void TracePredictExperiment::performExperiment() {
 #pragma omp ordered
 	{
 	// First, we check that we don't have to instantiate a new TraceReader:
-	TraceReader<L64bu, L64bu>* traceReader = &this->framework->traceReader;
-	bool isSameFile = traceReader->filename == this->traceFilename;
-	bool isFileOpen = traceReader->file.is_open();
+	bool isSameFile = this->framework->traceReader.filename == this->traceFilename;
+	bool isFileOpen = this->framework->traceReader.file.is_open();
 
-	if (!isSameFile || !isFileOpen)
-		*traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
+	if (!isSameFile || !isFileOpen) {
+		// this->framework->traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
+		
+		// this->framework->traceReader.file = ifstream(this->traceFilename);
+		// this->framework->traceReader.filename = this->traceFilename;
+		// this->framework->traceReader.file.open(this->traceFilename);
+		TraceReader<L64bu, L64bu>(this->traceFilename).copy(this->framework->traceReader);
+	}
 
 	// Next, we read the trace and extract the working dataset:
-	dataset = traceReader->readLines(startLine, endLine);
+	dataset = this->framework->traceReader.readLines(startLine, endLine);
 	}
 	BuffersDataset<int> classesDataset;
 

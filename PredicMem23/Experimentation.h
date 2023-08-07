@@ -47,11 +47,15 @@ private:
 	bool countTotalMemory = false;
 	
 public:
-	static vector<TracePredictExperimentation> createAndBuildExperimentations(vector<TraceInfo> tracesInfo, PredictorParametersDomain, 
+	static void createAndBuildExperimentations(vector<TracePredictExperimentation>& res, vector<TraceInfo> tracesInfo, PredictorParametersDomain,
 		long numAccessesPerExperiment, string outputFilename, bool countTotalMemory);
 
 	TraceReader<L64bu, L64bu> traceReader;
 
+	TracePredictExperimentation() {
+		experiments = vector<Experiment*>();
+		outputFilename = "";
+	}
 	TracePredictExperimentation(vector<Experiment*> experiments, string outputFilename);
 	TracePredictExperimentation(string outputFilename, bool countTotalMemory = false);
 	
