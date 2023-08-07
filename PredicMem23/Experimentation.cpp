@@ -226,6 +226,8 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	// std::string baseName = outputFilename.substr(outputFilename.find_last_of("/\\") + 1);
 	auto path = fs::path(outputFilename);
 	string directory = path.parent_path().string();
+	if (directory == "")
+		directory = ".";
 	std::string baseName = path.stem().string();
 	std::string extension = path.extension().string();
 	res = vector<TracePredictExperimentation>(allPredictorParams.size());
