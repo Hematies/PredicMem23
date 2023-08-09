@@ -624,7 +624,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 
 }
 
-
+/*
 template<typename T, typename I, typename A, typename LA, typename Delta>
 shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulateWithSVM(AccessesDataset<I, LA>& dataset,
 	shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>& model, bool initializeModel) {
@@ -755,17 +755,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			if (!noError)
 				cout << "ERROR" << endl;
 		}
-
-		/*
-		res.inputAccesses.push_back(inputAccesses);
-		res.outputAccesses.push_back(outputAccess);
-		res.isValid.push_back(isValid);
-		res.isDictionaryMiss.push_back(isDictionaryMiss);
-		res.isCacheMiss.push_back(isCacheMiss);
-
-		numFallosDiccionario += isDictionaryMiss;
-		*/
-
+		
 		// SVM predictor:
 		vector<float> entrada = inputAccesses;
 		int salida = outputAccess;
@@ -836,6 +826,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 	return resultsAndCosts;
 
 }
+*/
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 bool BuffersSimulator<T, I, A, LA, Delta>::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
