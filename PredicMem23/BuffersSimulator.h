@@ -3,10 +3,11 @@
 #include <vector>
 #include <map>
 #include <iostream>
-#include "Global.h"
 #include "PredictorSVM.h"
+#include "Global.h"
 
 using namespace std;
+
 
 template<typename T, typename A, typename LA>
 class HistoryCacheEntry {
@@ -314,11 +315,11 @@ public:
 	}
 
 	BuffersDataset<A> simulate(AccessesDataset<I, LA>& dataset);
-	/*
+	
 	shared_ptr<PredictResultsAndCosts> simulateWithSVM(AccessesDataset<I, LA>& dataset, 
 		shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>& model,
 		bool initializeModel = true);
-	*/
+	
 
 	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);
 

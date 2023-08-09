@@ -624,7 +624,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 
 }
 
-/*
+
 template<typename T, typename I, typename A, typename LA, typename Delta>
 shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulateWithSVM(AccessesDataset<I, LA>& dataset,
 	shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>& model, bool initializeModel) {
@@ -826,7 +826,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 	return resultsAndCosts;
 
 }
-*/
+
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
 bool BuffersSimulator<T, I, A, LA, Delta>::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
