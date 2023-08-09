@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from PredictorType import PredictorsHelper, defaultOrderLevels, possiblePredictorTypes
@@ -6,7 +7,7 @@ import os
 
 class MultiXMLReader:
 
-    def __init__(self, directoryPath):
+    def __init__(self, directoryPath, onlyPredictorsOfTypes = []):
         self.directoryPath = directoryPath
         self.files = self.getXMLFiles(directoryPath)
         self.dataframe = self.buildDataframe(self.files)
@@ -31,6 +32,13 @@ class MultiXMLReader:
         self.dataframe = self.predictorsManager.setPredictorsNameAndTranslatedToDataframe(self.dataframe)
         self.dataframe = self.predictorsManager.setPredictorsMemoryCostsToDataframe(self.dataframe)
         self.dataframe["yield"] = self.dataframe["hitRate"] / self.dataframe["totalMemoryCost"]
+
+        if len(onlyPredictorsOfTypes) > 0:
+            # originalDataframe = pd.DataFrame(self.dataframe)
+            mascara = np.zeros(len(self.dataframe))
+            for predictorType in onlyPredictorsOfTypes:
+                mascara = np.logical_or(mascara, self.dataframe['predictorType'] == predictorType)
+            self.dataframe = self.dataframe[mascara]
 
     def getXMLFiles(self, directoryPath):
         res = []

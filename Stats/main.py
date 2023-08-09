@@ -10,7 +10,15 @@ from matplotlib import pyplot as plt
 configExplorationFilesDir =  "configExplorationFiles/"
 testOnAllAppsDir = "testOnAllApps/"
 
-multiReader = MultiXMLReader(configExplorationFilesDir)
+multiReader_ = MultiXMLReader(testOnAllAppsDir, onlyPredictorsOfTypes=["Real DFCM K-order"])
+comparator = TraceComparer(multiReader_.dataframe)
+comparator.plotParettoFront("totalMemoryCost", "hitRate", False, True, True)
+comparator.plotPerformanceComparison("hitRate")
+comparator.plotPerformanceComparison("totalMemoryCost")
+comparator.plotPerformanceComparison("yield")
+
+multiReader = MultiXMLReader(testOnAllAppsDir)
+
 comparator = TraceComparer(MultiXMLReader(testOnAllAppsDir).dataframe)
 comparator.plotParettoFront("totalMemoryCost", "hitRate", False, True, True)
 comparator.plotPerformanceComparison("hitRate")

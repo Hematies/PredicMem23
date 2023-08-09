@@ -285,41 +285,8 @@ class WholeTrace:
     def __init__(self, predictorType: str, dataframe: pd.DataFrame):
         self.predictorType = predictorType
         self.dataframe = dataframe[dataframe["predictorType"] == predictorType]
-        self.dataframe['modelHitRate'] = \
-            self.dataframe['hitRate'] / (
-                        (1 - self.dataframe['cacheMissRate']) * (1 - self.dataframe['dictionaryMissRate']))
-        self.dataframe['cacheHitRate'] = \
-            (1 - self.dataframe['cacheMissRate'])
-        self.dataframe['dictionaryHitRate'] = \
-            (1 - self.dataframe['dictionaryMissRate'])
-        self.dataframe['firstTableHitRate'] = \
-            (1 - self.dataframe['firstTableMissRate'])
-        self.dataframe['secondTableHitRate'] = \
-            (1 - self.dataframe['secondTableMissRate'])
-
-
-        # OJO: Ajustar coste en memoria a capacidad para los DFCMs:
-
-        casosDFCMHashOnHash = self.dataframe['predictorType'] == "InfiniteDFCM"
-        casosDFCM8Order = self.dataframe['predictorType'] == "InfiniteDFCMGradeK"
-        dataframe_ = self.dataframe.copy()
-        dataframe_['firstTableMemoryCost'] = \
-            self.dataframe[casosDFCMHashOnHash]['firstTableMemoryCost'] * 2 / 3
-        dataframe_['secondTableMemoryCost'] = \
-            self.dataframe[casosDFCMHashOnHash]['secondTableMemoryCost'] * 1 / 2
-        dataframe_['totalMemoryCost'] = dataframe_['firstTableMemoryCost'] + dataframe_['secondTableMemoryCost']
-        if casosDFCMHashOnHash.any():
-            self.dataframe[casosDFCMHashOnHash] = dataframe_[casosDFCMHashOnHash]
-
-
-        dataframe_ = self.dataframe.copy()
-        dataframe_['firstTableMemoryCost'] = \
-            self.dataframe[casosDFCM8Order]['firstTableMemoryCost'] * (1 + 8) / (2 + 8)
-        dataframe_['secondTableMemoryCost'] = \
-            self.dataframe[casosDFCM8Order]['secondTableMemoryCost'] * 1 / 2
-        dataframe_['totalMemoryCost'] = dataframe_['firstTableMemoryCost'] + dataframe_['secondTableMemoryCost']
-        if casosDFCM8Order.any():
-            self.dataframe[casosDFCM8Order] = dataframe_[casosDFCM8Order]
+        self.predictorsManager = PredictorsHelper(possiblePredictorTypes, defaultOrderLevels)
+        self.predictorsManager.setPredictors(self.dataframe.to_dict("list"))
 
 
     def groupAndAggregate(self, inputParameters: list, outputParameters: list):
@@ -363,7 +330,7 @@ class WholeTrace:
         dataframe = self.dataframe.round(3)
         dataframe['predictorHitRate'] = dataframe['hitRate']
         metrics = []
-        if "BufferSVM" in self.predictorType:
+        if "SVM4AP" in self.predictorType:
             if plotMemoryCosts:
                 # metrics = ["cacheMemoryCost", "dictionaryMemoryCost", "modelMemoryCost"]
                 metric = "totalMemoryCost"
@@ -372,7 +339,7 @@ class WholeTrace:
             else:
                 metrics = ["cacheHitRate", "dictionaryHitRate",
                            "modelHitRate", "predictorHitRate"]
-        elif self.predictorType == "InfiniteDFCM" or self.predictorType == "InfiniteDFCMGradeK":
+        elif "DFCM" in self.predictorType:
             if plotMemoryCosts:
                 metrics = ["firstTableMemoryCost", "secondTableMemoryCost", "totalMemoryCost"]
             else:
