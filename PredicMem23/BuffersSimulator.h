@@ -8,7 +8,6 @@
 
 using namespace std;
 
-
 template<typename T, typename A, typename LA>
 class HistoryCacheEntry {
 
@@ -314,7 +313,7 @@ public:
 		this->dictionary.~Dictionary();
 	}
 
-	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
+	BuffersDataset<A> simulate(AccessesDataset<I, LA>& dataset);
 	// void simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>&);
 
 	shared_ptr<PredictResultsAndCosts> simulateWithSVM(AccessesDataset<I, LA>& dataset, 

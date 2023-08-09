@@ -496,7 +496,7 @@ BuffersSimulator <T, I, A, LA, Delta>::BuffersSimulator(const BuffersSimulator <
 }
 
 template<typename T, typename I, typename A, typename LA, typename Delta>
-BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA> dataset) {
+BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA>& dataset) {
 // void BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>& res) {
 	// We iterate through the given samples:
 	auto accesses = dataset.accesses;
@@ -807,7 +807,9 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		if (haHabidoErrorDiccionario) numDictionaryMisses++;
 		if (haHabidoErrorCache) numCacheMisses++;
 
-
+		int numPartesMostrar = 10000;
+		int numClasesEntrada = numClasesEntrada;
+		int i = k;
 		if (i % numPartesMostrar == 0) {
 			// 
 			// if (!esEntradaPredecible){
@@ -815,7 +817,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			for (auto e : entrada)
 				in += to_string((e - 1.0) * numClasesEntrada) + ", ";
 			std::cout << in << " -> " << salida << " vs " << salidaPredicha << std::endl;
-			std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datosEntrada.size() << std::endl;
+			std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / accesses.size() << std::endl;
 		}
 
 
@@ -823,12 +825,12 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 	}
 
 
-	tasaExito = ((double)numAciertos) / datosEntrada.size();
+	tasaExito = ((double)numAciertos) / accesses.size();
 
 	resultsAndCosts.hitRate = tasaExito;
-	resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
-	resultsAndCosts.cacheMissRate = numCacheMisses / datosEntrada.size();
-	resultsAndCosts.modelMemoryCost = getModelMemoryCosts();
+	resultsAndCosts.dictionaryMissRate = numDictionaryMisses / accesses.size();
+	resultsAndCosts.cacheMissRate = numCacheMisses / accesses.size();
+	resultsAndCosts.modelMemoryCost = model->getModelMemoryCosts();
 	return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*) new BuffersSVMPredictResultsAndCosts(resultsAndCosts));
 	
 	return resultsAndCosts;
