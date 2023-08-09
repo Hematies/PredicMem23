@@ -4,7 +4,7 @@
 #include <map>
 #include <iostream>
 #include "Global.h"
-
+#include "PredictorSVM.h"
 
 using namespace std;
 
@@ -316,6 +316,10 @@ public:
 
 	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
 	// void simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>&);
+
+	shared_ptr<PredictResultsAndCosts> simulateWithSVM(AccessesDataset<I, LA>& dataset, 
+		shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>& model,
+		bool initializeModel = true);
 
 	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);
 

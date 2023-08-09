@@ -624,6 +624,217 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 
 }
 
+
+template<typename T, typename I, typename A, typename LA, typename Delta>
+shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulateWithSVM(AccessesDataset<I, LA>& dataset,
+	shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>& model, bool initializeModel) {
+
+	BuffersSVMPredictResultsAndCosts resultsAndCosts = BuffersSVMPredictResultsAndCosts();
+	double numDictionaryMisses = 0.0;
+	double numCacheMisses = 0.0;
+
+	if (initializeModel) {
+		model->inicializarModelo();
+
+	}
+
+	long numAciertos = 0;
+	double tasaExito = 0.0;
+
+	auto accesses = dataset.accesses;
+	auto instructions = dataset.accessesInstructions;
+
+	BuffersDataset<A> res = {
+		vector<vector<A>>(),
+		vector<A>(),
+		vector<bool>(),
+		vector<bool>(),
+		vector<bool>()
+	};
+
+	double numFallosDiccionario = 0.0;
+
+	for (int k = 0; k < accesses.size(); k++) {
+
+		// Buffer simulation:
+		auto access = accesses[k];
+		auto instruction = instructions[k];
+
+		vector<A> inputAccesses = vector<A>();
+		A outputAccess;
+		bool isValid = true,
+			isCacheMiss = false,
+			isDictionaryMiss = false;
+
+		// First, we ask the cache for the respective instruction history:
+		bool historyIsValid = true;
+		shared_ptr<HistoryCacheEntry<T, A, LA>> history =
+			shared_ptr< HistoryCacheEntry<T, A, LA>>(new StandardHistoryCacheEntry<T, A, LA>());
+		bool historyIsFound = historyCache->getEntry(instruction, history.get());
+		Delta delta;
+		LA previousAccess;
+		if (historyIsFound) {
+			historyIsValid = history->isEntryValid();
+			previousAccess = history->getLastAccess();
+			delta = access - previousAccess;
+		}
+		else {
+			historyIsValid = false;
+			previousAccess = access;
+			delta = 0;
+		}
+
+
+
+		// The history and the dictionary are updated:
+		bool classIsFound;
+		int class_;
+		auto previousDictionaryEntries = vector<DictionaryEntry<Delta>>(dictionary.entries);
+		// int classToPredict;
+		if (historyIsFound) {
+
+			// First, we ask the dictionary for the class/word assigned to the delta of the access:
+			class_ = dictionary.getClass(delta);
+
+			// classToPredict = class_;
+			classIsFound = class_ >= 0;
+
+			class_ = dictionary.newDelta(delta);
+		}
+		else {
+			classIsFound = false;
+			class_ = -1;
+			// classToPredict = -1;
+		}
+		historyCache->newAccess(instruction, access, class_);
+
+
+		bool noError = true;
+		// isCacheMiss = !historyIsValid;
+		isCacheMiss = !historyIsFound;
+		isDictionaryMiss = !classIsFound;
+		vector<A> history_ = history->getHistory();
+
+		// If we predict via greediness, histories that are found but not valid will be saved:
+		if (!isCacheMiss && !historyIsValid && this->saveHistoryAndClassIfNotValid) {
+			historyIsValid = true;
+			vector<A> aux = vector<A>();
+			for (A elem : history_)
+				aux.push_back(elem == -1 ? this->dictionary.numClasses : elem);
+			history_ = aux;
+		}
+
+		inputAccesses = vector<A>(history_);
+		if (!classIsFound || !historyIsValid || !historyIsFound) {
+			// The access is labeled as miss:
+			isValid = false;
+			if (!historyIsValid || !saveHistoryAndClassAfterDictMiss) {
+				outputAccess = -1;
+			}
+			else {
+				// In the case that only the dictionary, failed, we
+				// will indicate as resulting class the class for
+				// the next iteration after updating the dictionary:
+				outputAccess = class_;
+			}
+
+			// We test the buffers just in case:
+			noError = this->testBuffers(instruction, access, previousAccess);
+
+			if (!noError)
+				cout << "ERROR" << endl;
+
+		}
+		else {
+			isValid = true;
+			outputAccess = class_;
+
+			// We test the buffers just in case:
+			noError = this->testBuffers(instruction, access, previousAccess);
+
+			if (!noError)
+				cout << "ERROR" << endl;
+		}
+
+		/*
+		res.inputAccesses.push_back(inputAccesses);
+		res.outputAccesses.push_back(outputAccess);
+		res.isValid.push_back(isValid);
+		res.isDictionaryMiss.push_back(isDictionaryMiss);
+		res.isCacheMiss.push_back(isCacheMiss);
+
+		numFallosDiccionario += isDictionaryMiss;
+		*/
+
+		// SVM predictor:
+		vector<float> entrada = inputAccesses;
+		int salida = outputAccess;
+		auto esEntradaPredecible = isValid;
+		auto haHabidoErrorCache = isCacheMiss;
+		auto haHabidoErrorDiccionario = isDictionaryMiss;
+
+		int salidaPredicha = -1;
+		if (esEntradaPredecible)
+			salidaPredicha = model->predecir(entrada);
+
+		bool haHabidoFalloPrediccion = (salida != salidaPredicha);
+
+		// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
+		// bool hayQueAjustar = (haHabidoFalloPrediccion && esEntradaPredecible) || (haHabidoErrorDiccionario && !esEntradaPredecible);
+		bool hayQueAjustar = !haHabidoErrorCache && (haHabidoFalloPrediccion || haHabidoErrorDiccionario);
+		if (hayQueAjustar) {
+			model->ajustarPredictor(entrada, salida);
+		}
+
+		bool hayHit = esEntradaPredecible && !haHabidoErrorDiccionario && !haHabidoErrorCache && !haHabidoFalloPrediccion;
+		if (hayHit) {
+			numAciertos++;
+
+			// Test the hit:
+			bool simulationFailure = false;
+			bool nullClass = salidaPredicha < 0;
+
+			int predictedClass = salidaPredicha;
+			auto predictedDelta = previousDictionaryEntries[predictedClass];
+			auto predictedAccess = previousAccess + predictedDelta;
+			bool realAndPredictedAccessesNotEqual = predictedAccess != access;
+
+			simulationFailure = nullClass || realAndPredictedAccessesNotEqual;
+			if(simulationFailure)
+				cout << "ERROR" << endl;
+		}
+
+		if (haHabidoErrorDiccionario) numDictionaryMisses++;
+		if (haHabidoErrorCache) numCacheMisses++;
+
+
+		if (i % numPartesMostrar == 0) {
+			// 
+			// if (!esEntradaPredecible){
+			string in = "";
+			for (auto e : entrada)
+				in += to_string((e - 1.0) * numClasesEntrada) + ", ";
+			std::cout << in << " -> " << salida << " vs " << salidaPredicha << std::endl;
+			std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datosEntrada.size() << std::endl;
+		}
+
+
+		history.reset();
+	}
+
+
+	tasaExito = ((double)numAciertos) / datosEntrada.size();
+
+	resultsAndCosts.hitRate = tasaExito;
+	resultsAndCosts.dictionaryMissRate = numDictionaryMisses / datosEntrada.size();
+	resultsAndCosts.cacheMissRate = numCacheMisses / datosEntrada.size();
+	resultsAndCosts.modelMemoryCost = getModelMemoryCosts();
+	return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*) new BuffersSVMPredictResultsAndCosts(resultsAndCosts));
+	
+	return resultsAndCosts;
+
+}
+
 template<typename T, typename I, typename A, typename LA, typename Delta>
 bool BuffersSimulator<T, I, A, LA, Delta>::testBuffers(I instruction, LA currentAccess, LA previousAccess) {
 	bool historyIsValid = true;
