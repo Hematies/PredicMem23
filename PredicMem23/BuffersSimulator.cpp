@@ -8,6 +8,7 @@ template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64bu>;
 template class StandardHistoryCacheEntry<L64bu, L64bu, L64b>;
 template class RealHistoryCache<L64bu, L64bu, L64bu, L64b>;
 template class InfiniteHistoryCache<L64bu, L64bu, L64bu, L64b>;
+template class BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>;
 
 
 template<typename T, typename A, typename LA>
@@ -689,7 +690,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		// The history and the dictionary are updated:
 		bool classIsFound;
 		int class_;
-		auto previousDictionaryEntries = vector<DictionaryEntry<Delta>>(dictionary.entries);
+		vector<DictionaryEntry<Delta>> previousDictionaryEntries = vector<DictionaryEntry<Delta>>(dictionary.entries);
 		// int classToPredict;
 		if (historyIsFound) {
 
@@ -757,7 +758,8 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		}
 		
 		// SVM predictor:
-		vector<float> entrada = inputAccesses;
+		vector<float> entrada = vector<float>();
+		for(auto input : inputAccesses) entrada.push_back((float)input);
 		int salida = outputAccess;
 		auto esEntradaPredecible = isValid;
 		auto haHabidoErrorCache = isCacheMiss;
@@ -785,8 +787,8 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			bool nullClass = salidaPredicha < 0;
 
 			int predictedClass = salidaPredicha;
-			auto predictedDelta = previousDictionaryEntries[predictedClass];
-			auto predictedAccess = previousAccess + predictedDelta;
+			Delta predictedDelta = previousDictionaryEntries[predictedClass].delta;
+			LA predictedAccess = previousAccess + predictedDelta;
 			bool realAndPredictedAccessesNotEqual = predictedAccess != access;
 
 			simulationFailure = nullClass || realAndPredictedAccessesNotEqual;
@@ -823,7 +825,6 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 	resultsAndCosts.modelMemoryCost = model->getModelMemoryCosts();
 	return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*) new BuffersSVMPredictResultsAndCosts(resultsAndCosts));
 	
-	return resultsAndCosts;
 
 }
 

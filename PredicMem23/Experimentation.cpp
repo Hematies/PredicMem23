@@ -358,12 +358,20 @@ void TracePredictExperiment::performExperiment() {
 
 		if (this->predictorParams.type == PredictorModelType::BufferSVM) {
 			// Now we simulate the buffers and extract the final dataset:
-			classesDataset = this->buffersSimulator.simulate(dataset);
+			// classesDataset = this->buffersSimulator.simulate(dataset);
+			auto cacheParams = this->predictorParams.cacheParams;
+			auto dictParams = this->predictorParams.dictParams;
+			auto p = shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>(
+				new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses,
+					cacheParams.saveHistoryAndClassIfNotValid));
+			resultsAndCosts = this->buffersSimulator.simulateWithSVM(dataset, p, true);
 		}
-
-		// Finally, we simulate the predictor model and extract metrics from results:
-		this->model->importarDatos(dataset, classesDataset);
-		resultsAndCosts = this->model->simular();
+		else {
+			// Finally, we simulate the predictor model and extract metrics from results:
+			this->model->importarDatos(dataset, classesDataset);
+			resultsAndCosts = this->model->simular();
+		}
+		
 
 		if (this->predictorParams.type == PredictorModelType::BufferSVM) {
 			BuffersSVMPredictResultsAndCosts* rc = (BuffersSVMPredictResultsAndCosts*)resultsAndCosts.get();
