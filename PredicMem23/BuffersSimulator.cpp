@@ -808,6 +808,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		if (haHabidoErrorCache) numCacheMisses++;
 
 		int numPartesMostrar = 10000;
+		int numClasesEntrada = model->numClases;
 		int i = k;
 		if (i % numPartesMostrar == 0) {
 			// 
