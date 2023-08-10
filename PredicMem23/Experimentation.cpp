@@ -359,6 +359,7 @@ void TracePredictExperiment::performExperiment() {
 		if (this->predictorParams.type == PredictorModelType::BufferSVM) {
 			// Now we simulate the buffers and extract the final dataset:
 			// classesDataset = this->buffersSimulator.simulate(dataset);
+
 			auto cacheParams = this->predictorParams.cacheParams;
 			auto dictParams = this->predictorParams.dictParams;
 			auto p = shared_ptr<PredictorSVM<MultiSVMClassifierOneToAll, int>>(

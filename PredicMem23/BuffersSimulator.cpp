@@ -753,13 +753,18 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			// We test the buffers just in case:
 			noError = this->testBuffers(instruction, access, previousAccess);
 
-			if (!noError)
-				cout << "ERROR" << endl;
+			if (!noError) {
+				cout << "ERRORRRRRRRRRRRRRRRRRRRRRRRR" << endl;
+			}
+			
 		}
 		
 		// SVM predictor:
 		vector<float> entrada = vector<float>();
-		for(auto input : inputAccesses) entrada.push_back((float)input);
+		int numClasesEntrada = this->dictionary.numClasses + 1;
+		for (auto input : inputAccesses) {
+			entrada.push_back(((float)input) / numClasesEntrada + 1.0);
+		}
 		int salida = outputAccess;
 		auto esEntradaPredecible = isValid;
 		auto haHabidoErrorCache = isCacheMiss;
@@ -779,6 +784,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		}
 
 		bool hayHit = esEntradaPredecible && !haHabidoErrorDiccionario && !haHabidoErrorCache && !haHabidoFalloPrediccion;
+		LA predictedAccess = 0;
 		if (hayHit) {
 			numAciertos++;
 
@@ -788,10 +794,12 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 
 			int predictedClass = salidaPredicha;
 			Delta predictedDelta = previousDictionaryEntries[predictedClass].delta;
-			LA predictedAccess = previousAccess + predictedDelta;
+			predictedAccess = previousAccess + predictedDelta;
 			bool realAndPredictedAccessesNotEqual = predictedAccess != access;
 
 			simulationFailure = nullClass || realAndPredictedAccessesNotEqual;
+			if(!noError)
+				cout << "ERROR" << endl;
 			if(simulationFailure)
 				cout << "ERROR" << endl;
 		}
@@ -800,7 +808,6 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		if (haHabidoErrorCache) numCacheMisses++;
 
 		int numPartesMostrar = 10000;
-		int numClasesEntrada = numClasesEntrada;
 		int i = k;
 		if (i % numPartesMostrar == 0) {
 			// 
@@ -808,7 +815,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			string in = "";
 			for (auto e : entrada)
 				in += to_string((e - 1.0) * numClasesEntrada) + ", ";
-			std::cout << in << " -> " << salida << " vs " << salidaPredicha << std::endl;
+			std::cout << in << " -> " << access << " vs " << predictedAccess << std::endl;
 			std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / accesses.size() << std::endl;
 		}
 
@@ -882,6 +889,11 @@ bool BuffersSimulator<T, I, A, LA, Delta>::testBuffers(I instruction, LA current
 	else {
 		// printf("\nClass: %d", class_);
 		// printf("\nSaved class: %d", savedClass);
+		if (!classesAreSame) {
+			cout << "ERROR" << endl;
+			printf("\nClass: %d", class_);
+			printf("\nSaved class: %d", savedClass);
+		}
 		return classesAreSame;
 	}
 	// return deltasAreSame;
