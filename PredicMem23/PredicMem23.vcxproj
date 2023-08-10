@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml.lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml.lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\Debugtinyxml\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -117,7 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\Debugtinyxml\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
