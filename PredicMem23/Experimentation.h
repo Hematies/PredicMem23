@@ -50,6 +50,9 @@ public:
 	static void createAndBuildExperimentations(vector<TracePredictExperimentation>& res, vector<TraceInfo> tracesInfo, PredictorParametersDomain,
 		long numAccessesPerExperiment, string outputFilename, bool countTotalMemory);
 
+	static void performAndExportExperimentations(vector<TraceInfo> tracesInfo,
+		PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory);
+
 	TraceReader<L64bu, L64bu> traceReader;
 
 	TracePredictExperimentation() {

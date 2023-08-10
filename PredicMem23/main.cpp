@@ -47,7 +47,7 @@ int main()
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
     //outputName = "PruebaDFCMRealPrimeraTabla1024Conjuntos6ViasSegundaTabla256Conjuntos4Vias.xml";
     // outputName = "PruebaBufferSVM1024Conjuntos6Vias6Clases.xml";
-    outputName = "MultiPruebaDFCMGradoK.xml";
+    outputName = "MultiPruebaDFCMGradoK_secuencia4.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
@@ -71,7 +71,7 @@ int main()
 
     };
 
-    traceFiles = vector<string>{ mcf_s };
+    // traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -94,7 +94,7 @@ int main()
         "roms_s",
 
     };
-    traceNames = vector<string>{ "mcf_s" };
+    // traceNames = vector<string>{ "mcf_s" };
 
     bool countTotalMemory = false;
 
@@ -133,16 +133,16 @@ int main()
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
     CacheParametersDomain cacheParamsDomain = {
-        vector<int>{7,8}, // 10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        vector<int>{7,8}, // vector<int>{7,8,9}, // 10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
         vector<int>{6},// 8,// 8,// 4,
-        vector<int>{8},// 8,// 4,// 8
+        vector<int>{4},// 8,// 4,// 8
         vector<bool>{true}
     };
 
 
     CacheParametersDomain additionalCacheParamsDomain = {
         vector<int>{7},// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        vector<int>{4},// 8,// 8,// 4,
+        vector<int>{2,4},// vector<int>{2,4},// 8,// 8,// 4,
         vector<int>{-1},// 4,// 8
         vector<bool>{true}
     };
@@ -178,19 +178,9 @@ int main()
             numAccessesPerTrace
             });
     }
-    /*
-    TracePredictExperimentation experimentation = TracePredictExperimentation(outputName, countTotalMemory);
-    // experimentation.buildExperiments(tracesInfo, params, numAccessesPerExperiment);
-    experimentation.buildExperiments(tracesInfo, paramsDomain, numAccessesPerExperiment);
-    experimentation.performExperiments();
-    experimentation.exportResults();
-    */
-    vector<TracePredictExperimentation> experimentations = vector<TracePredictExperimentation>();
-    TracePredictExperimentation::createAndBuildExperimentations(experimentations, tracesInfo, paramsDomain, numAccessesPerExperiment, outputName, countTotalMemory);
-    for (auto& experimentation : experimentations) {
-        experimentation.performExperiments();
-        experimentation.exportResults();
-    }
+   
+    TracePredictExperimentation::performAndExportExperimentations(tracesInfo, paramsDomain, numAccessesPerExperiment, 
+        outputName, countTotalMemory);
 
     printf("");
 

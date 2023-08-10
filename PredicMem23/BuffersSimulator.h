@@ -314,7 +314,7 @@ public:
 		this->dictionary.~Dictionary();
 	}
 
-	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
+	BuffersDataset<A> simulate(AccessesDataset<I, LA>& dataset);
 	// void simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>&);
 
 	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);

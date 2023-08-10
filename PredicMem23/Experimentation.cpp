@@ -217,7 +217,29 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	}
 }
 
-
+void TracePredictExperimentation::performAndExportExperimentations(vector<TraceInfo> tracesInfo,
+	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
+	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
+	int i = 0;
+	// std::string baseName = outputFilename.substr(outputFilename.find_last_of("/\\") + 1);
+	auto path = fs::path(outputFilename);
+	string directory = path.parent_path().string();
+	if (directory == "")
+		directory = ".";
+	std::string baseName = path.stem().string();
+	std::string extension = path.extension().string();
+	for (auto& predictorParams : allPredictorParams) {
+		ostringstream file_;
+		file_ << directory << "\\" << baseName << "_" << to_string(i) << extension;
+		string file = file_.str();
+		// res.push_back(TracePredictExperimentation(file, countTotalMemory));
+		auto experimentation = TracePredictExperimentation(file, countTotalMemory);
+		experimentation.buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		experimentation.performExperiments();
+		experimentation.exportResults();
+		i++;
+	}
+}
 
  void TracePredictExperimentation::createAndBuildExperimentations(vector<TracePredictExperimentation>& res, vector<TraceInfo> tracesInfo,
 	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
