@@ -708,7 +708,7 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 		bool noError = true;
 		// isCacheMiss = !historyIsValid;
 		isCacheMiss = !historyIsFound;
-		isDictionaryMiss = !classIsFound;
+		isDictionaryMiss = !classIsFound && historyIsFound;
 		vector<A> history_ = history->getHistory();
 
 		// If we predict via greediness, histories that are found but not valid will be saved:
