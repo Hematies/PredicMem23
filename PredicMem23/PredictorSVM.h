@@ -14,11 +14,10 @@ using namespace std;
 template<typename T_pred, typename T_entrada>
 class PredictorSVM : PredictorModel<L64bu, T_entrada>
 {
-
-private:
+	
+public:
 	int numPartesMostrar = 10000;
 	int numClasesEntrada;
-public:
 	vector<vector<float>> datosEntrada = vector<vector<float>>();
 	vector<char> datosSalida = vector<char>();
 	vector<char> mascaraEntradasPredecibles = vector<char>();

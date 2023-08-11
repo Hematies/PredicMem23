@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\pablo\Documents\tinyxml;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\pablo\Documents\Releasetinyxml\tinyxml.lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\pablo\Documents\tinyxml;$(IncludePath)</IncludePath>
@@ -135,7 +135,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\pablo\Documents\tinyxml\Releasetinyxml\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

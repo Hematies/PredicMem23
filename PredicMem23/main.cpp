@@ -48,7 +48,7 @@ int main()
     // outputName = "PruebaOrden8Infinito";
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
     // outputName = "PruebaDFCMRealPrimeraTabla128Conjuntos6ViasSegundaTabla128Conjuntos2Vias.xml";
-    outputName = "PruebaBufferSVM1024Conjuntos6Vias6Clases_testeo.xml";
+    outputName = "PruebaBufferSVM1024Conjuntos6Vias6Clases_testeo_final.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
@@ -72,7 +72,7 @@ int main()
 
     };
 
-    traceFiles = vector<string>{ mcf_s };
+    traceFiles = vector<string>{ gcc_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -95,7 +95,7 @@ int main()
         "roms_s",
 
     };
-    traceNames = vector<string>{ "mcf_s" };
+    traceNames = vector<string>{ "gcc_s" };
 
     bool countTotalMemory = false;
 

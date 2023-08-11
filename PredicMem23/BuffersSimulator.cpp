@@ -634,11 +634,6 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 	double numDictionaryMisses = 0.0;
 	double numCacheMisses = 0.0;
 
-	if (initializeModel) {
-		model->inicializarModelo();
-
-	}
-
 	long numAciertos = 0;
 	double tasaExito = 0.0;
 
@@ -742,8 +737,10 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			// We test the buffers just in case:
 			noError = this->testBuffers(instruction, access, previousAccess);
 
-			if (!noError)
+			if (!noError) {
 				cout << "ERROR" << endl;
+				throw - 1;
+			}
 
 		}
 		else {
@@ -755,13 +752,14 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 
 			if (!noError) {
 				cout << "ERRORRRRRRRRRRRRRRRRRRRRRRRR" << endl;
+				throw - 1;
 			}
 			
 		}
 		
 		// SVM predictor:
 		vector<float> entrada = vector<float>();
-		int numClasesEntrada = this->dictionary.numClasses + 1;
+		int numClasesEntrada = model->numClasesEntrada;
 		for (auto input : inputAccesses) {
 			entrada.push_back(((float)input) / numClasesEntrada + 1.0);
 		}
@@ -800,15 +798,16 @@ shared_ptr<PredictResultsAndCosts> BuffersSimulator<T, I, A, LA, Delta>::simulat
 			simulationFailure = nullClass || realAndPredictedAccessesNotEqual;
 			if(!noError)
 				cout << "ERROR" << endl;
-			if(simulationFailure)
+			if (simulationFailure) {
+				throw - 1;
 				cout << "ERROR" << endl;
+			}
 		}
 
 		if (haHabidoErrorDiccionario) numDictionaryMisses++;
 		if (haHabidoErrorCache) numCacheMisses++;
 
 		int numPartesMostrar = 10000;
-		int numClasesEntrada = model->numClases;
 		int i = k;
 		if (i % numPartesMostrar == 0) {
 			// 
