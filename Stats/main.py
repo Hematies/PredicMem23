@@ -9,14 +9,14 @@ from matplotlib import pyplot as plt
 
 configExplorationFilesDir =  "configExplorationFiles/"
 testOnAllAppsDir = "testOnAllApps/"
-
+'''
 multiReader_ = MultiXMLReader(testOnAllAppsDir, onlyPredictorsOfTypes=["Real SVM4AP"])
 comparator = TraceComparer(multiReader_.dataframe)
 comparator.plotParettoFront("totalMemoryCost", "hitRate", False, True, True)
 comparator.plotPerformanceComparison("hitRate")
 comparator.plotPerformanceComparison("totalMemoryCost")
 comparator.plotPerformanceComparison("yield")
-
+'''
 multiReader = MultiXMLReader(testOnAllAppsDir)
 
 comparator = TraceComparer(MultiXMLReader(testOnAllAppsDir).dataframe)

@@ -206,14 +206,18 @@ class TraceComparer:
             i = i + 1
         return pareto_front_nodes, pareto_front
 
-    def plotParettoFront(self, metric1, metric2, max1: bool, max2: bool, plotAllFronts = False,
+    def plotParettoFront(self, metric1, metric2, max1: bool, max2: bool,
+                         plotAllFronts = False,
                          fitCurvePerFront = False,
-                         fitCurvePerPredictorFamily = True):
+                         fitCurvePerPredictorFamily = True,
+                         fitCurvePerPredictorFamilyAndNumSequenceAccesses = False
+                         ):
         group = self.groupAndAggregate(['predictorPrettyName'], [metric1, metric2])
+        group_ = self.groupAndAggregate(['predictorPrettyName', 'numSequenceAccesses'], [metric1, metric2])
         values1 = group[(metric1, 'mean')].to_list()
         values2 = group[(metric2, 'mean')].to_list()
         labels = group.index.to_list()
-
+        labels_ = group_.index.to_list()
 
         '''Plotting process'''
         # plt.scatter(values1, values2)
@@ -222,6 +226,8 @@ class TraceComparer:
         markers = {'SVM': "s", 'HoH': "^", 'K-order': "v", 'default': "."}
         values1PerPredictorFamily = {'SVM': [], 'HoH': [], 'K-order': [], 'default': []}
         values2PerPredictorFamily = {'SVM': [], 'HoH': [], 'K-order': [], 'default': []}
+        values1PerPredictorFamilyAndSequence = {'default': []}
+        values2PerPredictorFamilyAndSequence = {'default': []}
         for i in range(0, len(labels)):
             marker = markers["default"]
             for l in markers.keys():
@@ -229,6 +235,12 @@ class TraceComparer:
                     marker = markers[l]
                     values1PerPredictorFamily[l].append(values1[i])
                     values2PerPredictorFamily[l].append(values2[i])
+                    l_ = l+'_'+ str(labels_[i][1])
+                    if not l_ in values1PerPredictorFamilyAndSequence:
+                        values1PerPredictorFamilyAndSequence[l_] = []
+                        values2PerPredictorFamilyAndSequence[l_] = []
+                    values1PerPredictorFamilyAndSequence[l_].append(values1[i])
+                    values2PerPredictorFamilyAndSequence[l_].append(values2[i])
                     break
             ax.scatter(values1[i], values2[i], label=labels[i], s=30, marker=marker)
 
@@ -261,15 +273,23 @@ class TraceComparer:
                     pf_Y_new = fit[0] * np.log(pf_X_new) + fit[1]
                     plt.plot(pf_X_new, pf_Y_new, linestyle = 'dotted')
 
+        keys = {}
         if fitCurvePerPredictorFamily:
-            for l in values1PerPredictorFamily.keys():
+            keys = values1PerPredictorFamily.keys()
+        elif  fitCurvePerPredictorFamilyAndNumSequenceAccesses:
+            keys = values1PerPredictorFamilyAndSequence.keys()
+        for l in keys:
+            if fitCurvePerPredictorFamily:
                 pf_X = values1PerPredictorFamily[l]
                 pf_Y = values2PerPredictorFamily[l]
-                if len(pf_X) > 1:
-                    fit = np.polyfit(np.log(pf_X), pf_Y, 1)
-                    pf_X_new = np.linspace(min(pf_X, key=lambda x: x), max(pf_X, key=lambda x: x), 300)
-                    pf_Y_new = fit[0] * np.log(pf_X_new) + fit[1]
-                    plt.plot(pf_X_new, pf_Y_new, linestyle='dotted')
+            elif fitCurvePerPredictorFamilyAndNumSequenceAccesses:
+                pf_X = values1PerPredictorFamilyAndSequence[l]
+                pf_Y = values2PerPredictorFamilyAndSequence[l]
+            if len(pf_X) > 1:
+                fit = np.polyfit(np.log(pf_X), pf_Y, 1)
+                pf_X_new = np.linspace(min(pf_X, key=lambda x: x), max(pf_X, key=lambda x: x), 300)
+                pf_Y_new = fit[0] * np.log(pf_X_new) + fit[1]
+                plt.plot(pf_X_new, pf_Y_new, linestyle='dotted')
 
 
         plt.xlabel(metricTranslationTable[metric1])
