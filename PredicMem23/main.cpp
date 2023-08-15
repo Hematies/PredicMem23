@@ -30,9 +30,7 @@ int main()
 {
     string outputName;
     vector<string> traceFiles;
-    CacheParameters cacheParams;
     vector<string> traceNames;
-    DictionaryParameters dictParams;
 
     // Nombre del fichero de salida:
     // outputName = "PruebaBufferSVMReal_NoActualizarDiccionarioCuandoMissInputBuffer.xml";
@@ -47,8 +45,9 @@ int main()
     // outputName = "PruebaDFCMInfinito_cambio_acceso_mapa.xml";
     // outputName = "PruebaOrden8Infinito";
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
-    // outputName = "PruebaDFCMRealPrimeraTabla128Conjuntos6ViasSegundaTabla128Conjuntos2Vias.xml";
-    outputName = "PruebaBufferSVM1024Conjuntos6Vias4Clases.xml";
+    //outputName = "PruebaDFCMRealPrimeraTabla1024Conjuntos6ViasSegundaTabla256Conjuntos4Vias.xml";
+    // outputName = "PruebaBufferSVM1024Conjuntos6Vias6Clases.xml";
+    outputName = "MultiPruebaDFCMGradoK_secuencia4.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
@@ -72,7 +71,7 @@ int main()
 
     };
 
-    //  traceFiles = vector<string>{ mcf_s };
+    // traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -99,42 +98,73 @@ int main()
 
     bool countTotalMemory = false;
 
+    /*
     // Parámetros de caché: (1) núm.de bits de índice, (2) num. de vías, (3) longitud de cada secuencia (historia), 
     // (4) guardar historia de entrada y clase de salida en el dataset aunque la secuencia guardada en caché no esté completa.
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
-    cacheParams = {
-        10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        6,// 8,// 8,// 4,
-        -1,// 8,// 4,// 8
-        true
+    CacheParametersDomain cacheParamsDomain = {
+        vector<int>{7,8}, // 10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        vector<int>{6},// 8,// 8,// 4,
+        vector<int>{4,8},// 8,// 4,// 8
+        vector<bool>{true}
     };
 
 
-    CacheParameters additionalCacheParams = {
-        7,// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        4,// 8,// 8,// 4,
-        -1,// 4,// 8
-        true
+    CacheParametersDomain additionalCacheParamsDomain = {
+        vector<int>{7, 8},// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        vector<int>{2,4},// 8,// 8,// 4,
+        vector<int>{-1},// 4,// 8
+        vector<bool>{true}
     };
 
     // Parámetros de diccionario: (1) núm. de clases (ergo, núm. de entradas), (2) máx. nivel de confianza, (3) núm. de saltos 
     // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
     // haya habido miss en el diccionario.
-    dictParams = {
-        8,
-        255,
-        8,
-        true
+    DictionaryParametersDomain dictParamsDomain = {
+        vector < int>{6},
+        vector < int>{255},
+        vector < int>{8},
+        vector<bool>{true}
+    };
+    */
+    // Parámetros de caché: (1) núm.de bits de índice, (2) num. de vías, (3) longitud de cada secuencia (historia), 
+    // (4) guardar historia de entrada y clase de salida en el dataset aunque la secuencia guardada en caché no esté completa.
+    // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
+    // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
+    CacheParametersDomain cacheParamsDomain = {
+        vector<int>{7,8}, // vector<int>{7,8,9}, // 10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        vector<int>{6},// 8,// 8,// 4,
+        vector<int>{4},// 8,// 4,// 8
+        vector<bool>{true}
     };
 
-    PredictorParameters params = {
+
+    CacheParametersDomain additionalCacheParamsDomain = {
+        vector<int>{7},// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        vector<int>{2,4},// vector<int>{2,4},// 8,// 8,// 4,
+        vector<int>{-1},// 4,// 8
+        vector<bool>{true}
+    };
+
+    // Parámetros de diccionario: (1) núm. de clases (ergo, núm. de entradas), (2) máx. nivel de confianza, (3) núm. de saltos 
+    // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
+    // haya habido miss en el diccionario.
+    DictionaryParametersDomain dictParamsDomain = {
+        vector < int>{6},
+        vector < int>{255},
+        vector < int>{8},
+        vector<bool>{true}
+    };
+
+
+    PredictorParametersDomain paramsDomain = {
         // PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
         // o el DFCM-infinito.
-        PredictorModelType::DFCM,
-        cacheParams,
-        additionalCacheParams,
-        dictParams
+        vector<PredictorModelType>{PredictorModelType::DFCM},
+        cacheParamsDomain,
+        additionalCacheParamsDomain,
+        dictParamsDomain
     };
 
     unsigned long numAccessesPerTrace = 1e9;
@@ -148,11 +178,9 @@ int main()
             numAccessesPerTrace
             });
     }
-
-    TracePredictExperimentation experimentation = TracePredictExperimentation(outputName, countTotalMemory);
-    experimentation.buildExperiments(tracesInfo, params, numAccessesPerExperiment);
-    experimentation.performExperiments();
-    experimentation.exportResults();
+   
+    TracePredictExperimentation::performAndExportExperimentations(tracesInfo, paramsDomain, numAccessesPerExperiment, 
+        outputName, countTotalMemory);
 
     printf("");
 

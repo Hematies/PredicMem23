@@ -3,15 +3,16 @@
 #include <fstream>      // std::ifstream
 // #include "BuffersSimulator.h"
 #include<set>
+#include<filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 template<typename I, typename O>
 class TraceReader {
-private:
 public:
-	string filename;
-	ifstream file;
+	string filename = "";
+	ifstream file = ifstream();
 	unsigned long currentLine = 0;
 
 	string endLine = "#eof";
@@ -26,6 +27,33 @@ public:
 		this->filename = filename;
 		file = ifstream(filename);
 		file.open(filename);
+	}
+	
+	TraceReader(const TraceReader<I,O>& t) {
+		this->filename = t.filename;
+		try {
+			this->file = ifstream(filename);
+		}
+		catch(...){
+			this->file = ifstream();
+		}
+		this->currentLine = t.currentLine;
+		this->endLine = t.endLine;
+		this->skipLineHeader = t.skipLineHeader;
+	}
+
+	void copy(TraceReader<I, O>& t) {
+		t.filename = filename;
+		t.file = ifstream(filename);
+		t.file.open(filename);
+	}
+
+	TraceReader operator=(const TraceReader<I, O>& t) {
+		return TraceReader(t);
+	}
+
+	~TraceReader() {
+		closeFile();
 	}
 
 	void closeFile() {
