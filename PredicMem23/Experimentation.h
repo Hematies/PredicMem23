@@ -20,10 +20,11 @@ public:
 	virtual map<string, double> getResultsAndCosts() = 0;
 	virtual void performExperiment() = 0;
 	virtual void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
-	virtual void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>) = 0;
+	virtual void setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b>) = 0;
 	virtual void clean() = 0;
 	virtual PredictorParameters getPredictorParams() = 0;
 	virtual void setPredictorParams(PredictorParameters) = 0;
+	virtual bool isNull() = 0;
 };
 
 
@@ -60,6 +61,8 @@ public:
 	void buildExperiments(vector<TraceInfo> tracesInfo, PredictorParameters params, long numAccessesPerExperiment);
 
 	map<string, vector<Experiment*>> getExperimentsByTrace();
+
+	int numWorkingThreads = 8;
 };
 
 class TracePredictExperiment : public Experiment {
@@ -70,6 +73,7 @@ private:
 	long endLine;
 	string startDateTime;
 	bool countTotalMemory = false;
+	bool isNull_ = false;
 
 	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> buffersSimulator
 		 = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>();
@@ -102,8 +106,9 @@ public:
 	map<string, double> getResultsAndCosts();
 	void performExperiment();
 	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
-	void setPredictorModel(PredictorDFCMInfinito<L64bu, L64b>);
+	void setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b>);
 	void clean();
+	bool isNull();
 
 	PredictorParameters getPredictorParams();
 	void setPredictorParams(PredictorParameters);
