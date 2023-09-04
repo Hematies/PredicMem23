@@ -48,7 +48,8 @@ int main()
     // outputName = "PruebaOrden8Infinito";
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
     // outputName = "PruebaDFCMRealPrimeraTabla128Conjuntos6ViasSegundaTabla128Conjuntos2Vias.xml";
-    outputName = "PruebaBufferSVM1024Conjuntos6Vias4Clases___.xml";
+    // outputName = "PruebaBufferSVM1024Conjuntos6Vias4Clases___.xml";
+    outputName = "PruebaSVM6ClasesIdeal.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
@@ -72,7 +73,7 @@ int main()
 
     };
 
-    traceFiles = vector<string>{ mcf_s };
+    //traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
@@ -95,7 +96,7 @@ int main()
         "roms_s",
 
     };
-    traceNames = vector<string>{ "mcf_s" };
+    //traceNames = vector<string>{ "mcf_s" };
 
     bool countTotalMemory = false;
 
@@ -104,7 +105,7 @@ int main()
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
     cacheParams = {
-        10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        -1,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
         6,// 8,// 8,// 4,
         6,// 8,// 4,// 8
         true
@@ -112,7 +113,7 @@ int main()
 
 
     CacheParameters additionalCacheParams = {
-        7,// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        -1,// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
         4,// 8,// 8,// 4,
         -1,// 4,// 8
         true
@@ -129,9 +130,9 @@ int main()
     };
 
     PredictorParameters params = {
-        PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
+        // PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
         // o el DFCM-infinito.
-        // PredictorModelType::DFCM,
+        PredictorModelType::BufferSVM,
         cacheParams,
         additionalCacheParams,
         dictParams
