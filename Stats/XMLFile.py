@@ -55,6 +55,7 @@ def setTypeToTableDict(tableDict: dict):
     return dataframe.to_dict("list")
 
 
+
 def fixOnWrongValue(value):
     res = value
     # 1) Check if value == "-nan(ind)"

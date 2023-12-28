@@ -1,3 +1,4 @@
+import matplotlib.colors
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sb
@@ -5,6 +6,8 @@ import numpy as np
 from matplotlib import ticker
 import seaborn as sns
 from PredictorType import metricTranslationTable, PredictorsHelper, possiblePredictorTypes, defaultOrderLevels
+import matplotlib.pylab as pl
+from textwrap import wrap
 
 class ExploratoryTrace:
 
@@ -67,121 +70,184 @@ class TraceComparer:
         map = {param: ['mean', 'std'] for param in outputParameters}
         return self.dataframe.groupby(inputParameters).agg(map)
 
-    def plotPerformanceComparison(self, metric, includeMean=True):
-        if self.dataframe[metric].min() > 0.001:
-            dataframe = self.dataframe.round(3)
-        else:
-            dataframe = self.dataframe
-        dataframe['predictorHitRate'] = dataframe['hitRate']
-        dataframe['order'] = dataframe['predictorPrettyName']
-        dataframe = dataframe.replace({"order":
-               self.predictorsManager.getPredictorsOrder(self.predictorsManager.predictors)})
-        dataframe = dataframe.sort_values(by=['order'])
-        metrics = []
-        # Group the DataFrame by 'Category'
-        groupedByTrace = dataframe.groupby('traceName', sort=False)
-        groupedByPredictor = dataframe.groupby('predictorPrettyName', sort=False)
+    def plotPerformanceComparison(self, metric, onlyAggMean=False):
 
-        # Create a figure and axis
-        # fig, ax = plt.subplots(layout='constrained')
-        fig, ax = plt.subplots(layout='constrained')
+        if not onlyAggMean:
+            if self.dataframe[metric].min() > 0.001:
+                dataframe = self.dataframe.round(3)
+            else:
+                dataframe = self.dataframe
+            dataframe['predictorHitRate'] = dataframe['hitRate']
+            dataframe['order'] = dataframe['predictorPrettyName']
+            dataframe = dataframe.replace({"order":
+                self.predictorsManager.getPredictorsOrder(
+                    self.predictorsManager.predictors)})
+            dataframe = dataframe.sort_values(by=['order'])
+            # dataframe = dataframe.sort_values(by=['totalMemoryCost'])
+            metrics = []
+            # Group the DataFrame by 'Category'
+            groupedByTrace = dataframe.groupby('traceName', sort=False)
+            groupedByPredictor = dataframe.groupby('predictorPrettyName', sort=False)
 
-        x = np.arange(len(groupedByTrace))  # the label locations
-        # width = 0.15  # the width of the bars
-        width = 0.07  # the width of the bars
-        multiplier = 0
+            # Create a figure and axis
+            # fig, ax = plt.subplots(layout='constrained')
+            fig, ax = plt.subplots(layout='constrained')
 
-        # Iterate over each group and plot the bars
-        # for name, group in grouped:
-        labels = []
-        for group in groupedByPredictor:
-            offset = width * multiplier
-            g = group[1].sort_values(by=['traceName'])
-            # labels.append(predictorTypeTranslationTable[group[0]])
-            labels.append(group[0])
-            rects = ax.bar(x + offset,
-                           g[metric],
-                           width,
-                           # label=predictorTypeTranslationTable[group[0]])
-                           label=group[0])
+            x = np.arange(len(groupedByTrace))  # the label locations
+            # width = 0.15  # the width of the bars
+            width = 0.07  # the width of the bars
+            multiplier = 0
+
+            # Iterate over each group and plot the bars
+            # for name, group in grouped:
+            labels = []
+            for group in groupedByPredictor:
+                offset = width * multiplier
+                g = group[1].sort_values(by=['totalMemoryCost'])
+                # labels.append(predictorTypeTranslationTable[group[0]])
+                labels.append(group[0])
+                rects = ax.bar(x + offset,
+                               g[metric],
+                               width,
+                               # label=predictorTypeTranslationTable[group[0]])
+                               label=group[0],
+                               )
+                '''
+                if plotMemoryCosts:
+                    ax.bar_label(rects, padding=5, fontsize=6, rotation=30,
+                                 fmt = '%.1e')
+                else:
+                    ax.bar_label(rects, padding=5, fontsize=6, rotation=30,
+                                 # fmt = '%.2e')
+                                 fmt='%.3f')
+                '''
+                multiplier += 1
+
+            '''
+            if includeMean:
+                aggregateResults = self.groupAndAggregate(['predictorType'], [metric])
+                # group = aggregateResults[(metric, 'mean')].sort_index(key=lambda index:
+                #    index.sort_values(key=lambda s: predictorTypeOrder[s])[0])
+                group = aggregateResults[(metric, 'mean')]
+                indexes = group.values.tolist()
+                labels.append('Mean')
+                rects = ax.bar(x + offset,
+                               group,
+                               width, label=predictorTypeTranslationTable[group[0]])
+            '''
+            # Add some text for labels, title and custom x-axis tick labels, etc.
+            # ax.set_ylabel('Metric value')
+            # if title != None:
+            #    ax.set_title(title)
+            ax.set_xticks(x + width, sorted(groupedByTrace.groups.keys()))
+            #if plotMemoryCosts:
+            #    plt.ylabel("Memory cost (bytes)")
+
+            plt.yticks(fontsize=9)
+            plt.xticks(fontsize=10, rotation=30)
+            # ax.legend(loc='upper left', fontsize=10, )
+            plt.locator_params(axis='y', nbins=20)
+            plt.grid(True, axis='y', linestyle='--')
+
+            plt.legend(  # bbox_to_anchor=(0.75, 1.15),
+                bbox_to_anchor=(0., 1, 1., 0),
+                ncol=4, fontsize=7)
+
             '''
             if plotMemoryCosts:
-                ax.bar_label(rects, padding=5, fontsize=6, rotation=30,
-                             fmt = '%.1e')
-            else:
-                ax.bar_label(rects, padding=5, fontsize=6, rotation=30,
-                             # fmt = '%.2e')
-                             fmt='%.3f')
+                ax.get_yaxis().set_major_formatter(
+                    ticker.FuncFormatter(lambda x, p: '{:.2e}'.format(x)))
             '''
-            multiplier += 1
 
-        '''
-        if includeMean:
-            aggregateResults = self.groupAndAggregate(['predictorType'], [metric])
-            # group = aggregateResults[(metric, 'mean')].sort_index(key=lambda index:
-            #    index.sort_values(key=lambda s: predictorTypeOrder[s])[0])
-            group = aggregateResults[(metric, 'mean')]
-            indexes = group.values.tolist()
-            labels.append('Mean')
-            rects = ax.bar(x + offset,
-                           group,
-                           width, label=predictorTypeTranslationTable[group[0]])
-        '''
-        # Add some text for labels, title and custom x-axis tick labels, etc.
-        # ax.set_ylabel('Metric value')
-        # if title != None:
-        #    ax.set_title(title)
-        ax.set_xticks(x + width, sorted(groupedByTrace.groups.keys()))
-        #if plotMemoryCosts:
-        #    plt.ylabel("Memory cost (bytes)")
+            # Show the plot
+            plt.show()
 
-        plt.yticks(fontsize=9)
-        plt.xticks(fontsize=10, rotation=30)
-        # ax.legend(loc='upper left', fontsize=10, )
-        plt.locator_params(axis='y', nbins=20)
-        plt.grid(True, axis='y', linestyle='--')
+            plt.figure()
+            tuples = [(p[0],
+                       self.predictorsManager.getPredictorsOrder(self.predictorsManager.predictors)[p[0]]) for p in
+                      groupedByPredictor]
+            order = list(
+                sorted(tuples, key=lambda t: t[1])
+            )
+            order = list(map(lambda t: t[0], order))
 
-        plt.legend(  # bbox_to_anchor=(0.75, 1.15),
-            bbox_to_anchor=(0., 1, 1., 0),
-            ncol=3, fontsize=6)
+            sns.boxplot(x='predictorPrettyName', y=metric, data=self.dataframe,
+                        order=order,
+                        # [
+                        #    'InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM',
+                        #    'RealBufferSVM_4_4', 'RealBufferSVM_8_8',
+                        # ],
+                        showmeans=True,
+                        meanprops={'marker': 'o',
+                                   'markerfacecolor': 'white',
+                                   'markeredgecolor': 'black',
+                                   'markersize': '8'},
+                        ).set(xlabel=None, ylabel=None)
 
-        '''
-        if plotMemoryCosts:
-            ax.get_yaxis().set_major_formatter(
-                ticker.FuncFormatter(lambda x, p: '{:.2e}'.format(x)))
-        '''
+            plt.grid(True, axis='y', linestyle='--', alpha=0.4)
+            plt.locator_params(axis='y', nbins=20)
 
-        # Show the plot
-        plt.show()
+            labels = [ '\n'.join(wrap(l, 10)) for l in labels]
+            plt.xticks(list(range(0, len(labels))), labels,
+                       rotation=45,
+                       fontsize=7,
+                       )
 
-        plt.figure()
-        tuples = [(p[0],
-                   self.predictorsManager.getPredictorsOrder(self.predictorsManager.predictors)[p[0]]) for p in groupedByPredictor]
-        order = list(
-            sorted(tuples, key=lambda t: t[1])
-        )
-        order = list(map(lambda t: t[0], order))
-        sns.boxplot(x='predictorPrettyName', y=metric, data=self.dataframe,
-                    order=order,
-                    #[
-                    #    'InfiniteDFCM', 'InfiniteDFCMGradeK', 'InfiniteBufferSVM', 'RealBufferSVM',
-                    #    'RealBufferSVM_4_4', 'RealBufferSVM_8_8',
-                    #],
-                    showmeans=includeMean,
-                    meanprops={'marker': 'o',
-                               'markerfacecolor': 'white',
-                               'markeredgecolor': 'black',
-                               'markersize': '8'}
-                    ).set(xlabel=None, ylabel=None)
-        plt.grid(True, axis='y', linestyle='--', alpha=0.4)
-        plt.locator_params(axis='y', nbins=20)
 
-        # plt.xticks([0, 1, 2, 3], labels,
-        plt.xticks(list(range(0, len(labels))), labels,
-                   rotation=30,
-                   fontsize=6
-                   )
-        plt.show()
+            plt.legend(  # bbox_to_anchor=(0.75, 1.15),
+                bbox_to_anchor=(0., 1, 1., 0),
+                ncol=4, fontsize=7)
+
+
+            plt.show()
+
+        else:
+            fig, ax = plt.subplots(layout='constrained')
+
+            group = self.groupAndAggregate(['predictorPrettyName'], [metric])
+            group_ = self.groupAndAggregate(['predictorPrettyName'], ["totalMemoryCost"])
+            memoryCosts = group_[("totalMemoryCost", 'mean')].to_list()
+            values = group[(metric, 'mean')].to_list()
+            labels = group.index.to_list()
+            indexes = sorted(list(range(0, len(labels))), key=lambda i: memoryCosts[i])
+            # values = list(map(lambda i: values[indexes[i]], list(range(0, len(labels)))))
+            # labels = list(map(lambda i: labels[indexes[i]], list(range(0, len(labels)))))
+            x = np.arange(len(group))  # the label locations
+            # width = 0.15  # the width of the bars
+            width = 0.8  # the width of the bars
+            multiplier = 0
+
+            # labels.append(predictorTypeTranslationTable[group[0]])
+            for i in range(0, len(values)):
+                offset = width * multiplier
+                rects = ax.bar(x[i],
+                               values[i],
+                               width,
+                               label=labels[i])
+                multiplier += 1
+
+
+            # ax.set_xticks(x + width, labels)
+
+            plt.yticks(fontsize=9)
+            # plt.xticks(fontsize=10, rotation=30)
+            # ax.legend(loc='upper left', fontsize=10, )
+            plt.locator_params(axis='y', nbins=20)
+            plt.grid(True, axis='y', linestyle='--')
+            ax.set_ylabel(metricTranslationTable[metric])
+            plt.tick_params(labelbottom = False, bottom=False)
+            plt.legend(  # bbox_to_anchor=(0.75, 1.15),
+                bbox_to_anchor=(0., 1, 1., 0),
+                ncol=3, fontsize=6)
+
+            '''
+            if plotMemoryCosts:
+                ax.get_yaxis().set_major_formatter(
+                    ticker.FuncFormatter(lambda x, p: '{:.2e}'.format(x)))
+            '''
+
+            # Show the plot
+            plt.show()
 
     # https://sirinnes.wordpress.com/2013/04/25/pareto-frontier-graphic-via-python/
 
@@ -210,7 +276,8 @@ class TraceComparer:
                          plotAllFronts = False,
                          fitCurvePerFront = False,
                          fitCurvePerPredictorFamily = True,
-                         fitCurvePerPredictorFamilyAndNumSequenceAccesses = False
+                         fitCurvePerPredictorFamilyAndNumSequenceAccesses = False,
+                         plotIdealMetric2 = False,
                          ):
         group = self.groupAndAggregate(['predictorPrettyName'], [metric1, metric2])
         group_ = self.groupAndAggregate(['predictorPrettyName', 'numSequenceAccesses'], [metric1, metric2])
@@ -222,6 +289,24 @@ class TraceComparer:
         '''Plotting process'''
         # plt.scatter(values1, values2)
         fig, ax = plt.subplots()
+
+        if plotIdealMetric2 and metric2 == "hitRate":
+            indexes = list(filter(lambda i: not "nfinite" in labels[i], range(0, len(labels))))
+            indexes_ = list(filter(lambda i: "nfinite" in labels[i], range(0, len(labels))))
+
+            n = len(indexes_)
+            colors = pl.cm.jet(np.linspace(0, 1, n))
+
+            i = 0
+            for index in indexes_:
+                plt.axhline(y=values2[index],
+                            color=colors[i],
+                            linestyle='-.')
+                i = i + 1
+            values1 = list(map(lambda i: values1[i], indexes))
+            values2 = list(map(lambda i: values2[i], indexes))
+            labels = list(map(lambda i: labels[i], indexes))
+            labels_ = list(map(lambda i: labels_[i], indexes))
 
         markers = {'SVM': "s", 'HoH': "^", 'K-order': "v", 'default': "."}
         values1PerPredictorFamily = {'SVM': [], 'HoH': [], 'K-order': [], 'default': []}
@@ -296,7 +381,8 @@ class TraceComparer:
         plt.ylabel(metricTranslationTable[metric2])
         plt.legend(  # bbox_to_anchor=(0.75, 1.15),
             bbox_to_anchor=(0., 1, 1., 0),
-            ncol=3, fontsize=6)
+            ncol=4, fontsize=6)
+        plt.locator_params(axis='y', nbins=20)
         plt.show()
 
 
@@ -338,7 +424,6 @@ class WholeTrace:
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax.set_ylabel(metricTranslationTable[metric])
-        ax.set_ylabel("Total mean memory capacity (bytes)")
         # if title != None:
         #    ax.set_title(title)
         ax.set_xticks(x, grouped.groups.keys())

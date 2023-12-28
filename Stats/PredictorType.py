@@ -367,7 +367,7 @@ class Predictor:
 
 BufferSVMPredicate = Predicate("firstTableMemoryCost", op.eq, float('nan'))
 DFCMPredicate = Predicate("firstTableMemoryCost", op.ne, float('nan'))
-InfiniteBufferSVM = PredictorType("Infinite BufferSVM")
+InfiniteBufferSVM = PredictorType("Infinite SVM4AP")
 InfiniteBufferSVM.setPredicates(
     ListOfPredicates(
         [
@@ -482,11 +482,11 @@ RealDFCMGradeK.setAttributes(["numSequenceAccesses", 'firstTableNumIndexBits', '
 
 metricTranslationTable = {
     'hitRate': 'Predictor hit rate',
-    'totalMemoryCost': "Total memory cost", # mean memory capacity",
-    'cacheMemoryCost': 'Cache memory capacity',
+    'totalMemoryCost': "Total memory cost (bytes)", # mean memory capacity",
+    'cacheMemoryCost': 'Cache memory capacity (bytes)',
     'cacheMissRate': 'Input buffer miss rate',
     'cacheHitRate': 'Input buffer hit rate',
-    'dictionaryMemoryCost': 'Dictionary memory capacity',
+    'dictionaryMemoryCost': 'Dictionary memory capacity (bytes)',
     'dictionaryMissRate': 'Dictionary miss rate',
     'dictionaryHitRate': 'Dictionary hit rate',
     'firstTableMissRate': 'First table miss rate',
@@ -497,9 +497,9 @@ metricTranslationTable = {
     'firstTableNumWays': 'First table num. ways',
     'secondTableNumIndexBits': 'Second table num. index. bits',
     'secondTableWays': 'Second table num. ways',
-    'firstTableMemoryCost': "First table's memory cost", # 's mean memory capacity",
-    'secondTableMemoryCost': "Second table's memory cost", # 's mean memory capacity",
-    'modelMemoryCost': 'Model memory capacity',
+    'firstTableMemoryCost': "First table's memory cost (bytes)", # 's mean memory capacity",
+    'secondTableMemoryCost': "Second table's memory cost (bytes)", # 's mean memory capacity",
+    'modelMemoryCost': 'Model memory capacity (bytes)',
     'modelHitRate': 'Model hit rate',
     'predictorHitRate': 'Predictor hit rate',
     'yield': 'Hit rate / Memory cost',
