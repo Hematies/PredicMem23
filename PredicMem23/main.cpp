@@ -25,6 +25,28 @@ string cactuBSSN_s = rutaSSD + "607.cactuBSSN_s\\run\\run_peak_refspeed_mytest-m
 string exchange2_s = rutaSSD + "648.exchange2_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 string roms_s = rutaSSD + "654.roms_s\\run\\run_peak_refspeed_mytest-m64.0000\\pinatrace.out";
 
+// Direcciones de ficheros de trazas obtenidas de ChampSim:
+string perlbench_recortado_s = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem24\\C-MemMAP\\Concatenated_Rerun\\data_dt_predicmem23\\perlbench.txt";
+
+// Direcciones de ficheros de trazas dadas por los californianos:
+string bodytrack_recortado_s = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem24\\MemMAP\\data\\bodytrack_1_1M.out";
+string canneal_recortado_s = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem24\\MemMAP\\data\\canneal_1_1M.out";
+
+// Direcciones de ficheros de trazas recortadas con 1e7 accesos:
+string ruta_ = "C:\\Users\\pablo\\Desktop\\Doctorado\\PredicMem24\\TrazasRecortadas\\";
+
+string perlbench_s_ = ruta_ + "perlbench_s.out";
+string gcc_s_ = ruta_ + "gcc_s.out";
+string mcf_s_ = ruta_ + "mcf_s.out";
+string lbm_s_ = ruta_ + "lbm_s.out";
+string omnetpp_s_ = ruta_ + "omnetpp_s.out";
+string xalancbmk_s_ = ruta_ + "xalancbmk_s.out";
+string x264_s_ = ruta_ + "x264_s.out";
+string deepsjeng_s_ = ruta_ + "deepsjeng_s.out";
+string leela_s_ = ruta_ + "leela_s.out";
+string cactuBSSN_s_ = ruta_ + "cactuBSSN_s.out";
+string exchange2_s_ = ruta_ + "exchange2_s.out";
+string roms_s_ = ruta_ + "roms_s.out";
 
 int main()
 {
@@ -47,11 +69,13 @@ int main()
     // outputName = "PruebaDFCMRealSegundaTabla64Conjuntos2Vias.xml";
     //outputName = "PruebaDFCMRealPrimeraTabla1024Conjuntos6ViasSegundaTabla256Conjuntos4Vias.xml";
     // outputName = "PruebaBufferSVM1024Conjuntos6Vias6Clases.xml";
-    outputName = "MultiPruebaDFCMGradoK_secuencia4.xml";
+    // outputName = "MultiPruebaDFCMGradoK_secuencia4.xml";
+    // outputName = "MultiPruebaSVMReal_bodytrack_canneal_recortado.xml";
+    outputName = "MultiPruebaSVMReal_trazas_recortadas.xml";
 
     // Lista de ficheros de traza a ser utilizados:
     traceFiles = vector<string>{
-
+        /*
         perlbench_s,
 
         gcc_s,
@@ -68,14 +92,30 @@ int main()
         cactuBSSN_s,
         exchange2_s,
         roms_s,
+        */
+        // perlbench_recortado_s
+        // bodytrack_recortado_s,
+        // canneal_recortado_s
 
+        perlbench_s_,
+        gcc_s_,
+        mcf_s_,
+        lbm_s_,
+        omnetpp_s_,
+        xalancbmk_s_,
+        x264_s_,
+        deepsjeng_s_,
+        leela_s_,
+        cactuBSSN_s_,
+        exchange2_s_,
+        roms_s_,
     };
 
     // traceFiles = vector<string>{ mcf_s };
 
     // Lista de nombres de trazas: 
     traceNames = vector<string>{
-
+        
         "perlbench_s",
 
         "gcc_s",
@@ -92,7 +132,10 @@ int main()
         "cactuBSSN_s",
         "exchange2_s",
         "roms_s",
-
+        
+        // "perlbench_recortado_s",
+        // "bodytrack_recortado_s",
+        // "canneal_recortado_s"
     };
     // traceNames = vector<string>{ "mcf_s" };
 
@@ -133,16 +176,16 @@ int main()
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
     CacheParametersDomain cacheParamsDomain = {
-        vector<int>{7,8}, // vector<int>{7,8,9}, // 10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        vector<int>{6},// 8,// 8,// 4,
-        vector<int>{4},// 8,// 4,// 8
+        vector<int>{10}, // vector<int>{7,8,9}, // 10,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+        vector<int>{4},// 8,// 8,// 4,
+        vector<int>{8},// 8,// 4,// 8
         vector<bool>{true}
     };
 
 
     CacheParametersDomain additionalCacheParamsDomain = {
         vector<int>{7},// 8,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        vector<int>{2,4},// vector<int>{2,4},// 8,// 8,// 4,
+        vector<int>{2},// vector<int>{2,4},// 8,// 8,// 4,
         vector<int>{-1},// 4,// 8
         vector<bool>{true}
     };
@@ -151,7 +194,7 @@ int main()
     // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
     // haya habido miss en el diccionario.
     DictionaryParametersDomain dictParamsDomain = {
-        vector < int>{6},
+        vector < int>{8},
         vector < int>{255},
         vector < int>{8},
         vector<bool>{true}
@@ -159,17 +202,18 @@ int main()
 
 
     PredictorParametersDomain paramsDomain = {
-        // PredictorModelType::BufferSVM, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
+        vector<PredictorModelType>{PredictorModelType::BufferSVM}, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
         // o el DFCM-infinito.
-        vector<PredictorModelType>{PredictorModelType::DFCM},
+        // vector<PredictorModelType>{PredictorModelType::DFCM},
         cacheParamsDomain,
         additionalCacheParamsDomain,
         dictParamsDomain
     };
 
-    unsigned long numAccessesPerTrace = 1e9;
+    unsigned long numAccessesPerTrace = 5*1e6;
     // unsigned long numAccessesPerTrace = 1e7;
-    unsigned long numAccessesPerExperiment = 1e6;
+    // unsigned long numAccessesPerExperiment = 1e6;
+    unsigned long numAccessesPerExperiment = 2.5*1e6;
     vector<TraceInfo> tracesInfo = vector<TraceInfo>();
     for (int i = 0; i < traceNames.size(); i++) {
         tracesInfo.push_back({
