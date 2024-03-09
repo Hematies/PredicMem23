@@ -226,7 +226,7 @@ public:
 	}
 
 	long getNumSets() {
-		return this->numSets;
+		return this->sets.size();;
 	}
 
 	int getNumIndexBits() {
@@ -298,7 +298,7 @@ public:
 		numHistoryAccesses = 0;
 	}
 
-	BuffersSimulator(HistoryCacheType historyCacheType, CacheParameters cacheParams, DictionaryParameters dictParams);
+	BuffersSimulator(HistoryCacheType cacheType, CacheParameters cacheParams, DictionaryParameters dictParams);
 
 	BuffersSimulator(const BuffersSimulator& b);
 
@@ -314,7 +314,7 @@ public:
 		this->dictionary.~Dictionary();
 	}
 
-	BuffersDataset<A> simulate(AccessesDataset<I, LA> dataset);
+	BuffersDataset<A> simulate(AccessesDataset<I, LA>& dataset);
 	// void simulate(AccessesDataset<I, LA> dataset, BuffersDataset<A>&);
 
 	bool testBuffers(I instruction, LA currentAccess, LA previousAccess);

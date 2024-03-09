@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\pablo\Documents\tinyxml;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\pablo\Documents\tinyxml\x64\Release\tinyxml.lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\pablo\Documents\tinyxml;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\pablo\Documents\tinyxml\x64\Release\tinyxml.lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\Debugtinyxml\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,11 +112,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\pablo\Documents\tinyxml\x64\Release\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\Debugtinyxml\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,18 +129,21 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\pablo\Documents\tinyxml\x64\Release\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BuffersSimulator.cpp" />
     <ClCompile Include="Experimentation.cpp" />
+    <ClCompile Include="Global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="multi_svm_classifier.cpp" />
     <ClCompile Include="PredictorDFCM.cpp" />

@@ -8,6 +8,9 @@
 #include "tinyxml.h"
 #include <algorithm> 
 #include "Experimentation.h"
+#include<omp.h>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 string nowDateTime() {
 	// auto now = std::chrono::system_clock::now();
@@ -36,12 +39,25 @@ TracePredictExperimentation::TracePredictExperimentation(string outputFilename,b
 }
 
 void TracePredictExperimentation::performExperiments() {
+
+	omp_set_num_threads(this->numWorkingThreads);
+	/*
 	for (auto& experiment : this->experiments) {
 		cout << "\n=========";
 		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
 		experiment->performExperiment();
 		experiment->clean();
 	}
+	*/
+#pragma omp parallel for schedule(dynamic,1) ordered
+	for (int i = 0; i < experiments.size(); i++) {
+		auto experiment = this->experiments[i];
+		cout << "\n=========";
+		cout << "\nEXPERIMENT: " << experiment->getString() << "\n";
+		experiment->performExperiment();
+		experiment->clean();
+	}
+
 }
 
 vector<Experiment*> TracePredictExperimentation::getExperiments() {
@@ -93,55 +109,72 @@ void TracePredictExperimentation::exportResults(string filename) {
 		TiXmlElement* trace = new TiXmlElement(traceName.c_str());
 		map<string, double> totalResults = {};
 
-		int numExperiments = experimentsByTrace[traceName].size();
-		int i = 0;
+		int numExperiments = 0;
 		for (auto experiment : experimentsByTrace[traceName]) {
-			// TiXmlElement* experiment_ = new TiXmlElement(experiment->getString().c_str());
-			string experimentName = "experiment_" + to_string(i);
-			TiXmlElement* experiment_ = new TiXmlElement(experimentName.c_str());
-			experiment_->SetAttribute("start", experiment->getStartLine());
-			experiment_->SetAttribute("end", experiment->getEndLine());
-			auto results = experiment->getResultsAndCosts();
-			auto params = experiment->getPredictorParams();
-
-			// First node: related to results and costs:
-			TiXmlElement* results_ = new TiXmlElement("resultsAndCosts");
-			/*
-			results_->SetDoubleAttribute("hitRate", results["hitRate"]);
-			results_->SetDoubleAttribute("cacheMissRate", results["cacheMissRate"]);
-			results_->SetDoubleAttribute("dictionaryMissRate", results["dictionaryMissRate"]);
-			*/
-			for (auto it = results.begin(); it != results.end(); it++) {
-				results_->SetDoubleAttribute(it->first.c_str(), it->second);
+			if (!experiment->isNull()) {
+				numExperiments++;
 			}
-			experiment_->LinkEndChild(results_);
+		}
+		for (auto experiment : experimentsByTrace[traceName]) {
+			if (!experiment->isNull()) {
 
-			// Second node: related to input, cache params:
-			auto cacheParams = params.cacheParams;
-			TiXmlElement* cacheParams_ = new TiXmlElement("cacheParams");
-			cacheParams_->SetAttribute("numIndexBits", cacheParams.numIndexBits);
-			cacheParams_->SetAttribute("numWays", cacheParams.numWays);
-			cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
-			cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
-			experiment_->LinkEndChild(cacheParams_);
+				TiXmlElement* experiment_ = new TiXmlElement(experiment->getString().c_str());
+				auto results = experiment->getResultsAndCosts();
+				auto params = experiment->getPredictorParams();
 
-			// Third node: related to input, dictionary params:
-			auto dictParams = params.dictParams;
-			TiXmlElement* dictParams_ = new TiXmlElement("dictParams");
-			dictParams_->SetAttribute("numClasses", dictParams.numClasses);
-			dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
-			dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
-			dictParams_->SetAttribute("saveHistoryAndClassIfNotValid", dictParams.saveHistoryAndClassIfNotValid);
-			experiment_->LinkEndChild(dictParams_);
+				// First node: related to results and costs:
+				TiXmlElement* results_ = new TiXmlElement("resultsAndCosts");
+				/*
+				results_->SetDoubleAttribute("hitRate", results["hitRate"]);
+				results_->SetDoubleAttribute("cacheMissRate", results["cacheMissRate"]);
+				results_->SetDoubleAttribute("dictionaryMissRate", results["dictionaryMissRate"]);
+				*/
+				for (auto it = results.begin(); it != results.end(); it++) {
+					results_->SetDoubleAttribute(it->first.c_str(), it->second);
+				}
+				experiment_->LinkEndChild(results_);
+
+				// Second node: related to input, cache params:
+				auto cacheParams = params.cacheParams;
+				TiXmlElement* cacheParams_ = new TiXmlElement("cacheParams");
+				if (experiment->getPredictorParams().type == PredictorModelType::BufferSVM) {
+					cacheParams_->SetAttribute("numIndexBits", cacheParams.numIndexBits);
+					cacheParams_->SetAttribute("numWays", cacheParams.numWays);
+					cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
+					cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
+					experiment_->LinkEndChild(cacheParams_);
+				}
+				else {
+					auto additionalCacheParams = params.additionalCacheParams;
+					cacheParams_->SetAttribute("firstTableNumIndexBits", cacheParams.numIndexBits);
+					cacheParams_->SetAttribute("secondTableNumIndexBits", additionalCacheParams.numIndexBits);
+					cacheParams_->SetAttribute("firstTableNumWays", cacheParams.numWays);
+					cacheParams_->SetAttribute("secondTableNumWays", additionalCacheParams.numWays);
+					cacheParams_->SetAttribute("numSequenceAccesses", cacheParams.numSequenceAccesses);
+					cacheParams_->SetAttribute("saveHistoryAndClassIfNotValid", cacheParams.saveHistoryAndClassIfNotValid);
+					experiment_->LinkEndChild(cacheParams_);
+				}
+				
+
+				// Third node: related to input, dictionary params:
+				if (experiment->getPredictorParams().type == PredictorModelType::BufferSVM) {
+					auto dictParams = params.dictParams;
+					TiXmlElement* dictParams_ = new TiXmlElement("dictParams");
+					dictParams_->SetAttribute("numClasses", dictParams.numClasses);
+					dictParams_->SetAttribute("maxConfidence", dictParams.maxConfidence);
+					dictParams_->SetAttribute("numConfidenceJumps", dictParams.numConfidenceJumps);
+					dictParams_->SetAttribute("saveHistoryAndClassIfNotValid", dictParams.saveHistoryAndClassIfNotValid);
+					experiment_->LinkEndChild(dictParams_);
+				}
 			
-			trace->LinkEndChild(experiment_);
-			for (auto it = results.begin(); it != results.end(); it++) {
-				totalResults[it->first] += it->second / numExperiments;
+				trace->LinkEndChild(experiment_);
+				for (auto it = results.begin(); it != results.end(); it++) {
+					totalResults[it->first] += it->second / numExperiments;
+				}
 			}
-			i++;
+
 		}
 
-		TiXmlElement* totalResults_ = new TiXmlElement("dictParams");
 		for (auto it = totalResults.begin(); it != totalResults.end(); it++) {
 			totalResults_->SetDoubleAttribute(it->first.c_str(), it->second);
 		}
@@ -170,14 +203,68 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 		while(true) {
 			k1 = k1 > numLines ? numLines : k1;
 			this->experiments.push_back(
-				new TracePredictExperiment(pointer, filename, name, k, k1, params));
+				new TracePredictExperiment(this, filename, name, k, k1, params, this->countTotalMemory));
 			// this->experiments.push_back(make_unique<TracePredictExperiment>(experiment));
 
 			k += numAccessesPerExperiment;
 			k1 += numAccessesPerExperiment;
-			if (k >= numLines) break;
+			if (k >= numLines) {
+				printf("");
+				break;
+
+			}
 		}
 
+	}
+}
+
+void TracePredictExperimentation::performAndExportExperimentations(vector<TraceInfo> tracesInfo,
+	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
+	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
+	int i = 0;
+	// std::string baseName = outputFilename.substr(outputFilename.find_last_of("/\\") + 1);
+	auto path = fs::path(outputFilename);
+	string directory = path.parent_path().string();
+	if (directory == "")
+		directory = ".";
+	std::string baseName = path.stem().string();
+	std::string extension = path.extension().string();
+	for (auto& predictorParams : allPredictorParams) {
+		ostringstream file_;
+		file_ << directory << "\\" << baseName << "_" << to_string(i) << extension;
+		string file = file_.str();
+		// res.push_back(TracePredictExperimentation(file, countTotalMemory));
+		auto experimentation = TracePredictExperimentation(file, countTotalMemory);
+		experimentation.buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		experimentation.performExperiments();
+		experimentation.exportResults();
+		i++;
+	}
+}
+
+ void TracePredictExperimentation::createAndBuildExperimentations(vector<TracePredictExperimentation>& res, vector<TraceInfo> tracesInfo,
+	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
+	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
+	int i = 0;
+	// std::string baseName = outputFilename.substr(outputFilename.find_last_of("/\\") + 1);
+	auto path = fs::path(outputFilename);
+	string directory = path.parent_path().string();
+	if (directory == "")
+		directory = ".";
+	std::string baseName = path.stem().string();
+	std::string extension = path.extension().string();
+	res = vector<TracePredictExperimentation>(allPredictorParams.size());
+	for (auto& predictorParams : allPredictorParams) {
+		ostringstream file_;
+		file_ << directory << "\\" << baseName << "_" << to_string(i) << extension;
+		string file = file_.str();
+		// res.push_back(TracePredictExperimentation(file, countTotalMemory));
+		res[i] = TracePredictExperimentation(file, countTotalMemory);
+		res[i].buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		// auto t = TracePredictExperimentation(file, countTotalMemory);
+		// t.buildExperiments(tracesInfo, predictorParams, numAccessesPerExperiment);
+		// res.push_back(t);
+		i++;
 	}
 }
 
@@ -202,7 +289,9 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
-		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+		this->model = 
+			shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) 
+				new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 	}
 	
 	this->startDateTime = nowDateTime();
@@ -232,9 +321,12 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 	else {
 		if(params.cacheParams.numSequenceAccesses > 0)
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMInfinitoGradoK<L64bu, L64b>(params.cacheParams.numSequenceAccesses));
+				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+					this->countTotalMemory));
 		else
-			this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) new PredictorDFCMInfinito<L64bu, L64b>());
+			this->model = shared_ptr<PredictorModel<L64bu, int>>(
+				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+					this->countTotalMemory));
 	}
 	this->startDateTime = nowDateTime();
 }
@@ -270,7 +362,7 @@ void TracePredictExperiment::setName(string name) {
 string TracePredictExperiment::getString() {
 
 	ostringstream res; 
-	res << traceName << "__" << startLine << "__" << endLine << "__" << this->startDateTime;
+	res << "part_" << this->startDateTime << "__" << traceName << "_" << startLine << "_" << endLine;
 
 	return res.str();
 }
@@ -289,47 +381,65 @@ void TracePredictExperiment::setPredictorModel(BuffersSimulator<L64bu, L64bu, in
 	this->model = shared_ptr<PredictorModel<L64bu,int>>((PredictorModel<L64bu, int>*) & model);
 }
 
-void TracePredictExperiment::setPredictorModel(PredictorDFCMInfinito<L64bu, L64b> model) {
+void TracePredictExperiment::setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b> model) {
 	this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) & model);
+}
+
+bool TracePredictExperiment::isNull() {
+	return this->isNull_;
 }
 
 void TracePredictExperiment::performExperiment() {
 	this->startDateTime = nowDateTime();
-
+	AccessesDataset<L64bu, L64bu> dataset;
+#pragma omp ordered
+	{
 	// First, we check that we don't have to instantiate a new TraceReader:
-	TraceReader<L64bu, L64bu>* traceReader = &this->framework->traceReader;
-	bool isSameFile = traceReader->filename == this->traceFilename;
-	bool isFileOpen = traceReader->file.is_open();
+	bool isSameFile = this->framework->traceReader.filename == this->traceFilename;
+	bool isFileOpen = this->framework->traceReader.file.is_open();
 
-	if (!isSameFile || !isFileOpen)
-		*traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
+	if (!isSameFile || !isFileOpen) {
+		// this->framework->traceReader = TraceReader<L64bu, L64bu>(this->traceFilename);
+		
+		// this->framework->traceReader.file = ifstream(this->traceFilename);
+		// this->framework->traceReader.filename = this->traceFilename;
+		// this->framework->traceReader.file.open(this->traceFilename);
+		TraceReader<L64bu, L64bu>(this->traceFilename).copy(this->framework->traceReader);
+	}
 
 	// Next, we read the trace and extract the working dataset:
-	auto dataset = traceReader->readLines(startLine, endLine);
+	dataset = this->framework->traceReader.readLines(startLine, endLine);
+	}
 	BuffersDataset<int> classesDataset;
 
-	if (this->predictorParams.type == PredictorModelType::BufferSVM) {
-		// Now we simulate the buffers and extract the final dataset:
-		classesDataset = this->buffersSimulator.simulate(dataset);
-	}
+	if (dataset.accesses.size() > 0) {
 
-	// Finally, we simulate the predictor model and extract metrics from results:
-	this->model->importarDatos(dataset, classesDataset);
-	resultsAndCosts = this->model->simular();
+		if (this->predictorParams.type == PredictorModelType::BufferSVM) {
+			// Now we simulate the buffers and extract the final dataset:
+			classesDataset = this->buffersSimulator.simulate(dataset);
+		}
 
-	if (this->predictorParams.type == PredictorModelType::BufferSVM) {
-		BuffersSVMPredictResultsAndCosts* rc = (BuffersSVMPredictResultsAndCosts*)resultsAndCosts.get();
-		if (countTotalMemory) {
-			rc->cacheMemoryCost = buffersSimulator.historyCache->getTotalMemoryCost();
-			rc->dictionaryMemoryCost = buffersSimulator.dictionary.getTotalMemoryCost();
+		// Finally, we simulate the predictor model and extract metrics from results:
+		this->model->importarDatos(dataset, classesDataset);
+		resultsAndCosts = this->model->simular();
+
+		if (this->predictorParams.type == PredictorModelType::BufferSVM) {
+			BuffersSVMPredictResultsAndCosts* rc = (BuffersSVMPredictResultsAndCosts*)resultsAndCosts.get();
+			if (countTotalMemory) {
+				rc->cacheMemoryCost = buffersSimulator.historyCache->getTotalMemoryCost();
+				rc->dictionaryMemoryCost = buffersSimulator.dictionary.getTotalMemoryCost();
+			}
+			else {
+				rc->cacheMemoryCost = buffersSimulator.historyCache->getMemoryCost();
+				rc->dictionaryMemoryCost = buffersSimulator.dictionary.getMemoryCost();
+			}
+			rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
+
 		}
-		else {
-			rc->cacheMemoryCost = buffersSimulator.historyCache->getMemoryCost();
-			rc->dictionaryMemoryCost = buffersSimulator.dictionary.getMemoryCost();
-		}
-		rc->totalMemoryCost = rc->cacheMemoryCost + rc->dictionaryMemoryCost + rc->modelMemoryCost;
 		
 	}
+	else this->isNull_ = true;
+
 	/*
 	dataset.accesses.clear();
 	dataset.accessesInstructions.clear();
