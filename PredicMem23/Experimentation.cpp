@@ -176,9 +176,8 @@ void TracePredictExperimentation::exportResults(string filename) {
 		}
 
 		for (auto it = totalResults.begin(); it != totalResults.end(); it++) {
-			totalResults_->SetDoubleAttribute(it->first.c_str(), it->second);
+			trace->SetDoubleAttribute(it->first.c_str(), it->second);
 		}
-		trace->LinkEndChild(totalResults_);
 		traces->LinkEndChild(trace);
 	}
 	doc.LinkEndChild(traces);
