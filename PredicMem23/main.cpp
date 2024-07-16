@@ -100,14 +100,23 @@ int main()
 
     bool countTotalMemory = false;
 
+    auto setNumIndexBits = vector<int>{ 7,8,10 };
+    auto setNumWays = vector<int>{ 2,4 };
+    auto setSequenceLength = vector<int>{ 4,8 };
+    auto setNumClasses = vector<int>{ 4,8 };
+
+    for (auto numIndexBits : setNumIndexBits) {
+        for (auto numWays : setNumWays) {
+            for (auto sequenceLength : setSequenceLength) {
+                for (auto numClasses : setNumClasses) {
     // Parámetros de caché: (1) núm.de bits de índice, (2) num. de vías, (3) longitud de cada secuencia (historia), 
     // (4) guardar historia de entrada y clase de salida en el dataset aunque la secuencia guardada en caché no esté completa.
     // - En el caso de predictor BufferSVM, un núm.de bits de índice menor que 0 (<0) indica que la caché será de tamaño infinito.
     // - En el caso de predictor DFCMInfinito, una longitud de secuencia k > 0 indica un DFCM de grado k. 
     cacheParams = {
-        -1,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
-        6,// 8,// 8,// 4,
-        6,// 8,// 4,// 8
+                        numIndexBits,// 8,//6,// 0,// 9,// 8,// 10, // Infinite cache
+                        numWays,// 8,// 8,// 4,
+                        sequenceLength,// 8,// 4,// 8
         true
     };
 
@@ -123,7 +132,7 @@ int main()
     // que da la confianza (para implementar pseudo-LFU), (4) guardar historia de entrada y clase de salida en el dataset aunque 
     // haya habido miss en el diccionario.
     dictParams = {
-        6,
+                        numClasses,
         255,
         8,
         true
@@ -138,7 +147,7 @@ int main()
         dictParams
     };
 
-    unsigned long numAccessesPerTrace = 1e9;
+                    unsigned long numAccessesPerTrace = 1e9;
     // unsigned long numAccessesPerTrace = 1e7;
     unsigned long numAccessesPerExperiment = 1e6;
     vector<TraceInfo> tracesInfo = vector<TraceInfo>();
@@ -150,7 +159,9 @@ int main()
             });
     }
 
-    TracePredictExperimentation experimentation = TracePredictExperimentation(outputName, countTotalMemory);
+                    string outputName_ = outputName + "_" + to_string(sequenceLength) + "_" + to_string(numClasses) + 
+                        "_" + to_string(numIndexBits) + "_" + to_string(numWays) + ".xml";
+                    TracePredictExperimentation experimentation = TracePredictExperimentation(outputName_, countTotalMemory);
     experimentation.buildExperiments(tracesInfo, params, numAccessesPerExperiment);
     experimentation.performExperiments();
     experimentation.exportResults();
@@ -158,5 +169,11 @@ int main()
     printf("");
 
 
+}
+            }
+        }
+    }
+
+            
 }
 
