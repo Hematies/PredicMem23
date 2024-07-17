@@ -162,6 +162,9 @@
     <ClInclude Include="TraceReader.h" />
     <ClInclude Include="SVMClassifier.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="doc\doxygen_config_file" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
