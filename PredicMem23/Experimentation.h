@@ -42,8 +42,8 @@
 #include "TraceReader.h"
 #include "Global.h"
 #include "BuffersSimulator.h"
-#include "PredictorDFCM.h"
-#include "PredictorDFCMGradoK.h"
+#include "DFCM.h"
+#include "KOrderDFCM.h"
 
 /**
  * @brief Abstract class representing a single experiment.

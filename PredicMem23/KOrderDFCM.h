@@ -28,7 +28,7 @@
 //#include "Experimentation.h"
 #include "Global.h"
 #include "PredictorModel.h"
-#include "PredictorDFCM.h"
+#include "DFCM.h"
 
 using namespace std;
 

@@ -62,13 +62,13 @@
     <ClInclude Include="Simulator.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="PredictorDFCM.h">
+    <ClInclude Include="DFCM.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="PredictorModel.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="PredictorDFCMGradoK.h">
+    <ClInclude Include="KOrderDFCM.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
