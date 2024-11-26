@@ -222,7 +222,7 @@ int main()
 
 
     PredictorParametersDomain paramsDomain = {
-        vector<PredictorModelType>{PredictorModelType::BufferSVM}, // Con el tipo de modelo de predictor indicamos si queremos el BufferSVM
+        vector<PredictorModelType>{PredictorModelType::BufferSVM}, // Con el tipo de model de predictor indicamos si queremos el BufferSVM
         // o el DFCM-infinito.
         // vector<PredictorModelType>{PredictorModelType::DFCM},
         cacheParamsDomain,

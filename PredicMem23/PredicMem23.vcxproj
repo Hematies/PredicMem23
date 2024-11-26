@@ -75,8 +75,8 @@
     <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\x64\Release\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\Debugtinyxml\tinyxml.lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\pablo\Documents\tinyxml;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\pablo\Documents\tinyxml\Debugtinyxml\tinyxml.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -118,7 +118,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\EQUIPO\Desktop\cache_testbenchs\tinyxml\Debugtinyxml\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\pablo\Documents\tinyxml\Debugtinyxml\tinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,15 +152,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuffersSimulator.h" />
-    <ClInclude Include="PredictorDFCM.h" />
+    <ClInclude Include="DFCM.h" />
     <ClInclude Include="Experimentation.h" />
     <ClInclude Include="Global.h" />
-    <ClInclude Include="PredictorDFCMGradoK.h" />
+    <ClInclude Include="KOrderDFCM.h" />
     <ClInclude Include="PredictorModel.h" />
     <ClInclude Include="PredictorSVM.h" />
     <ClInclude Include="Simulator.h" />
     <ClInclude Include="TraceReader.h" />
     <ClInclude Include="SVMClassifier.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="doc\doxygen_config_file" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
