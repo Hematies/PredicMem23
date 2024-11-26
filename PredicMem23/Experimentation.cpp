@@ -306,13 +306,13 @@ TracePredictExperiment::TracePredictExperiment(string traceFilename, string trac
 	if (params.type == PredictorModelType::BufferSVM) {
 		this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(cacheType, cacheParams, dictParams);
 		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*)
-			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses, 
+			new SVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses, 
 				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
 		this->model = 
 			shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) 
-				new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
+				new HashOnHashDFCM<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams));
 	}
 	
 	this->startDateTime = nowDateTime();
@@ -336,17 +336,17 @@ TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation* fram
 	if (params.type == PredictorModelType::BufferSVM) {
 		this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(cacheType, cacheParams, dictParams);
 		this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*)
-			new PredictorSVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses, 
+			new SVM<MultiSVMClassifierOneToAll, int>(cacheParams.numSequenceAccesses, dictParams.numClasses, 
 				cacheParams.saveHistoryAndClassIfNotValid));
 	}
 	else {
 		if(params.cacheParams.numSequenceAccesses > 0)
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMGradoK<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+				(PredictorModel<L64bu, int>*) new KOrderDFCM<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
 					this->countTotalMemory));
 		else
 			this->model = shared_ptr<PredictorModel<L64bu, int>>(
-				(PredictorModel<L64bu, int>*) new PredictorDFCMHashOnHash<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
+				(PredictorModel<L64bu, int>*) new HashOnHashDFCM<L64bu, L64b>(cacheType, cacheParams, params.additionalCacheParams,
 					this->countTotalMemory));
 	}
 	this->startDateTime = nowDateTime();
@@ -397,12 +397,12 @@ map<string, double> TracePredictExperiment::getResultsAndCosts() {
 }
 
 void TracePredictExperiment::setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> bufferSimulator,
-	PredictorSVM<MultiSVMClassifierOneToAll, int> model) {
+	SVM<MultiSVMClassifierOneToAll, int> model) {
 	this->buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>(bufferSimulator);
 	this->model = shared_ptr<PredictorModel<L64bu,int>>((PredictorModel<L64bu, int>*) & model);
 }
 
-void TracePredictExperiment::setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b> model) {
+void TracePredictExperiment::setPredictorModel(HashOnHashDFCM<L64bu, L64b> model) {
 	this->model = shared_ptr<PredictorModel<L64bu, int>>((PredictorModel<L64bu, int>*) & model);
 }
 
@@ -441,8 +441,8 @@ void TracePredictExperiment::performExperiment() {
 		}
 
 		// Finally, we simulate the predictor model and extract metrics from results:
-		this->model->importarDatos(dataset, classesDataset);
-		resultsAndCosts = this->model->simular();
+		this->model->importData(dataset, classesDataset);
+		resultsAndCosts = this->model->simulate();
 
 		if (this->predictorParams.type == PredictorModelType::BufferSVM) {
 			BuffersSVMPredictResultsAndCosts* rc = (BuffersSVMPredictResultsAndCosts*)resultsAndCosts.get();

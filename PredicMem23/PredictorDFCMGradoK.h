@@ -34,17 +34,17 @@ using namespace std;
 
 
 template<typename T, typename Delta>
-class PredictorDFCMGradoK: PredictorModel<T, int>
+class KOrderDFCM: PredictorModel<T, int>
 {
 protected:
-	int numPartesMostrar = 10000;
+	int numPartsToPrint = 10000;
 
-	AccessesDataset<T, T> datos;
+	AccessesDataset<T, T> data;
 
-	bool accederTablaInstrHash(T instruccion, shared_ptr<HistoryCacheEntry<T, T, T>>* entry) {
+	bool accessInstrHashTable(T instruction, shared_ptr<HistoryCacheEntry<T, T, T>>* entry) {
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
-		bool entryIsFound = this->tablaInstrHash->getEntry(instruccion, firstTableEntry.get());
+		bool entryIsFound = this->instrHashTable->getEntry(instruction, firstTableEntry.get());
 		if (!entryIsFound) {
 			return false;
 		}
@@ -54,10 +54,10 @@ protected:
 		}
 	}
 
-	bool accederTablaHashDelta(T hash, shared_ptr<HistoryCacheEntry<T, T, Delta>>* entry) {
+	bool accessHashDeltaTable(T hash, shared_ptr<HistoryCacheEntry<T, T, Delta>>* entry) {
 		shared_ptr<HistoryCacheEntry<T, T, Delta>> secondTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, Delta>>(new StandardHistoryCacheEntry<T, T, Delta>());
-		bool entryIsFound = this->tablaHashDelta->getEntry(hash, secondTableEntry.get());
+		bool entryIsFound = this->hashDeltaTable->getEntry(hash, secondTableEntry.get());
 		if (!entryIsFound) {
 			return false;
 		}
@@ -67,34 +67,32 @@ protected:
 		}
 	}
 
-	bool escribirTablaInstrHash(T instruccion, T ultimoAcceso, T delta) {
+	bool writeInstrHashTable(T instruction, T lastAccess, T delta) {
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
-		bool estabaEnTabla = accederTablaInstrHash(instruccion, &firstTableEntry);
-		// T h;
-		// tablaInstrHash[instruccion] = tuple<T,T>(ultimoAcceso, hash);
-		this->tablaInstrHash->newAccess(instruccion, ultimoAcceso, delta);
-		return estabaEnTabla;
+		bool wasInTable = accessInstrHashTable(instruction, &firstTableEntry);
+		this->instrHashTable->newAccess(instruction, lastAccess, delta);
+		return wasInTable;
 	}
 
 
-	bool escribirTablaHashDelta(T hash, Delta delta) {
+	bool writeHashDeltaTable(T hash, Delta delta) {
 		shared_ptr<HistoryCacheEntry<T, T, Delta>> secondTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, Delta>>(new StandardHistoryCacheEntry<T, T, Delta>());
-		bool estabaEnTabla = accederTablaHashDelta(hash, &secondTableEntry);
-		this->tablaHashDelta->newAccess(hash, delta, 0);
-		return estabaEnTabla;
+		bool wasInTable = accessHashDeltaTable(hash, &secondTableEntry);
+		this->hashDeltaTable->newAccess(hash, delta, 0);
+		return wasInTable;
 	}
 
 public:
 	
-	long numAciertos = 0;
+	long numHits = 0;
 
-	double tasaExito = 0.0;
+	double hitRate = 0.0;
 
 
-	shared_ptr <HistoryCache<T, T, T, T>> tablaInstrHash;
-	shared_ptr <HistoryCache<T, T, T, Delta>> tablaHashDelta;
+	shared_ptr <HistoryCache<T, T, T, T>> instrHashTable;
+	shared_ptr <HistoryCache<T, T, T, Delta>> hashDeltaTable;
 
 	HistoryCacheType historyCacheType;
 	CacheParameters firstTableCacheParams = {};
@@ -102,140 +100,136 @@ public:
 	bool countMemoryCapacity = false;
 
 
-	PredictorDFCMGradoK(AccessesDataset<T,T>& datos, HistoryCacheType historyCacheType, CacheParameters firstTableCacheParams = {},
+	KOrderDFCM(AccessesDataset<T,T>& data, HistoryCacheType historyCacheType, CacheParameters firstTableCacheParams = {},
 		CacheParameters secondTableCacheParams = {}, bool countTotalMemoryCost = true) {
-		this->datos = datos;
+		this->data = data;
 		this->historyCacheType = historyCacheType;
 		this->firstTableCacheParams = firstTableCacheParams;
 		this->secondTableCacheParams = secondTableCacheParams;
-		inicializarPredictor();
+		initializePredictor();
 		this->countMemoryCapacity = !countTotalMemoryCost;
 	}
 
-	PredictorDFCMGradoK(HistoryCacheType historyCacheType,CacheParameters firstTableCacheParams = {},
+	KOrderDFCM(HistoryCacheType historyCacheType,CacheParameters firstTableCacheParams = {},
 		CacheParameters secondTableCacheParams = {}, bool countTotalMemoryCost = true) {
 		this->historyCacheType = historyCacheType;
 		this->firstTableCacheParams = firstTableCacheParams;
 		this->secondTableCacheParams = secondTableCacheParams;
-		inicializarPredictor();
+		initializePredictor();
 		this->countMemoryCapacity = !countTotalMemoryCost;
 	}
 
 
-	~PredictorDFCMGradoK() {
+	~KOrderDFCM() {
 		this->clean();
 	}
 
 	void clean() {
 		
-		this->tablaInstrHash->clean();
-		this->tablaHashDelta->clean();
+		this->instrHashTable->clean();
+		this->hashDeltaTable->clean();
 		
-		this->datos = {};
+		this->data = {};
 	}
 
-	void importarDatos(AccessesDataset<T, T>& datos, BuffersDataset<int>& datasetClases) {
-		this->datos = datos;
+	void importData(AccessesDataset<T, T>& data, BuffersDataset<int>& datasetClases) {
+		this->data = data;
 	}
 
-	void inicializarPredictor() {
+	void initializePredictor() {
 		if(historyCacheType == HistoryCacheType::Infinite) {
-			this->tablaInstrHash =
+			this->instrHashTable =
 				shared_ptr<HistoryCache< T, T, T, T >>(
 					new InfiniteHistoryCache< T, T, T, T >(this->firstTableCacheParams.numSequenceAccesses, 1));
 
-			this->tablaHashDelta =
+			this->hashDeltaTable =
 				shared_ptr<HistoryCache< T, T, T, Delta >>(
 					new InfiniteHistoryCache< T, T, T, Delta >(1, 1));
 		}
 		else if (historyCacheType == HistoryCacheType::Real) {
-			this->tablaInstrHash =
+			this->instrHashTable =
 				shared_ptr<HistoryCache< T, T, T, T >>(new RealHistoryCache< T, T, T, T >(this->firstTableCacheParams.numIndexBits,
 					this->firstTableCacheParams.numWays, firstTableCacheParams.numSequenceAccesses, 1));
 
-			this->tablaHashDelta =
+			this->hashDeltaTable =
 				shared_ptr<HistoryCache< T, T, T, Delta >>(new RealHistoryCache< T, T, T, Delta >(this->secondTableCacheParams.numIndexBits,
 					this->secondTableCacheParams.numWays, 1, 1));
 		}
 		else {
-			// this->historyCache = HistoryCache<T, I, A, LA>();
-			// throw -1;
-			this->tablaInstrHash = nullptr;
-			this->tablaHashDelta = nullptr;
+			this->instrHashTable = nullptr;
+			this->hashDeltaTable = nullptr;
 		}
 	}
 
 
-	void ajustarPredictor(T instruccion, T acceso) {
-		// Primera tabla
+	void fit(T instruccion, T acceso) {
+		// First table:
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
 
 		T hash;
-		T accesoAnterior;
+		T lastAccess;
 		Delta delta;
-		// bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, &hash);
-		bool hashEnTabla = accederTablaInstrHash(instruccion, &firstTableEntry);
+		bool isHashInTable = accessInstrHashTable(instruccion, &firstTableEntry);
 		
-		if (!hashEnTabla) {
-			accesoAnterior = acceso;
+		if (!isHashInTable) {
+			lastAccess = acceso;
 			hash = 0;
 			delta = 0;
-			escribirTablaInstrHash(instruccion, accesoAnterior, hash);
-			escribirTablaHashDelta(hash, delta);
+			writeInstrHashTable(instruccion, lastAccess, hash);
+			writeHashDeltaTable(hash, delta);
 		}
 		else {
-			accesoAnterior = firstTableEntry->getLastAccess();
-			delta = acceso - accesoAnterior;
+			lastAccess = firstTableEntry->getLastAccess();
+			delta = acceso - lastAccess;
 			hash = 0;
 			for (auto delta_ : firstTableEntry->getHistory())
 				hash = hash ^ delta_;
-			escribirTablaHashDelta(hash, delta);
-			escribirTablaInstrHash(instruccion, acceso, delta);
+			writeHashDeltaTable(hash, delta);
+			writeInstrHashTable(instruccion, acceso, delta);
 		}
 		
 	}
 
-	bool predecir(T instruccion, T* acceso, bool* instrEnTabla, bool* hashEnTabla) {
+	bool predict(T instruction, T* access, bool* instrIsInTable, bool* hashIsInTable) {
 		T hash;
-		T ultimoAcceso;
-		*instrEnTabla = false;
-		*hashEnTabla = false;
+		T lastAccess;
+		*instrIsInTable = false;
+		*hashIsInTable = false;
 
 		shared_ptr<HistoryCacheEntry<T, T, T>> firstTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, T>>(new StandardHistoryCacheEntry<T, T, T>());
 		shared_ptr<HistoryCacheEntry<T, T, Delta>> secondTableEntry =
 			shared_ptr< HistoryCacheEntry<T, T, Delta>>(new StandardHistoryCacheEntry<T, T, Delta>());
 
-		// *instrEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, &hash);
-		*instrEnTabla = accederTablaInstrHash(instruccion, &firstTableEntry);
+		*instrIsInTable = accessInstrHashTable(instruction, &firstTableEntry);
 
-		if (!(*instrEnTabla)) return false;
+		if (!(*instrIsInTable)) return false;
 		else {
-			ultimoAcceso = firstTableEntry->getLastAccess();
+			lastAccess = firstTableEntry->getLastAccess();
 			hash = 0;
 			for (auto delta_ : firstTableEntry->getHistory())
 				hash = hash ^ delta_;
 			Delta delta;
-			// *hashEnTabla = accederTablaHashDelta(hash, &delta);
-			*hashEnTabla = accederTablaHashDelta(hash, &secondTableEntry);
-			if (!(*hashEnTabla)) 
+			// *isHashInTable = accessHashDeltaTable(hash, &delta);
+			*hashIsInTable = accessHashDeltaTable(hash, &secondTableEntry);
+			if (!(*hashIsInTable)) 
 				return false;
 			else {
 				delta = secondTableEntry->getLastAccess();
-				*acceso =
-					ultimoAcceso + delta;
+				*access =
+					lastAccess + delta;
 			}
 		}
 		return true;
 	}
 
-	bool predecir(T instruccion, T* acceso) {
+	bool predict(T instruction, T* access) {
 		bool a, b;
-		return prededir(instruccion, acceso, &a, &b);
+		return predict(instruction, access, &a, &b);
 	}
 
-	shared_ptr<PredictResultsAndCosts> simular(bool inicializar = true) {
+	shared_ptr<PredictResultsAndCosts> simulate(bool inicializar = true) {
 
 		DFCMPredictResultsAndCosts resultsAndCosts = DFCMPredictResultsAndCosts();
 		double numFirstTableMisses = 0.0;
@@ -243,26 +237,26 @@ public:
 
 
 		if (inicializar) {
-			this->inicializarPredictor();
+			this->initializePredictor();
 
 		}
 
-		long numAciertos = 0;
-		double tasaExito = 0.0;
+		long numHits = 0;
+		double hitRate = 0.0;
 
-		for (int i = 0; i < datos.accesses.size(); i++) {
-			T entrada = datos.accessesInstructions[i];
-			T salida = datos.accesses[i];
-			T salidaPredicha;
+		for (int i = 0; i < data.accesses.size(); i++) {
+			T input = data.accessesInstructions[i];
+			T output = data.accesses[i];
+			T predictedOutput;
 			bool instrEnTabla, hashEnTabla;
-			bool haHabidoFalloTablas = !predecir(entrada, &salidaPredicha, &instrEnTabla, &hashEnTabla);
+			bool tableMiss = !predict(input, &predictedOutput, &instrEnTabla, &hashEnTabla);
 
-			bool haHabidoFalloPrediccion = (salida != salidaPredicha);
-			bool haHabidoFallo = haHabidoFalloPrediccion || haHabidoFalloTablas;
+			bool predictionMiss = (output != predictedOutput);
+			bool miss = predictionMiss || tableMiss;
 
-			// Si ha habido un fallo, entrenamos con la muestra de entrada y salida:
-			if (haHabidoFallo) {
-				if (haHabidoFalloTablas) {
+			// Si ha habido un fallo, entrenamos con la muestra de input y output:
+			if (miss) {
+				if (tableMiss) {
 					if (!instrEnTabla)
 						numFirstTableMisses++;
 					if (!hashEnTabla)
@@ -270,25 +264,25 @@ public:
 				}
 			}
 			else
-				numAciertos++;
+				numHits++;
 
-			ajustarPredictor(entrada, salida);
+			fit(input, output);
 
 
-			if (i % numPartesMostrar == 0) {
+			if (i % numPartsToPrint == 0) {
 				// 
 				// if (!haHabidoErrorBufferes){
-				std::cout << entrada << " -> " << salida << " vs " << salidaPredicha << std::endl;
-				std::cout << "Tasa de éxito: " << (double)numAciertos / (i + 1) << " ; " << ((double)i) / datos.accesses.size() << std::endl;
+				std::cout << input << " -> " << output << " vs " << predictedOutput << std::endl;
+				std::cout << "Hit rate: " << (double)numHits / (i + 1) << " ; " << ((double)i) / data.accesses.size() << std::endl;
 			}
 
 		}
 
-		tasaExito = ((double)numAciertos) / datos.accesses.size();
+		hitRate = ((double)numHits) / data.accesses.size();
 
-		resultsAndCosts.hitRate = tasaExito;
-		resultsAndCosts.firstTableMissRate = numFirstTableMisses / datos.accesses.size();
-		resultsAndCosts.secondTableMissRate = numSecondTableMisses / datos.accesses.size();
+		resultsAndCosts.hitRate = hitRate;
+		resultsAndCosts.firstTableMissRate = numFirstTableMisses / data.accesses.size();
+		resultsAndCosts.secondTableMissRate = numSecondTableMisses / data.accesses.size();
 		double firstTableCost, secondTableCost;
 		if (this->countMemoryCapacity)
 			resultsAndCosts.totalMemoryCost = getMemoryCosts(&firstTableCost, &secondTableCost);
@@ -299,51 +293,6 @@ public:
 		return shared_ptr<PredictResultsAndCosts>((PredictResultsAndCosts*)new DFCMPredictResultsAndCosts(resultsAndCosts));
 	}
 
-	/*
-	void ajustarPredictor(T instruccion, T acceso) {
-		// Primera tabla
-		T hash;
-		T accesoAnterior;
-		Delta delta;
-		vector<Delta> ultimosDeltas;
-		bool hashEnTabla = accederTablaInstrHash(instruccion, &accesoAnterior, ultimosDeltas, &hash);
-		if (!hashEnTabla) {
-			accesoAnterior = acceso;
-			hash = 0;
-			delta = 0;
-			escribirTablaInstrHash(instruccion, acceso, delta);
-			escribirTablaHashDelta(hash, delta);
-		}
-		else {
-			delta = acceso - accesoAnterior;
-			escribirTablaHashDelta(hash, delta);
-			escribirTablaInstrHash(instruccion, acceso, delta);
-		}
-
-	}
-
-	bool predecir(T instruccion, T* acceso, bool* instrEnTabla, bool* hashEnTabla) {
-		T hash;
-		T ultimoAcceso;
-		*instrEnTabla = false;
-		*hashEnTabla = false;
-		vector<Delta> deltas;
-
-		*instrEnTabla = accederTablaInstrHash(instruccion, &ultimoAcceso, deltas, &hash);
-		if (!(*instrEnTabla)) return false;
-		else {
-			Delta delta;
-			*hashEnTabla = this->accederTablaHashDelta(hash, &delta);
-			if (!(*hashEnTabla))
-				return false;
-			else *acceso =
-				ultimoAcceso + delta;
-		}
-		return true;
-	}
-	*/
-
-
 	double getTotalMemoryCosts(double* firstTableCost, double* secondTableCost) {
 		int wordSize = sizeof(T) * 8;
 		int firstTableNumTagBits = wordSize - this->firstTableCacheParams.numIndexBits;
@@ -352,8 +301,8 @@ public:
 		int secondTableNumTagBits = wordSize - this->secondTableCacheParams.numIndexBits;
 		double secondTableEntryNumBits = secondTableNumTagBits + wordSize
 			+ 1; // LRU bit
-		*firstTableCost = firstTableEntryNumBits * tablaInstrHash->getNumEntries() / 8.0;
-		*secondTableCost = secondTableEntryNumBits * tablaHashDelta->getNumEntries() / 8.0;
+		*firstTableCost = firstTableEntryNumBits * instrHashTable->getNumEntries() / 8.0;
+		*secondTableCost = secondTableEntryNumBits * hashDeltaTable->getNumEntries() / 8.0;
 		return *firstTableCost + *secondTableCost;
 	}
 
@@ -361,8 +310,8 @@ public:
 		int wordSize = sizeof(T) * 8;
 		double firstTableEntryNumBits = wordSize * (1 + this->firstTableCacheParams.numSequenceAccesses);
 		double secondTableEntryNumBits = wordSize;
-		*firstTableCost = firstTableEntryNumBits * tablaInstrHash->getNumEntries() / 8.0;
-		*secondTableCost = secondTableEntryNumBits * tablaHashDelta->getNumEntries() / 8.0;
+		*firstTableCost = firstTableEntryNumBits * instrHashTable->getNumEntries() / 8.0;
+		*secondTableCost = secondTableEntryNumBits * hashDeltaTable->getNumEntries() / 8.0;
 		return *firstTableCost + *secondTableCost;
 	}
 };

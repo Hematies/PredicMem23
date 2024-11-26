@@ -50,17 +50,17 @@ public:
     /**
      * @brief Simulate the predictor model.
      *
-     * @param inicializar Flag to indicate whether to initialize the simulation.
+     * @param initialize Flag to indicate whether to initialize the simulation.
      * @return A shared pointer to the results and costs of the simulation.
      */
-	virtual shared_ptr<PredictResultsAndCosts> simular(bool inicializar = true) = 0;
+	virtual shared_ptr<PredictResultsAndCosts> simulate(bool initialize = true) = 0;
     /**
      * @brief Import data into the predictor model.
      *
-     * @param datos Dataset of accesses.
+     * @param data Dataset of accesses.
      * @param datasetClases Dataset of buffer classes.
      */
-	virtual void importarDatos(AccessesDataset<T_access, T_access>& datos, BuffersDataset<T_class>& datasetClases) = 0;
+	virtual void importData(AccessesDataset<T_access, T_access>& data, BuffersDataset<T_class>& datasetClases) = 0;
     /**
      * @brief Clean up the predictor model resources.
      */

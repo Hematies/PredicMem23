@@ -72,4 +72,7 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="doc\doxygen_config_file" />
+  </ItemGroup>
 </Project>

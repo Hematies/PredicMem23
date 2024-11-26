@@ -148,25 +148,6 @@ void MultiSVMClassifierOneToOne::fit(vector<vector<double>>& data, vector<int>& 
 vector<int> MultiSVMClassifierOneToAll::predict(vector<vector<double>> & data) {
     vector<int> predicted_labels;
 
-    /*
-    vector<vector<int>> predictedLabelsPerPredictor;
-    // Each classifier gives its prediction for the given data:
-    for (int k = 0; k < SVMsTable.size(); k++) {
-        predictedLabelsPerPredictor.push_back(SVMsTable[k].predict(data));
-    }
-
-    // For each data sample, we append as label the first class which has been predicted against 
-    // the rest:
-    for (int i = 0; i < data.size(); i++) {
-        for (int k = 0; k < SVMsTable.size(); k++) {
-            if ((predictedLabelsPerPredictor[k][i] == -1)
-                || (k == (SVMsTable.size() - 1))) {
-                predicted_labels.push_back(k);
-                break;
-            }
-        }
-    }
-    */
     vector<vector<int>> predictedLabelsPerPredictor;
     vector<vector<double>> distancesPerPredictor;
     // Each classifier gives its prediction for the given data:

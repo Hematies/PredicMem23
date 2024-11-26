@@ -109,12 +109,12 @@ public:
 	 * @param bufferSimulator The buffer simulator.
 	 * @param model The SVM predictor model.
 	 */
-	virtual void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>) = 0;
+	virtual void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, SVM<MultiSVMClassifierOneToAll, int>) = 0;
 	/**
 	 * @brief Set the predictor model using a DFCM predictor.
 	 * @param model The DFCM predictor model.
 	 */
-	virtual void setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b>) = 0;
+	virtual void setPredictorModel(HashOnHashDFCM<L64bu, L64b>) = 0;
 	/**
 	 * @brief Clean the experiment.
 	 */
@@ -279,7 +279,7 @@ private:
 
 	BuffersSimulator<L64bu, L64bu, int, L64bu, L64b> buffersSimulator = BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>();
 	shared_ptr<PredictorModel<L64bu, int>> model; ///< Predictor model.
-	// PredictorSVM<MultiSVMClassifierOneToAll, int> model;
+	// SVM<MultiSVMClassifierOneToAll, int> model;
 
 	TracePredictExperimentation* framework; ///< Pointer to the experimentation framework.
 	PredictorParameters predictorParams; ///< Predictor parameters.
@@ -376,12 +376,12 @@ public:
 	 * @param bufferSimulator The buffer simulator.
 	 * @param model The SVM predictor model.
 	 */
-	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, PredictorSVM<MultiSVMClassifierOneToAll, int>);
+	void setPredictorModel(BuffersSimulator<L64bu, L64bu, int, L64bu, L64b>, SVM<MultiSVMClassifierOneToAll, int>);
 	/**
 	 * @brief Set the predictor model using a DFCM predictor.
 	 * @param model The DFCM predictor model.
 	 */
-	void setPredictorModel(PredictorDFCMHashOnHash<L64bu, L64b>);
+	void setPredictorModel(HashOnHashDFCM<L64bu, L64b>);
 	/**
 	 * @brief Clean the experiment.
 	 */
