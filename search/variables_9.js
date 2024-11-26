@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['name_0',['name',['../structTraceInfo.html#ab9aea143cf206b07741aed0f20e70577',1,'TraceInfo']]],
+  ['numaccesses_1',['numAccesses',['../classHistoryCacheSet.html#af9bfe7d0c9f3373c405c8bae29c307f2',1,'HistoryCacheSet::numAccesses'],['../classInfiniteHistoryCache.html#a97c3449c7d8846caf88593299b90f533',1,'InfiniteHistoryCache::numAccesses'],['../structTraceInfo.html#a6a826e32884fa90c149f29d87a2da56e',1,'TraceInfo::numAccesses']]],
+  ['numbatchsamples_2',['numBatchSamples',['../classSVM.html#a73c220db9b86b72372c999ea3fc82f43',1,'SVM']]],
+  ['numclasses_3',['numClasses',['../classInfiniteHistoryCache.html#a4609b4d9e16ff747a5876d168e739c58',1,'InfiniteHistoryCache::numClasses'],['../classDictionary.html#ab011aeba68ee39dc52dd2812d03792fb',1,'Dictionary::numClasses'],['../structDictionaryParameters.html#a0778bf31210e614d602c8819f3c0470d',1,'DictionaryParameters::numClasses'],['../structDictionaryParametersDomain.html#af11a83e557564c40393c0921030612ae',1,'DictionaryParametersDomain::numClasses'],['../classSVM.html#a84cace7a0555a84fd980f53afa33894a',1,'SVM::numClasses']]],
+  ['numconfidencejumps_4',['numConfidenceJumps',['../classHistoryCacheSet.html#ae4e02b997e0dfe20b3bb7e6e79f9188f',1,'HistoryCacheSet::numConfidenceJumps'],['../classDictionary.html#a4d4ad9eb97a3622b4863de8011111f5b',1,'Dictionary::numConfidenceJumps'],['../structDictionaryParameters.html#adb86d69af549013ba75f950588ab0f7d',1,'DictionaryParameters::numConfidenceJumps'],['../structDictionaryParametersDomain.html#a1220326dd6abefb795d0400b346bda8b',1,'DictionaryParametersDomain::numConfidenceJumps']]],
+  ['numconfidencelevels_5',['numConfidenceLevels',['../classHistoryCacheSet.html#af078461cf7b5c9a15d86ce1c1b05d9fb',1,'HistoryCacheSet']]],
+  ['numhistoryaccesses_6',['numHistoryAccesses',['../classBuffersSimulator.html#aff4e00e6195e94dd862dccd5414ca7e8',1,'BuffersSimulator']]],
+  ['numhits_7',['numHits',['../classHashOnHashDFCM.html#aaa77a612abcec7bc223a9240213d0ae9',1,'HashOnHashDFCM::numHits'],['../classKOrderDFCM.html#ab48cd5e38e8575bc9629c7ddbf6c58de',1,'KOrderDFCM::numHits'],['../classSVM.html#a0194aec1fe52bb52a92ab95e0ea583a1',1,'SVM::numHits']]],
+  ['numindexbits_8',['numIndexBits',['../classRealHistoryCache.html#a9b10435b1371c4ddd3aa17e124b98fa1',1,'RealHistoryCache::numIndexBits'],['../structCacheParameters.html#a5852c609382ba65cd5d63df813452291',1,'CacheParameters::numIndexBits'],['../structCacheParametersDomain.html#aa3e77d94afd7fe0b05fa5ebcdf39f9fb',1,'CacheParametersDomain::numIndexBits']]],
+  ['numpartstoprint_9',['numPartsToPrint',['../classHashOnHashDFCM.html#a1064396c4494f149aefac2bd2e0c9964',1,'HashOnHashDFCM::numPartsToPrint'],['../classKOrderDFCM.html#aa5ce4230e03da85b1d0e831d7032f4ac',1,'KOrderDFCM::numPartsToPrint']]],
+  ['numrepetitions_10',['numRepetitions',['../classSVM.html#adc90ad1dd12718b9fb1704ce09118dd5',1,'SVM']]],
+  ['numsequenceaccesses_11',['numSequenceAccesses',['../structCacheParameters.html#ab8993c3c67a6287ed7071e4eada90e8a',1,'CacheParameters::numSequenceAccesses'],['../structCacheParametersDomain.html#acb2536ccba2968738322a52d86594b70',1,'CacheParametersDomain::numSequenceAccesses']]],
+  ['numsequenceelements_12',['numSequenceElements',['../classSVM.html#a98549ae79a7c31cedf258f639934fd96',1,'SVM']]],
+  ['numtagbits_13',['numTagBits',['../classHistoryCacheSet.html#a222328cf1cc1f34d25390deece4a43ec',1,'HistoryCacheSet']]],
+  ['numways_14',['numWays',['../classRealHistoryCache.html#acc8f93b027c5e9438809060916d08091',1,'RealHistoryCache::numWays'],['../structCacheParameters.html#acea8153e77329d39093e2dbfbbc47733',1,'CacheParameters::numWays'],['../structCacheParametersDomain.html#a10acf5a95f7f94531bf670be4bc454f2',1,'CacheParametersDomain::numWays']]],
+  ['numworkingthreads_15',['numWorkingThreads',['../classTracePredictExperimentation.html#ac25b6e44fb16daad81593cff14a7058b',1,'TracePredictExperimentation']]]
+];

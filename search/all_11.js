@@ -1,0 +1,15 @@
+var searchData=
+[
+  ['tag_0',['tag',['../classStandardHistoryCacheEntry.html#a2e5e6b0074b75561f3583b7173a10bab',1,'StandardHistoryCacheEntry']]],
+  ['testbuffers_1',['testBuffers',['../classBuffersSimulator.html#a51a5d6d9405cab2e7719c28830a4d87c',1,'BuffersSimulator']]],
+  ['totalmemorycost_2',['totalMemoryCost',['../classBuffersSVMPredictResultsAndCosts.html#aba75ae9093ae8f177ec1a589e4373375',1,'BuffersSVMPredictResultsAndCosts::totalMemoryCost'],['../classDFCMPredictResultsAndCosts.html#a62f1ec39f1f646ab126f8a74b5a58779',1,'DFCMPredictResultsAndCosts::totalMemoryCost']]],
+  ['traceinfo_3',['TraceInfo',['../structTraceInfo.html',1,'']]],
+  ['tracepredictexperiment_4',['TracePredictExperiment',['../classTracePredictExperiment.html',1,'TracePredictExperiment'],['../classTracePredictExperiment.html#a325092d143e9f57b41830b561634d15a',1,'TracePredictExperiment::TracePredictExperiment(TracePredictExperimentation *framework, string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters, bool countTotalMemory=false)'],['../classTracePredictExperiment.html#ab1d6c318345615ece8440a9510c54d22',1,'TracePredictExperiment::TracePredictExperiment(string traceFilename, string traceName, long startLine, long endLine, struct PredictorParameters, bool countTotalMemory=false)']]],
+  ['tracepredictexperimentation_5',['TracePredictExperimentation',['../classTracePredictExperimentation.html',1,'TracePredictExperimentation'],['../classTracePredictExperimentation.html#abeea813a0eb12027ae6fd20311c29071',1,'TracePredictExperimentation::TracePredictExperimentation()'],['../classTracePredictExperimentation.html#ac3046282b61eba6ab9594ee56e9cce71',1,'TracePredictExperimentation::TracePredictExperimentation(vector&lt; Experiment * &gt; experiments, string outputFilename)'],['../classTracePredictExperimentation.html#a7995b3ef279cc0b2c0d5759ba85eed89',1,'TracePredictExperimentation::TracePredictExperimentation(string outputFilename, bool countTotalMemory=false)']]],
+  ['tracereader_6',['TraceReader',['../classTraceReader.html',1,'TraceReader&lt; I, O &gt;'],['../classTraceReader.html#a386a607537ffcec56a8c00a5df0939db',1,'TraceReader::TraceReader()'],['../classTraceReader.html#a2ffe68a6154596113340837441bf09ca',1,'TraceReader::TraceReader(string filename)'],['../classTraceReader.html#a50cab1cf9341457a92d9a13b00e6c0d4',1,'TraceReader::TraceReader(const TraceReader&lt; I, O &gt; &amp;t)']]],
+  ['tracereader_7',['traceReader',['../classTracePredictExperimentation.html#a917e36f973baed78a1ad5f4c9bf56251',1,'TracePredictExperimentation']]],
+  ['tracereader_2eh_8',['TraceReader.h',['../TraceReader_8h.html',1,'']]],
+  ['tracereader_3c_20l64bu_2c_20l64bu_20_3e_9',['TraceReader&lt; L64bu, L64bu &gt;',['../classTraceReader.html',1,'']]],
+  ['type_10',['type',['../structPredictorParameters.html#a35e47fa4197fbfb65fc8256c0abe85e8',1,'PredictorParameters']]],
+  ['types_11',['types',['../structPredictorParametersDomain.html#a5921561d9d586b82b7b79c5af0110b45',1,'PredictorParametersDomain']]]
+];
