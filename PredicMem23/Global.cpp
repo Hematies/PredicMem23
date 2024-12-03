@@ -159,8 +159,8 @@ vector<PredictorParameters> decomposePredictorParametersDomain(PredictorParamete
 
 CacheParametersDomain decodeCacheParametersDomain(TiXmlElement* element) {
 	auto res = CacheParametersDomain();
-	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; element->NextSiblingElement()) {
-		auto childName = child->Value();
+	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; child = child->NextSiblingElement()) {
+		string childName = child->Value();
 		if (childName == "numIndexBits") {
 			res.numIndexBits.push_back(std::stoi(child->GetText()));
 		}
@@ -180,8 +180,8 @@ CacheParametersDomain decodeCacheParametersDomain(TiXmlElement* element) {
 
 DictionaryParametersDomain decodeDictionaryParametersDomain(TiXmlElement* element) {
 	auto res = DictionaryParametersDomain();
-	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; element->NextSiblingElement()) {
-		auto childName = child->Value();
+	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; child = child->NextSiblingElement()) {
+		string childName = child->Value();
 		if (childName == "numClasses") {
 			res.numClasses.push_back(std::stoi(child->GetText()));
 		}
@@ -201,12 +201,10 @@ DictionaryParametersDomain decodeDictionaryParametersDomain(TiXmlElement* elemen
 PredictorParametersDomain decodePredictorParametersDomain(TiXmlElement* element) {
 	auto res = PredictorParametersDomain();
 
-	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; element->NextSiblingElement()) {
-		auto childName = child->Value();
+	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; child = child->NextSiblingElement()) {
+		string childName = child->Value();
 		if (childName == "types") {
-			res.types.push_back(static_cast<PredictorModelType>(
-				std::stoi(child->GetText())
-				));
+			res.types.push_back(stringToPredictorTable[child->GetText()]);
 		}
 		else if (childName == "cacheParams") {
 			res.cacheParams = decodeCacheParametersDomain(child);
@@ -228,8 +226,8 @@ TraceInfo decodeTraceInfo(TiXmlElement* element) {
 	std::string filename; ///< Trace filename.
 	unsigned long numAccesses = 0L; ///< Number of accesses.
 
-	for (TiXmlAttribute* attribute = element->FirstAttribute(); attribute != NULL; attribute->Next()) {
-		auto attributeName = attribute->Name();
+	for (TiXmlAttribute* attribute = element->FirstAttribute(); attribute != NULL; attribute = attribute->Next()) {
+		string attributeName = attribute->Name();
 		if (attributeName == "name") name = attribute->Value();
 		else if (attributeName == "filename") filename = attribute->Value();
 		else if (attributeName == "numAccesses") numAccesses = std::stoul(attribute->Value());

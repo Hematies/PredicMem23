@@ -130,6 +130,11 @@ DictionaryParametersDomain decodeDictionaryParametersDomain(TiXmlElement* elemen
  */
 enum class PredictorModelType { BufferSVM, DFCM };
 
+static map<string, PredictorModelType> stringToPredictorTable = { 
+	{ "BufferSVM", PredictorModelType::BufferSVM },
+	{ "DFCM", PredictorModelType::DFCM}
+};
+
 /**
  * @brief Structure to store predictor parameters.
  */

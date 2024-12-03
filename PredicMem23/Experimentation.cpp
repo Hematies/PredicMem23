@@ -249,12 +249,12 @@ void TracePredictExperimentation::performAndExportExperimentations(string specsF
 	
 	TiXmlDocument doc(specsFilePath);
 	doc.LoadFile();
+	auto root = doc.FirstChildElement();
 
-	TiXmlElement* root = doc.FirstChildElement();
 	for (TiXmlElement* element = root->FirstChildElement(); element != NULL; element = element->NextSiblingElement()) {
 		string elemName = element->Value();
 		if (elemName == "TracesInfo") {
-			for (TiXmlElement* traceInfo = element->FirstChildElement(); traceInfo != NULL; traceInfo->NextSiblingElement()) {
+			for (TiXmlElement* traceInfo = element->FirstChildElement(); traceInfo != NULL; traceInfo = traceInfo->NextSiblingElement()) {
 				tracesInfo.push_back(decodeTraceInfo(traceInfo));
 			}
 		}
@@ -264,10 +264,10 @@ void TracePredictExperimentation::performAndExportExperimentations(string specsF
 		else if (elemName == "numAccessesPerExperiment") {
 			numAccessesPerExperiment = std::stol(element->GetText());
 		}
-		else if (elemName == "PredictorParametersDomain") {
+		else if (elemName == "outputFilename") {
 			outputFilename = element->GetText();
 		}
-		else if (elemName == "PredictorParametersDomain") {
+		else if (elemName == "countTotalMemory") {
 			countTotalMemory = (bool)std::stoi(element->GetText());
 		}
 	}
