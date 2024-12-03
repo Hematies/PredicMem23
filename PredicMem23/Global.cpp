@@ -156,3 +156,89 @@ vector<PredictorParameters> decomposePredictorParametersDomain(PredictorParamete
 
 	return base;
 }
+
+CacheParametersDomain decodeCacheParametersDomain(TiXmlElement* element) {
+	auto res = CacheParametersDomain();
+	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; element->NextSiblingElement()) {
+		auto childName = child->Value();
+		if (childName == "numIndexBits") {
+			res.numIndexBits.push_back(std::stoi(child->GetText()));
+		}
+		else if (childName == "numWays") {
+			res.numWays.push_back(std::stoi(child->GetText()));
+		}
+		else if (childName == "numSequenceAccesses") {
+			res.numSequenceAccesses.push_back(std::stoi(child->GetText()));
+		}
+		else if (childName == "saveHistoryAndClassIfNotValid") {
+			res.saveHistoryAndClassIfNotValid.push_back((bool)std::stoi(child->GetText()));
+		}
+	}
+	return res;
+}
+
+
+DictionaryParametersDomain decodeDictionaryParametersDomain(TiXmlElement* element) {
+	auto res = DictionaryParametersDomain();
+	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; element->NextSiblingElement()) {
+		auto childName = child->Value();
+		if (childName == "numClasses") {
+			res.numClasses.push_back(std::stoi(child->GetText()));
+		}
+		else if (childName == "maxConfidence") {
+			res.maxConfidence.push_back(std::stoi(child->GetText()));
+		}
+		else if (childName == "numConfidenceJumps") {
+			res.numConfidenceJumps.push_back(std::stoi(child->GetText()));
+		}
+		else if (childName == "saveHistoryAndClassIfNotValid") {
+			res.saveHistoryAndClassIfNotValid.push_back((bool)std::stoi(child->GetText()));
+		}
+	}
+	return res;
+}
+
+PredictorParametersDomain decodePredictorParametersDomain(TiXmlElement* element) {
+	auto res = PredictorParametersDomain();
+
+	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; element->NextSiblingElement()) {
+		auto childName = child->Value();
+		if (childName == "types") {
+			res.types.push_back(static_cast<PredictorModelType>(
+				std::stoi(child->GetText())
+				));
+		}
+		else if (childName == "cacheParams") {
+			res.cacheParams = decodeCacheParametersDomain(child);
+		}
+		else if (childName == "additionalCacheParams") {
+			res.additionalCacheParams = decodeCacheParametersDomain(child);
+		}
+		else if (childName == "dictParams") {
+			res.dictParams = decodeDictionaryParametersDomain(child);
+		}
+	}
+	return res;
+}
+
+
+
+TraceInfo decodeTraceInfo(TiXmlElement* element) {
+	std::string name; ///< Trace name.
+	std::string filename; ///< Trace filename.
+	unsigned long numAccesses = 0L; ///< Number of accesses.
+
+	for (TiXmlAttribute* attribute = element->FirstAttribute(); attribute != NULL; attribute->Next()) {
+		auto attributeName = attribute->Name();
+		if (attributeName == "name") name = attribute->Value();
+		else if (attributeName == "filename") filename = attribute->Value();
+		else if (attributeName == "numAccesses") numAccesses = std::stoul(attribute->Value());
+	}
+
+	auto res = TraceInfo();
+	res.filename = filename;
+	res.name = name;
+	res.numAccesses = numAccesses;
+
+	return res;
+}

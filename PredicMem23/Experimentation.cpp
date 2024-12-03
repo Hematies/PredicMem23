@@ -239,6 +239,43 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	}
 }
 
+void TracePredictExperimentation::performAndExportExperimentations(string specsFilePath) {
+	
+	vector<TraceInfo> tracesInfo;
+	PredictorParametersDomain params; 
+	long numAccessesPerExperiment = 0L; 
+	string outputFilename; 
+	bool countTotalMemory = false;
+	
+	TiXmlDocument doc(specsFilePath);
+	doc.LoadFile();
+
+	TiXmlElement* root = doc.FirstChildElement();
+	for (TiXmlElement* element = root->FirstChildElement(); element != NULL; element = element->NextSiblingElement()) {
+		string elemName = element->Value();
+		if (elemName == "TracesInfo") {
+			for (TiXmlElement* traceInfo = element->FirstChildElement(); traceInfo != NULL; traceInfo->NextSiblingElement()) {
+				tracesInfo.push_back(decodeTraceInfo(traceInfo));
+			}
+		}
+		else if (elemName == "PredictorParametersDomain") {
+			params = decodePredictorParametersDomain(element);
+		}
+		else if (elemName == "numAccessesPerExperiment") {
+			numAccessesPerExperiment = std::stol(element->GetText());
+		}
+		else if (elemName == "PredictorParametersDomain") {
+			outputFilename = element->GetText();
+		}
+		else if (elemName == "PredictorParametersDomain") {
+			countTotalMemory = (bool)std::stoi(element->GetText());
+		}
+	}
+
+	TracePredictExperimentation::performAndExportExperimentations(tracesInfo, params, numAccessesPerExperiment, 
+		outputFilename, countTotalMemory);
+}
+
 void TracePredictExperimentation::performAndExportExperimentations(vector<TraceInfo> tracesInfo,
 	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
 	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);
