@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['performandexportexperimentations_0',['performAndExportExperimentations',['../classTracePredictExperimentation.html#a5c3c302f70caa59f95b4bd7d86e5d4e4',1,'TracePredictExperimentation']]],
+  ['performandexportexperimentations_0',['performAndExportExperimentations',['../classTracePredictExperimentation.html#a5c3c302f70caa59f95b4bd7d86e5d4e4',1,'TracePredictExperimentation::performAndExportExperimentations(vector&lt; TraceInfo &gt; tracesInfo, PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory)'],['../classTracePredictExperimentation.html#a95d273d44069558a7dbe60679104ea94',1,'TracePredictExperimentation::performAndExportExperimentations(string specsFilePath)']]],
   ['performexperiment_1',['performExperiment',['../classExperiment.html#aad0dbba1713b35ea709210cea5c31bb6',1,'Experiment::performExperiment()'],['../classTracePredictExperiment.html#a188ca6b3ea26cf4352d69eec3a19bb50',1,'TracePredictExperiment::performExperiment()']]],
   ['performexperiments_2',['performExperiments',['../classExperimentation.html#a5292bb9d3887b2dad1de316c3fc122ff',1,'Experimentation::performExperiments()'],['../classTracePredictExperimentation.html#ab61b263afc7d5dd82d8a473647748421',1,'TracePredictExperimentation::performExperiments()']]],
   ['predicmem23_3',['PredicMem23',['../index.html',1,'']]],

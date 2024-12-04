@@ -99,6 +99,7 @@ $(function(){ initResizable(false); });
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;tinyxml.h&gt;</code><br />
 </div>
 <p><a href="Global_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -163,9 +164,22 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ae12684dc504717d756a5aa9414f328dc" id="r_ae12684dc504717d756a5aa9414f328dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structCacheParametersDomain.html">CacheParametersDomain</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae12684dc504717d756a5aa9414f328dc">decodeCacheParametersDomain</a> (TiXmlElement *element)</td></tr>
+<tr class="memdesc:ae12684dc504717d756a5aa9414f328dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodification function from XML to <a class="el" href="structCacheParametersDomain.html" title="Structure to store domain of cache parameters.">CacheParametersDomain</a>.  <br /></td></tr>
+<tr class="separator:ae12684dc504717d756a5aa9414f328dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0ee5d2eee6961bdb274f423d46271a3" id="r_ae0ee5d2eee6961bdb274f423d46271a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDictionaryParametersDomain.html">DictionaryParametersDomain</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0ee5d2eee6961bdb274f423d46271a3">decodeDictionaryParametersDomain</a> (TiXmlElement *element)</td></tr>
+<tr class="memdesc:ae0ee5d2eee6961bdb274f423d46271a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodification function from XML to <a class="el" href="structDictionaryParametersDomain.html" title="Structure to store domain of dictionary parameters.">DictionaryParametersDomain</a>.  <br /></td></tr>
+<tr class="separator:ae0ee5d2eee6961bdb274f423d46271a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a1eeef1f6e3d15b97b4342c20d75e02" id="r_a7a1eeef1f6e3d15b97b4342c20d75e02"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPredictorParametersDomain.html">PredictorParametersDomain</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a1eeef1f6e3d15b97b4342c20d75e02">decodePredictorParametersDomain</a> (TiXmlElement *element)</td></tr>
+<tr class="memdesc:a7a1eeef1f6e3d15b97b4342c20d75e02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodification function from XML to <a class="el" href="structPredictorParametersDomain.html" title="Structure to store domain of predictor parameters.">PredictorParametersDomain</a>.  <br /></td></tr>
+<tr class="separator:a7a1eeef1f6e3d15b97b4342c20d75e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a731b64206030b9d9ae57b22f427a94" id="r_a6a731b64206030b9d9ae57b22f427a94"><td class="memItemLeft" align="right" valign="top">vector&lt; <a class="el" href="structPredictorParameters.html">PredictorParameters</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a731b64206030b9d9ae57b22f427a94">decomposePredictorParametersDomain</a> (<a class="el" href="structPredictorParametersDomain.html">PredictorParametersDomain</a> paramsDomain)</td></tr>
 <tr class="memdesc:a6a731b64206030b9d9ae57b22f427a94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes a predictor parameters domain into a vector of predictor parameters.  <br /></td></tr>
 <tr class="separator:a6a731b64206030b9d9ae57b22f427a94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa700de87abf311f468345559189fd94" id="r_afa700de87abf311f468345559189fd94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTraceInfo.html">TraceInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa700de87abf311f468345559189fd94">decodeTraceInfo</a> (TiXmlElement *element)</td></tr>
+<tr class="memdesc:afa700de87abf311f468345559189fd94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodification function from XML to <a class="el" href="structTraceInfo.html" title="Structure to store trace information.">TraceInfo</a>. <br  />
+  <br /></td></tr>
+<tr class="separator:afa700de87abf311f468345559189fd94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Definition of structures and functions for the PredicMem23 project. </p>
@@ -174,8 +188,10 @@ Functions</h2></td></tr>
 <li><a class="el" href="structModelParameters.html" title="Structure to store model parameters.">ModelParameters</a></li>
 <li><a class="el" href="structCacheParameters.html" title="Structure to store cache parameters.">CacheParameters</a></li>
 <li><a class="el" href="structCacheParametersDomain.html" title="Structure to store domain of cache parameters.">CacheParametersDomain</a></li>
+<li>decodeCacheParametersDomain</li>
 <li><a class="el" href="structDictionaryParameters.html" title="Structure to store dictionary parameters.">DictionaryParameters</a></li>
 <li><a class="el" href="structDictionaryParametersDomain.html" title="Structure to store domain of dictionary parameters.">DictionaryParametersDomain</a></li>
+<li>decodeDictionaryParametersDomain</li>
 <li>PredictorModelType</li>
 <li><a class="el" href="structPredictorParameters.html" title="Structure to store predictor parameters.">PredictorParameters</a></li>
 <li><a class="el" href="structPredictorParametersDomain.html" title="Structure to store domain of predictor parameters.">PredictorParametersDomain</a></li>
@@ -184,6 +200,7 @@ Functions</h2></td></tr>
 <li><a class="el" href="classBuffersSVMPredictResultsAndCosts.html" title="Class for SVM prediction results and costs.">BuffersSVMPredictResultsAndCosts</a></li>
 <li><a class="el" href="classDFCMPredictResultsAndCosts.html" title="Class for DFCM prediction results and costs.">DFCMPredictResultsAndCosts</a></li>
 <li><a class="el" href="structTraceInfo.html" title="Structure to store trace information.">TraceInfo</a></li>
+<li>decodeTraceInfo</li>
 <li><a class="el" href="structAccessesDataset.html" title="Template structure to store accesses dataset.">AccessesDataset</a></li>
 <li><a class="el" href="structBuffersDataset.html" title="Template structure to store buffers dataset.">BuffersDataset</a></li>
 </ul>
@@ -198,6 +215,110 @@ LICENSE</h1>
 DESCRIPTION</h1>
 <p>This file declares the structures and functions for the PredicMem23 project. It includes definitions for model parameters, cache parameters, dictionary parameters, predictor parameters, and the decomposition of predictor parameters domains. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="ae12684dc504717d756a5aa9414f328dc" name="ae12684dc504717d756a5aa9414f328dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12684dc504717d756a5aa9414f328dc">&#9670;&#160;</a></span>decodeCacheParametersDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structCacheParametersDomain.html">CacheParametersDomain</a> decodeCacheParametersDomain </td>
+          <td>(</td>
+          <td class="paramtype">TiXmlElement *</td>          <td class="paramname"><span class="paramname"><em>element</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodification function from XML to <a class="el" href="structCacheParametersDomain.html" title="Structure to store domain of cache parameters.">CacheParametersDomain</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>XML element that contains the <a class="el" href="structCacheParametersDomain.html" title="Structure to store domain of cache parameters.">CacheParametersDomain</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae0ee5d2eee6961bdb274f423d46271a3" name="ae0ee5d2eee6961bdb274f423d46271a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0ee5d2eee6961bdb274f423d46271a3">&#9670;&#160;</a></span>decodeDictionaryParametersDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structDictionaryParametersDomain.html">DictionaryParametersDomain</a> decodeDictionaryParametersDomain </td>
+          <td>(</td>
+          <td class="paramtype">TiXmlElement *</td>          <td class="paramname"><span class="paramname"><em>element</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodification function from XML to <a class="el" href="structDictionaryParametersDomain.html" title="Structure to store domain of dictionary parameters.">DictionaryParametersDomain</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>XML element that contains the <a class="el" href="structDictionaryParametersDomain.html" title="Structure to store domain of dictionary parameters.">DictionaryParametersDomain</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7a1eeef1f6e3d15b97b4342c20d75e02" name="a7a1eeef1f6e3d15b97b4342c20d75e02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1eeef1f6e3d15b97b4342c20d75e02">&#9670;&#160;</a></span>decodePredictorParametersDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structPredictorParametersDomain.html">PredictorParametersDomain</a> decodePredictorParametersDomain </td>
+          <td>(</td>
+          <td class="paramtype">TiXmlElement *</td>          <td class="paramname"><span class="paramname"><em>element</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodification function from XML to <a class="el" href="structPredictorParametersDomain.html" title="Structure to store domain of predictor parameters.">PredictorParametersDomain</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>XML element that contains the <a class="el" href="structPredictorParametersDomain.html" title="Structure to store domain of predictor parameters.">PredictorParametersDomain</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="afa700de87abf311f468345559189fd94" name="afa700de87abf311f468345559189fd94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa700de87abf311f468345559189fd94">&#9670;&#160;</a></span>decodeTraceInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structTraceInfo.html">TraceInfo</a> decodeTraceInfo </td>
+          <td>(</td>
+          <td class="paramtype">TiXmlElement *</td>          <td class="paramname"><span class="paramname"><em>element</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodification function from XML to <a class="el" href="structTraceInfo.html" title="Structure to store trace information.">TraceInfo</a>. <br  />
+ </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>XML element that contains the <a class="el" href="structTraceInfo.html" title="Structure to store trace information.">TraceInfo</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; Trace name.</p>
+<p>&lt; Trace filename.</p>
+<p>&lt; Number of accesses.</p>
+
+</div>
+</div>
 <a id="a6a731b64206030b9d9ae57b22f427a94" name="a6a731b64206030b9d9ae57b22f427a94"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6a731b64206030b9d9ae57b22f427a94">&#9670;&#160;</a></span>decomposePredictorParametersDomain()</h2>
 
