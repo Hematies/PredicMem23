@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['resultsandcosts_0',['resultsAndCosts',['../classTracePredictExperiment.html#a9a6bdc99608e01287a80ff338623e2d6',1,'TracePredictExperiment']]]
+  ['predictableinputsmask_0',['predictableInputsMask',['../classSVM.html#a887abeae113f9435b9074653de242723',1,'SVM']]],
+  ['predictonnonvalidinput_1',['predictOnNonValidInput',['../classSVM.html#aa739b699fb9da9d98d095d39f9773535',1,'SVM']]]
 ];

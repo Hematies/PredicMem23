@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['file_0',['file',['../classTraceReader.html#a2d158c5ff879665bf8c7a4fd674a2d95',1,'TraceReader']]],
-  ['filename_1',['filename',['../structTraceInfo.html#afa9cdd3745b02a36f0562705b1d66547',1,'TraceInfo::filename'],['../classTraceReader.html#a9e07fd8a96c457d743a8fd2f14040cef',1,'TraceReader::filename']]],
-  ['firsttablecacheparams_2',['firstTableCacheParams',['../classHashOnHashDFCM.html#ad0a52c9c8349a8c584f63a5aa81de573',1,'HashOnHashDFCM::firstTableCacheParams'],['../classKOrderDFCM.html#a8ed1133ade526907e898a21aec51f304',1,'KOrderDFCM::firstTableCacheParams']]],
-  ['firsttablememorycost_3',['firstTableMemoryCost',['../classDFCMPredictResultsAndCosts.html#aff244afe1ef851023b14a6e2cb26d3b1',1,'DFCMPredictResultsAndCosts']]],
-  ['firsttablemissrate_4',['firstTableMissRate',['../classDFCMPredictResultsAndCosts.html#aaa45bbc213b5155c65d084ae2a4635ed',1,'DFCMPredictResultsAndCosts']]]
+  ['endline_0',['endLine',['../classTraceReader.html#acb7563bb48461ccf93cb421981b24bf9',1,'TraceReader']]],
+  ['entries_1',['entries',['../classHistoryCacheSet.html#a4196405871264391e60903b5bbf63e1d',1,'HistoryCacheSet::entries'],['../classDictionary.html#a463baae48d09ae26f1c44b9db31c40bf',1,'Dictionary::entries']]],
+  ['entriesconfidence_2',['entriesConfidence',['../classHistoryCacheSet.html#a2cbc113cc3f1552e31f73a6cd4edc374',1,'HistoryCacheSet']]],
+  ['epochs_3',['epochs',['../classSVMClassifier.html#a3fb22363b1644846841253b7a586b133',1,'SVMClassifier']]]
 ];

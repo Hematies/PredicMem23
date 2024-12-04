@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['predictableinputsmask_0',['predictableInputsMask',['../classSVM.html#a887abeae113f9435b9074653de242723',1,'SVM']]],
-  ['predictonnonvalidinput_1',['predictOnNonValidInput',['../classSVM.html#aa739b699fb9da9d98d095d39f9773535',1,'SVM']]]
+  ['outputaccesses_0',['outputAccesses',['../structBuffersDataset.html#afbebbe3d66104a278e76745eb4ab2d9c',1,'BuffersDataset']]],
+  ['outputdata_1',['outputData',['../classSVM.html#a1152ab4c8f86c2eeecca485a0e4f0f77',1,'SVM']]]
 ];

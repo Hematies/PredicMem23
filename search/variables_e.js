@@ -1,8 +1,12 @@
 var searchData=
 [
-  ['tag_0',['tag',['../classStandardHistoryCacheEntry.html#a2e5e6b0074b75561f3583b7173a10bab',1,'StandardHistoryCacheEntry']]],
-  ['totalmemorycost_1',['totalMemoryCost',['../classBuffersSVMPredictResultsAndCosts.html#aba75ae9093ae8f177ec1a589e4373375',1,'BuffersSVMPredictResultsAndCosts::totalMemoryCost'],['../classDFCMPredictResultsAndCosts.html#a62f1ec39f1f646ab126f8a74b5a58779',1,'DFCMPredictResultsAndCosts::totalMemoryCost']]],
-  ['tracereader_2',['traceReader',['../classTracePredictExperimentation.html#a917e36f973baed78a1ad5f4c9bf56251',1,'TracePredictExperimentation']]],
-  ['type_3',['type',['../structPredictorParameters.html#a35e47fa4197fbfb65fc8256c0abe85e8',1,'PredictorParameters']]],
-  ['types_4',['types',['../structPredictorParametersDomain.html#a5921561d9d586b82b7b79c5af0110b45',1,'PredictorParametersDomain']]]
+  ['savehistoryandclassafterdictmiss_0',['saveHistoryAndClassAfterDictMiss',['../classBuffersSimulator.html#a1a9846b34962979b892f7386856284a2',1,'BuffersSimulator']]],
+  ['savehistoryandclassifnotvalid_1',['saveHistoryAndClassIfNotValid',['../classBuffersSimulator.html#a1009306f6fb5be2125aecd7821119cda',1,'BuffersSimulator::saveHistoryAndClassIfNotValid'],['../structCacheParameters.html#a26f89524335008e1aa0ee9f5343daba2',1,'CacheParameters::saveHistoryAndClassIfNotValid'],['../structCacheParametersDomain.html#abe985aa646abaa4277843053e5fce54f',1,'CacheParametersDomain::saveHistoryAndClassIfNotValid'],['../structDictionaryParameters.html#aaeec7a3cc68ce296270744fcfe65ca77',1,'DictionaryParameters::saveHistoryAndClassIfNotValid'],['../structDictionaryParametersDomain.html#aa23bd28252c00dd82f7cb6f7ff36cfae',1,'DictionaryParametersDomain::saveHistoryAndClassIfNotValid']]],
+  ['secondtablecacheparams_2',['secondTableCacheParams',['../classHashOnHashDFCM.html#af55d98941d046cbb045a9d4e0f8f72be',1,'HashOnHashDFCM::secondTableCacheParams'],['../classKOrderDFCM.html#afb25601402a161b8c112b2d23192733a',1,'KOrderDFCM::secondTableCacheParams']]],
+  ['secondtablememorycost_3',['secondTableMemoryCost',['../classDFCMPredictResultsAndCosts.html#a1486b922847888b7300a7c17a553db89',1,'DFCMPredictResultsAndCosts']]],
+  ['secondtablemissrate_4',['secondTableMissRate',['../classDFCMPredictResultsAndCosts.html#a7547510fc58ab5ab24a67efd441f810e',1,'DFCMPredictResultsAndCosts']]],
+  ['seed_5',['seed',['../classSVMClassifier.html#aae44b1b7c5a5bf7df771ded2a9c043b9',1,'SVMClassifier']]],
+  ['sets_6',['sets',['../classRealHistoryCache.html#ac2f7c8aa79f16dbbe93b74da934f41ff',1,'RealHistoryCache']]],
+  ['skiplineheader_7',['skipLineHeader',['../classTraceReader.html#ac1c3454e7831687478f5fb55fb9a4953',1,'TraceReader']]],
+  ['svmstable_8',['SVMsTable',['../classMultiSVMClassifier.html#ab394dfe7c194da62a9b9e4e3497430b9',1,'MultiSVMClassifier']]]
 ];

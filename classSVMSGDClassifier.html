@@ -91,70 +91,87 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">SVMSGDClassifier Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="classSVM.html" title="Template class for a Support Vector Machine (SVM) model used as a predictor.">SVM</a> classifier trained using stochastic gradient descent (SGD).  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SVMClassifier_8hpp_source.html">SVMClassifier.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for SVMSGDClassifier:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classSVMSGDClassifier.png" usemap="#SVMSGDClassifier_map" alt=""/>
   <map id="SVMSGDClassifier_map" name="SVMSGDClassifier_map">
-<area href="classSVMClassifier.html" alt="SVMClassifier" shape="rect" coords="96,0,278,24"/>
-<area href="classMultiSVMClassifier.html" alt="MultiSVMClassifier" shape="rect" coords="96,112,278,136"/>
-<area href="classMultiSVMClassifierOneToAll.html" alt="MultiSVMClassifierOneToAll" shape="rect" coords="0,168,182,192"/>
-<area href="classMultiSVMClassifierOneToOne.html" alt="MultiSVMClassifierOneToOne" shape="rect" coords="192,168,374,192"/>
+<area href="classSVMClassifier.html" title="Base class for Support Vector Machine (SVM) classifiers." alt="SVMClassifier" shape="rect" coords="96,0,278,24"/>
+<area href="classMultiSVMClassifier.html" title="Base class for multi-class SVM classifiers." alt="MultiSVMClassifier" shape="rect" coords="96,112,278,136"/>
+<area href="classMultiSVMClassifierOneToAll.html" title="One-vs-All multi-class SVM classifier." alt="MultiSVMClassifierOneToAll" shape="rect" coords="0,168,182,192"/>
+<area href="classMultiSVMClassifierOneToOne.html" title="One-vs-One multi-class SVM classifier." alt="MultiSVMClassifierOneToOne" shape="rect" coords="192,168,374,192"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aec59aae2d6dcc014dbb5b82ec2014673" id="r_aec59aae2d6dcc014dbb5b82ec2014673"><td class="memItemLeft" align="right" valign="top"><a id="aec59aae2d6dcc014dbb5b82ec2014673" name="aec59aae2d6dcc014dbb5b82ec2014673"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SVMSGDClassifier</b> (double c, unsigned int epochs, unsigned int seed, double learningRate)</td></tr>
+<tr class="memitem:ad9aaf20dfcc2d4f21f1dd71f7e9493d8" id="r_ad9aaf20dfcc2d4f21f1dd71f7e9493d8"><td class="memItemLeft" align="right" valign="top"><a id="ad9aaf20dfcc2d4f21f1dd71f7e9493d8" name="ad9aaf20dfcc2d4f21f1dd71f7e9493d8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SVMSGDClassifier</b> ()</td></tr>
+<tr class="memdesc:ad9aaf20dfcc2d4f21f1dd71f7e9493d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
+<tr class="separator:ad9aaf20dfcc2d4f21f1dd71f7e9493d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec59aae2d6dcc014dbb5b82ec2014673" id="r_aec59aae2d6dcc014dbb5b82ec2014673"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec59aae2d6dcc014dbb5b82ec2014673">SVMSGDClassifier</a> (double <a class="el" href="classSVMClassifier.html#ae600d1a043a0c5185a37224730ae9714">c</a>, unsigned int <a class="el" href="classSVMClassifier.html#a3fb22363b1644846841253b7a586b133">epochs</a>, unsigned int <a class="el" href="classSVMClassifier.html#aae44b1b7c5a5bf7df771ded2a9c043b9">seed</a>, double <a class="el" href="#a351565180a72b1730191a325ad04d309">learningRate</a>)</td></tr>
+<tr class="memdesc:aec59aae2d6dcc014dbb5b82ec2014673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameterized constructor.  <br /></td></tr>
 <tr class="separator:aec59aae2d6dcc014dbb5b82ec2014673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5171986441b1c65e983f889f413940b7" id="r_a5171986441b1c65e983f889f413940b7"><td class="memItemLeft" align="right" valign="top"><a id="a5171986441b1c65e983f889f413940b7" name="a5171986441b1c65e983f889f413940b7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initWeights</b> (int numFeatures)</td></tr>
+<tr class="memitem:a5171986441b1c65e983f889f413940b7" id="r_a5171986441b1c65e983f889f413940b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5171986441b1c65e983f889f413940b7">initWeights</a> (int numFeatures)</td></tr>
+<tr class="memdesc:a5171986441b1c65e983f889f413940b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize weights with random values.  <br /></td></tr>
 <tr class="separator:a5171986441b1c65e983f889f413940b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d4f379e5b99a3f8c04046547704c9b8" id="r_a1d4f379e5b99a3f8c04046547704c9b8"><td class="memItemLeft" align="right" valign="top"><a id="a1d4f379e5b99a3f8c04046547704c9b8" name="a1d4f379e5b99a3f8c04046547704c9b8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fit</b> (vector&lt; vector&lt; double &gt; &gt; &amp;data, vector&lt; int &gt; &amp;label)</td></tr>
+<tr class="memitem:a1d4f379e5b99a3f8c04046547704c9b8" id="r_a1d4f379e5b99a3f8c04046547704c9b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d4f379e5b99a3f8c04046547704c9b8">fit</a> (vector&lt; vector&lt; double &gt; &gt; &amp;data, vector&lt; int &gt; &amp;label)</td></tr>
+<tr class="memdesc:a1d4f379e5b99a3f8c04046547704c9b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Train the <a class="el" href="classSVM.html" title="Template class for a Support Vector Machine (SVM) model used as a predictor.">SVM</a> using stochastic gradient descent.  <br /></td></tr>
 <tr class="separator:a1d4f379e5b99a3f8c04046547704c9b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1265c5014f3b0b040a23ebf267d9f8ac" id="r_a1265c5014f3b0b040a23ebf267d9f8ac"><td class="memItemLeft" align="right" valign="top"><a id="a1265c5014f3b0b040a23ebf267d9f8ac" name="a1265c5014f3b0b040a23ebf267d9f8ac"></a>
-vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>computeDistanceToPlane</b> (vector&lt; vector&lt; double &gt; &gt; &amp;data)</td></tr>
+<tr class="memitem:a1265c5014f3b0b040a23ebf267d9f8ac" id="r_a1265c5014f3b0b040a23ebf267d9f8ac"><td class="memItemLeft" align="right" valign="top">vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1265c5014f3b0b040a23ebf267d9f8ac">computeDistanceToPlane</a> (vector&lt; vector&lt; double &gt; &gt; &amp;data)</td></tr>
+<tr class="memdesc:a1265c5014f3b0b040a23ebf267d9f8ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute distances from data points to the decision boundary.  <br /></td></tr>
 <tr class="separator:a1265c5014f3b0b040a23ebf267d9f8ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSVMClassifier"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classSVMClassifier')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSVMClassifier.html">SVMClassifier</a></td></tr>
-<tr class="memitem:af703f90545b8d0c301b244b4f4dcfd02 inherit pub_methods_classSVMClassifier" id="r_af703f90545b8d0c301b244b4f4dcfd02"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>SVMClassifier</b> (double c, unsigned int epochs, unsigned int seed)</td></tr>
+<tr class="memitem:a8d4dbc84df084846f3665771d92693cb inherit pub_methods_classSVMClassifier" id="r_a8d4dbc84df084846f3665771d92693cb"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>SVMClassifier</b> ()</td></tr>
+<tr class="memdesc:a8d4dbc84df084846f3665771d92693cb inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
+<tr class="separator:a8d4dbc84df084846f3665771d92693cb inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af703f90545b8d0c301b244b4f4dcfd02 inherit pub_methods_classSVMClassifier" id="r_af703f90545b8d0c301b244b4f4dcfd02"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#af703f90545b8d0c301b244b4f4dcfd02">SVMClassifier</a> (double <a class="el" href="classSVMClassifier.html#ae600d1a043a0c5185a37224730ae9714">c</a>, unsigned int <a class="el" href="classSVMClassifier.html#a3fb22363b1644846841253b7a586b133">epochs</a>, unsigned int <a class="el" href="classSVMClassifier.html#aae44b1b7c5a5bf7df771ded2a9c043b9">seed</a>)</td></tr>
+<tr class="memdesc:af703f90545b8d0c301b244b4f4dcfd02 inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameterized constructor.  <br /></td></tr>
 <tr class="separator:af703f90545b8d0c301b244b4f4dcfd02 inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13a3b51b03ad2b0fa56473c23281590c inherit pub_methods_classSVMClassifier" id="r_a13a3b51b03ad2b0fa56473c23281590c"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setWeights</b> (vector&lt; double &gt; w, double b)</td></tr>
+<tr class="memitem:a13a3b51b03ad2b0fa56473c23281590c inherit pub_methods_classSVMClassifier" id="r_a13a3b51b03ad2b0fa56473c23281590c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#a13a3b51b03ad2b0fa56473c23281590c">setWeights</a> (vector&lt; double &gt; <a class="el" href="classSVMClassifier.html#a44e989af2600a718359ea5d7b4b4cd3f">w</a>, double <a class="el" href="classSVMClassifier.html#a117b93fa76b654260f3dff68eaccbcdb">b</a>)</td></tr>
+<tr class="memdesc:a13a3b51b03ad2b0fa56473c23281590c inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="classSVM.html" title="Template class for a Support Vector Machine (SVM) model used as a predictor.">SVM</a> weights and bias.  <br /></td></tr>
 <tr class="separator:a13a3b51b03ad2b0fa56473c23281590c inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed1d438f9fa4a31d297b351007992fc9 inherit pub_methods_classSVMClassifier" id="r_aed1d438f9fa4a31d297b351007992fc9"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initWeights</b> (int numFeatures)</td></tr>
+<tr class="memitem:aed1d438f9fa4a31d297b351007992fc9 inherit pub_methods_classSVMClassifier" id="r_aed1d438f9fa4a31d297b351007992fc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#aed1d438f9fa4a31d297b351007992fc9">initWeights</a> (int numFeatures)</td></tr>
+<tr class="memdesc:aed1d438f9fa4a31d297b351007992fc9 inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize weights with random values.  <br /></td></tr>
 <tr class="separator:aed1d438f9fa4a31d297b351007992fc9 inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebb3f8224ca6fe09f6b23565883a82fd inherit pub_methods_classSVMClassifier" id="r_aebb3f8224ca6fe09f6b23565883a82fd"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fit</b> (vector&lt; vector&lt; double &gt; &gt; &amp;data, vector&lt; int &gt; &amp;label)</td></tr>
+<tr class="memitem:aebb3f8224ca6fe09f6b23565883a82fd inherit pub_methods_classSVMClassifier" id="r_aebb3f8224ca6fe09f6b23565883a82fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#aebb3f8224ca6fe09f6b23565883a82fd">fit</a> (vector&lt; vector&lt; double &gt; &gt; &amp;data, vector&lt; int &gt; &amp;label)</td></tr>
+<tr class="memdesc:aebb3f8224ca6fe09f6b23565883a82fd inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Train the <a class="el" href="classSVM.html" title="Template class for a Support Vector Machine (SVM) model used as a predictor.">SVM</a> on labeled data.  <br /></td></tr>
 <tr class="separator:aebb3f8224ca6fe09f6b23565883a82fd inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ef3c3d7e4b5b8d516f82864c5557f9f inherit pub_methods_classSVMClassifier" id="r_a8ef3c3d7e4b5b8d516f82864c5557f9f"><td class="memItemLeft" align="right" valign="top">
-vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>predict</b> (vector&lt; vector&lt; double &gt; &gt; &amp;data)</td></tr>
+<tr class="memitem:a8ef3c3d7e4b5b8d516f82864c5557f9f inherit pub_methods_classSVMClassifier" id="r_a8ef3c3d7e4b5b8d516f82864c5557f9f"><td class="memItemLeft" align="right" valign="top">vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#a8ef3c3d7e4b5b8d516f82864c5557f9f">predict</a> (vector&lt; vector&lt; double &gt; &gt; &amp;data)</td></tr>
+<tr class="memdesc:a8ef3c3d7e4b5b8d516f82864c5557f9f inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predict labels for a given dataset.  <br /></td></tr>
 <tr class="separator:a8ef3c3d7e4b5b8d516f82864c5557f9f inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a000229682278ab5c6441fa7882270f95 inherit pub_methods_classSVMClassifier" id="r_a000229682278ab5c6441fa7882270f95"><td class="memItemLeft" align="right" valign="top">
-double&#160;</td><td class="memItemRight" valign="bottom"><b>accuracy</b> (vector&lt; int &gt; &amp;label, vector&lt; int &gt; &amp;pred_label)</td></tr>
+<tr class="memitem:a000229682278ab5c6441fa7882270f95 inherit pub_methods_classSVMClassifier" id="r_a000229682278ab5c6441fa7882270f95"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#a000229682278ab5c6441fa7882270f95">accuracy</a> (vector&lt; int &gt; &amp;label, vector&lt; int &gt; &amp;pred_label)</td></tr>
+<tr class="memdesc:a000229682278ab5c6441fa7882270f95 inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate classification accuracy.  <br /></td></tr>
 <tr class="separator:a000229682278ab5c6441fa7882270f95 inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac307d7440c74ef0cde4ea390bf21e19c inherit pub_methods_classSVMClassifier" id="r_ac307d7440c74ef0cde4ea390bf21e19c"><td class="memItemLeft" align="right" valign="top">
-double&#160;</td><td class="memItemRight" valign="bottom"><b>accuracy</b> (vector&lt; vector&lt; double &gt; &gt; &amp;data, vector&lt; int &gt; &amp;label)</td></tr>
+<tr class="memitem:ac307d7440c74ef0cde4ea390bf21e19c inherit pub_methods_classSVMClassifier" id="r_ac307d7440c74ef0cde4ea390bf21e19c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSVMClassifier.html#ac307d7440c74ef0cde4ea390bf21e19c">accuracy</a> (vector&lt; vector&lt; double &gt; &gt; &amp;data, vector&lt; int &gt; &amp;label)</td></tr>
+<tr class="memdesc:ac307d7440c74ef0cde4ea390bf21e19c inherit pub_methods_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate classification accuracy using the model's predictions.  <br /></td></tr>
 <tr class="separator:ac307d7440c74ef0cde4ea390bf21e19c inherit pub_methods_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a351565180a72b1730191a325ad04d309" id="r_a351565180a72b1730191a325ad04d309"><td class="memItemLeft" align="right" valign="top"><a id="a351565180a72b1730191a325ad04d309" name="a351565180a72b1730191a325ad04d309"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>learningRate</b></td></tr>
+<tr class="memdesc:a351565180a72b1730191a325ad04d309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Learning rate for SGD. <br /></td></tr>
 <tr class="separator:a351565180a72b1730191a325ad04d309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classSVMClassifier"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classSVMClassifier')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classSVMClassifier.html">SVMClassifier</a></td></tr>
 <tr class="memitem:ae600d1a043a0c5185a37224730ae9714 inherit pub_attribs_classSVMClassifier" id="r_ae600d1a043a0c5185a37224730ae9714"><td class="memItemLeft" align="right" valign="top">
 double&#160;</td><td class="memItemRight" valign="bottom"><b>c</b></td></tr>
+<tr class="memdesc:ae600d1a043a0c5185a37224730ae9714 inherit pub_attribs_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regularization parameter. <br /></td></tr>
 <tr class="separator:ae600d1a043a0c5185a37224730ae9714 inherit pub_attribs_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fb22363b1644846841253b7a586b133 inherit pub_attribs_classSVMClassifier" id="r_a3fb22363b1644846841253b7a586b133"><td class="memItemLeft" align="right" valign="top">
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>epochs</b></td></tr>
+<tr class="memdesc:a3fb22363b1644846841253b7a586b133 inherit pub_attribs_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of training epochs. <br /></td></tr>
 <tr class="separator:a3fb22363b1644846841253b7a586b133 inherit pub_attribs_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae44b1b7c5a5bf7df771ded2a9c043b9 inherit pub_attribs_classSVMClassifier" id="r_aae44b1b7c5a5bf7df771ded2a9c043b9"><td class="memItemLeft" align="right" valign="top">
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>seed</b></td></tr>
+<tr class="memdesc:aae44b1b7c5a5bf7df771ded2a9c043b9 inherit pub_attribs_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Random seed for initialization. <br /></td></tr>
 <tr class="separator:aae44b1b7c5a5bf7df771ded2a9c043b9 inherit pub_attribs_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
@@ -162,11 +179,140 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classSVMClassifier"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classSVMClassifier')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classSVMClassifier.html">SVMClassifier</a></td></tr>
 <tr class="memitem:a44e989af2600a718359ea5d7b4b4cd3f inherit pro_attribs_classSVMClassifier" id="r_a44e989af2600a718359ea5d7b4b4cd3f"><td class="memItemLeft" align="right" valign="top">
 vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>w</b></td></tr>
+<tr class="memdesc:a44e989af2600a718359ea5d7b4b4cd3f inherit pro_attribs_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight vector. <br /></td></tr>
 <tr class="separator:a44e989af2600a718359ea5d7b4b4cd3f inherit pro_attribs_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a117b93fa76b654260f3dff68eaccbcdb inherit pro_attribs_classSVMClassifier" id="r_a117b93fa76b654260f3dff68eaccbcdb"><td class="memItemLeft" align="right" valign="top">
 double&#160;</td><td class="memItemRight" valign="bottom"><b>b</b></td></tr>
+<tr class="memdesc:a117b93fa76b654260f3dff68eaccbcdb inherit pro_attribs_classSVMClassifier"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bias term. <br /></td></tr>
 <tr class="separator:a117b93fa76b654260f3dff68eaccbcdb inherit pro_attribs_classSVMClassifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="classSVM.html" title="Template class for a Support Vector Machine (SVM) model used as a predictor.">SVM</a> classifier trained using stochastic gradient descent (SGD). </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aec59aae2d6dcc014dbb5b82ec2014673" name="aec59aae2d6dcc014dbb5b82ec2014673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec59aae2d6dcc014dbb5b82ec2014673">&#9670;&#160;</a></span>SVMSGDClassifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SVMSGDClassifier::SVMSGDClassifier </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>c</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int</td>          <td class="paramname"><span class="paramname"><em>epochs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int</td>          <td class="paramname"><span class="paramname"><em>seed</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>learningRate</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parameterized constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>Regularization parameter. </td></tr>
+    <tr><td class="paramname">epochs</td><td>Number of training epochs. </td></tr>
+    <tr><td class="paramname">seed</td><td>Random seed for initialization. </td></tr>
+    <tr><td class="paramname">learningRate</td><td>Learning rate for SGD. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1265c5014f3b0b040a23ebf267d9f8ac" name="a1265c5014f3b0b040a23ebf267d9f8ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1265c5014f3b0b040a23ebf267d9f8ac">&#9670;&#160;</a></span>computeDistanceToPlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt; double &gt; SVMSGDClassifier::computeDistanceToPlane </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; vector&lt; double &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute distances from data points to the decision boundary. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Data to classify. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Distances from the decision boundary. </dd></dl>
+
+</div>
+</div>
+<a id="a1d4f379e5b99a3f8c04046547704c9b8" name="a1d4f379e5b99a3f8c04046547704c9b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d4f379e5b99a3f8c04046547704c9b8">&#9670;&#160;</a></span>fit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SVMSGDClassifier::fit </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; vector&lt; double &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; int &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>label</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Train the <a class="el" href="classSVM.html" title="Template class for a Support Vector Machine (SVM) model used as a predictor.">SVM</a> using stochastic gradient descent. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Training data. </td></tr>
+    <tr><td class="paramname">label</td><td>Corresponding labels for the training data. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5171986441b1c65e983f889f413940b7" name="a5171986441b1c65e983f889f413940b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5171986441b1c65e983f889f413940b7">&#9670;&#160;</a></span>initWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SVMSGDClassifier::initWeights </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numFeatures</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize weights with random values. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">numFeatures</td><td>Number of features in the data. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/github/workspace/PredicMem23/<a class="el" href="SVMClassifier_8hpp_source.html">SVMClassifier.hpp</a></li>
 <li>/github/workspace/PredicMem23/<b>svm_classifier.cpp</b></li>

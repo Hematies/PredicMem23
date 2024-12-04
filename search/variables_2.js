@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['data_0',['data',['../classHashOnHashDFCM.html#a750d71adcb7b67aea0ee274c25544781',1,'HashOnHashDFCM::data'],['../classKOrderDFCM.html#add4835614551344cde7e20cc777df656',1,'KOrderDFCM::data']]],
-  ['delta_1',['delta',['../structDictionaryEntry.html#aea355780fd03ccb0ee01d11302aabee4',1,'DictionaryEntry']]],
-  ['dictionary_2',['dictionary',['../classBuffersSimulator.html#a3c19666cb1b0e02bed04dc93474d374d',1,'BuffersSimulator']]],
-  ['dictionarymemorycost_3',['dictionaryMemoryCost',['../classBuffersSVMPredictResultsAndCosts.html#a79b482bba89017e0e4114f3b1c5bc734',1,'BuffersSVMPredictResultsAndCosts']]],
-  ['dictionarymissesmask_4',['dictionaryMissesMask',['../classSVM.html#a59c6609cc16ce55abe850b38c4c549d8',1,'SVM']]],
-  ['dictionarymissrate_5',['dictionaryMissRate',['../classBuffersSVMPredictResultsAndCosts.html#ae2fb9e46de42589652b0a612c9bde458',1,'BuffersSVMPredictResultsAndCosts']]],
-  ['dictparams_6',['dictParams',['../structPredictorParameters.html#a18c4807bf93bdf3195662708672baa43',1,'PredictorParameters::dictParams'],['../structPredictorParametersDomain.html#a4083c9cb2867b4f9f0e6245901671015',1,'PredictorParametersDomain::dictParams']]]
+  ['c_0',['c',['../classSVMClassifier.html#ae600d1a043a0c5185a37224730ae9714',1,'SVMClassifier']]],
+  ['cachememorycost_1',['cacheMemoryCost',['../classBuffersSVMPredictResultsAndCosts.html#a0ca1b47d21f20373625922b6473e6431',1,'BuffersSVMPredictResultsAndCosts']]],
+  ['cachemissrate_2',['cacheMissRate',['../classBuffersSVMPredictResultsAndCosts.html#af1a362c1ff2989ca4e3182e438b9ddbc',1,'BuffersSVMPredictResultsAndCosts']]],
+  ['cacheparams_3',['cacheParams',['../structPredictorParameters.html#a80fdf767602503110a4895c8da57a0c8',1,'PredictorParameters::cacheParams'],['../structPredictorParametersDomain.html#ad3781f030bce62f7e514781481483a5b',1,'PredictorParametersDomain::cacheParams']]],
+  ['confidence_4',['confidence',['../structDictionaryEntry.html#a511561c5623b90f3e141225a9128cf76',1,'DictionaryEntry']]],
+  ['countmemorycapacity_5',['countMemoryCapacity',['../classHashOnHashDFCM.html#ac279a788e226d98f8be0a9a30d5c62b6',1,'HashOnHashDFCM::countMemoryCapacity'],['../classKOrderDFCM.html#ac2386d9f0887399d84868d016a5728f9',1,'KOrderDFCM::countMemoryCapacity']]],
+  ['currentline_6',['currentLine',['../classTraceReader.html#a00c5711ca9bde170d0a8f02fd22cb854',1,'TraceReader']]]
 ];

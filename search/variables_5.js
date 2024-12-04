@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['hashdeltatable_0',['hashDeltaTable',['../classHashOnHashDFCM.html#ac6187498264eb74be7cc218b734e5f42',1,'HashOnHashDFCM::hashDeltaTable'],['../classKOrderDFCM.html#a0df2f378905e11a9cc02f7d090f3a4a8',1,'KOrderDFCM::hashDeltaTable']]],
-  ['headway_1',['headWay',['../classHistoryCacheSet.html#a5513a36533e4cbf220fbef525ab64f17',1,'HistoryCacheSet']]],
-  ['history_2',['history',['../classStandardHistoryCacheEntry.html#a2aa32ed608ecf79dd730a6597cfd0ad2',1,'StandardHistoryCacheEntry']]],
-  ['historycache_3',['historyCache',['../classBuffersSimulator.html#a92531f6b17bd5fe4b7a2efbf9115a79e',1,'BuffersSimulator']]],
-  ['historycachetype_4',['historyCacheType',['../classHashOnHashDFCM.html#accacdea09f79b42681544d8cbddecebe',1,'HashOnHashDFCM::historyCacheType'],['../classKOrderDFCM.html#a8c25228a2b19609cc130ef67274fc0e3',1,'KOrderDFCM::historyCacheType']]],
-  ['hitrate_5',['hitRate',['../classHashOnHashDFCM.html#ac3475a645a27d8ef1cec57141cc0c626',1,'HashOnHashDFCM::hitRate'],['../classBuffersSVMPredictResultsAndCosts.html#a729ef523838ffcb99782d0c52bdd37a3',1,'BuffersSVMPredictResultsAndCosts::hitRate'],['../classDFCMPredictResultsAndCosts.html#a7ce77e7a0322f644f437dd37d0bd7653',1,'DFCMPredictResultsAndCosts::hitRate'],['../classKOrderDFCM.html#aa15bf298ffa9ca4165a85d118ee1e1d9',1,'KOrderDFCM::hitRate'],['../classSVM.html#a6f7134db3b4a3c913d3634c7f743ad9b',1,'SVM::hitRate']]]
+  ['file_0',['file',['../classTraceReader.html#a2d158c5ff879665bf8c7a4fd674a2d95',1,'TraceReader']]],
+  ['filename_1',['filename',['../structTraceInfo.html#afa9cdd3745b02a36f0562705b1d66547',1,'TraceInfo::filename'],['../classTraceReader.html#a9e07fd8a96c457d743a8fd2f14040cef',1,'TraceReader::filename']]],
+  ['firsttablecacheparams_2',['firstTableCacheParams',['../classHashOnHashDFCM.html#ad0a52c9c8349a8c584f63a5aa81de573',1,'HashOnHashDFCM::firstTableCacheParams'],['../classKOrderDFCM.html#a8ed1133ade526907e898a21aec51f304',1,'KOrderDFCM::firstTableCacheParams']]],
+  ['firsttablememorycost_3',['firstTableMemoryCost',['../classDFCMPredictResultsAndCosts.html#aff244afe1ef851023b14a6e2cb26d3b1',1,'DFCMPredictResultsAndCosts']]],
+  ['firsttablemissrate_4',['firstTableMissRate',['../classDFCMPredictResultsAndCosts.html#aaa45bbc213b5155c65d084ae2a4635ed',1,'DFCMPredictResultsAndCosts']]]
 ];

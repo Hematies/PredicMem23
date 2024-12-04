@@ -4,7 +4,7 @@ var searchData=
   ['model_1',['model',['../classSVM.html#ac42fe472d3b11c410362ccbaf6c34b06',1,'SVM']]],
   ['modelmemorycost_2',['modelMemoryCost',['../classBuffersSVMPredictResultsAndCosts.html#afc415826ecff5dd4590554b19827e05f',1,'BuffersSVMPredictResultsAndCosts']]],
   ['modelparameters_3',['ModelParameters',['../structModelParameters.html',1,'']]],
-  ['multisvmclassifier_4',['MultiSVMClassifier',['../classMultiSVMClassifier.html',1,'']]],
-  ['multisvmclassifieronetoall_5',['MultiSVMClassifierOneToAll',['../classMultiSVMClassifierOneToAll.html',1,'']]],
-  ['multisvmclassifieronetoone_6',['MultiSVMClassifierOneToOne',['../classMultiSVMClassifierOneToOne.html',1,'']]]
+  ['multisvmclassifier_4',['MultiSVMClassifier',['../classMultiSVMClassifier.html',1,'MultiSVMClassifier'],['../classMultiSVMClassifier.html#a7f2899b1810f99871036beb08eefe541',1,'MultiSVMClassifier::MultiSVMClassifier()'],['../classMultiSVMClassifier.html#a2eb659d218e1a090186ebcd34ef651b9',1,'MultiSVMClassifier::MultiSVMClassifier(int numFeatures, int numClasses, double c, unsigned int epochs, double learningRate)']]],
+  ['multisvmclassifieronetoall_5',['MultiSVMClassifierOneToAll',['../classMultiSVMClassifierOneToAll.html',1,'MultiSVMClassifierOneToAll'],['../classMultiSVMClassifierOneToAll.html#a5bafe7d5cf450a4065c0bea3e5acc5cd',1,'MultiSVMClassifierOneToAll::MultiSVMClassifierOneToAll()'],['../classMultiSVMClassifierOneToAll.html#af1338363642ed5af017600f32d655e96',1,'MultiSVMClassifierOneToAll::MultiSVMClassifierOneToAll(int numFeatures, int numClasses, double c, unsigned int epochs, double learningRate)']]],
+  ['multisvmclassifieronetoone_6',['MultiSVMClassifierOneToOne',['../classMultiSVMClassifierOneToOne.html',1,'MultiSVMClassifierOneToOne'],['../classMultiSVMClassifierOneToOne.html#a8e0656ff30417518270286faa7619d1e',1,'MultiSVMClassifierOneToOne::MultiSVMClassifierOneToOne()'],['../classMultiSVMClassifierOneToOne.html#aadc3f0a128522bbf80840cdb4428c545',1,'MultiSVMClassifierOneToOne::MultiSVMClassifierOneToOne(int numFeatures, int numClasses, double c, unsigned int epochs, double learningRate)']]]
 ];
