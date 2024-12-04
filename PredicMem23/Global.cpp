@@ -203,7 +203,7 @@ PredictorParametersDomain decodePredictorParametersDomain(TiXmlElement* element)
 
 	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; child = child->NextSiblingElement()) {
 		string childName = child->Value();
-		if (childName == "types") {
+		if (childName == "PredictorType") {
 			res.types.push_back(stringToPredictorTable[child->GetText()]);
 		}
 		else if (childName == "cacheParams") {
