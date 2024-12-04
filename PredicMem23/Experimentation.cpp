@@ -272,6 +272,12 @@ void TracePredictExperimentation::performAndExportExperimentations(string specsF
 		}
 	}
 
+	if (numAccessesPerExperiment <= 0) {
+		string msg = string("ERROR: The number accesses per experiment has to be greater than zero!\n");
+		std::cout << msg;
+		throw std::invalid_argument(msg);
+	}
+
 	TracePredictExperimentation::performAndExportExperimentations(tracesInfo, params, numAccessesPerExperiment, 
 		outputFilename, countTotalMemory);
 }

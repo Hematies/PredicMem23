@@ -22,6 +22,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 #include "Global.h"
+#include <filesystem>
 
 
 vector<PredictorParameters> decomposeCacheParameters(vector<PredictorParameters>& base, CacheParametersDomain& domain, vector<string> params,
@@ -174,6 +175,17 @@ CacheParametersDomain decodeCacheParametersDomain(TiXmlElement* element) {
 			res.saveHistoryAndClassIfNotValid.push_back((bool)std::stoi(child->GetText()));
 		}
 	}
+	if (res.numIndexBits.size() == 0 || res.numWays.size() == 0 ||
+		res.numSequenceAccesses.size() == 0 || res.saveHistoryAndClassIfNotValid.size() == 0) {
+		string missingVar = "";
+		if (res.numIndexBits.size() == 0) missingVar = "numIndexBits";
+		else if (res.numWays.size() == 0) missingVar = "numWays";
+		else if (res.numSequenceAccesses.size() == 0) missingVar = "numSequenceAccesses";
+		else missingVar = "saveHistoryAndClassIfNotValid";
+		string msg = string("ERROR: Cache ") + missingVar + string(" parameter is missing!\n");
+		throw std::invalid_argument(msg);
+	}
+
 	return res;
 }
 
@@ -195,6 +207,17 @@ DictionaryParametersDomain decodeDictionaryParametersDomain(TiXmlElement* elemen
 			res.saveHistoryAndClassIfNotValid.push_back((bool)std::stoi(child->GetText()));
 		}
 	}
+	if (res.numClasses.size() == 0 || res.maxConfidence.size() == 0
+		|| res.numConfidenceJumps.size() == 0 || res.saveHistoryAndClassIfNotValid.size() == 0) {
+		string missingVar = "";
+		if (res.numClasses.size() == 0) missingVar = "numClasses";
+		else if (res.maxConfidence.size() == 0) missingVar = "maxConfidence";
+		else if (res.numConfidenceJumps.size() == 0) missingVar = "numConfidenceJumps";
+		else missingVar = "saveHistoryAndClassIfNotValid";
+		string msg = string("ERROR: Dictionary ") + missingVar + string(" parameter is missing!\n");
+		std::cout << msg;
+		throw std::invalid_argument(msg);
+	}
 	return res;
 }
 
@@ -204,6 +227,11 @@ PredictorParametersDomain decodePredictorParametersDomain(TiXmlElement* element)
 	for (TiXmlElement* child = element->FirstChildElement(); child != NULL; child = child->NextSiblingElement()) {
 		string childName = child->Value();
 		if (childName == "PredictorType") {
+			if (stringToPredictorTable.find(child->GetText()) == stringToPredictorTable.end()) {
+				string msg = string("ERROR: Predictor type ") + child->GetText() + string(" is not implemented!\n");
+				std::cout << msg;
+				throw std::invalid_argument(msg);
+			}
 			res.types.push_back(stringToPredictorTable[child->GetText()]);
 		}
 		else if (childName == "cacheParams") {
@@ -216,6 +244,7 @@ PredictorParametersDomain decodePredictorParametersDomain(TiXmlElement* element)
 			res.dictParams = decodeDictionaryParametersDomain(child);
 		}
 	}
+	
 	return res;
 }
 
@@ -237,6 +266,18 @@ TraceInfo decodeTraceInfo(TiXmlElement* element) {
 	res.filename = filename;
 	res.name = name;
 	res.numAccesses = numAccesses;
+
+	if (res.filename == "" || !std::filesystem::exists(res.filename)) {
+		string msg = string("ERROR: Trace filepath ") + res.filename + string(" does not exist!\n");
+		std::cout << msg;
+		throw std::invalid_argument(msg);
+	}
+
+	if (res.numAccesses <= 0) {
+		string msg = string("ERROR: The number of trace accesses has to be greater than zero!\n");
+		std::cout << msg;
+		throw std::invalid_argument(msg);
+	}
 
 	return res;
 }
