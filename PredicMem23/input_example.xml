@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<InputConfig>
+    <TracesInfo>
+      <!--
+      <TraceInfo name="perlbench_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\perlbench_s.out" numAccesses="10000000"/>
+      <TraceInfo name="gcc_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\gcc_s.out" numAccesses="10000000"/>
+      <TraceInfo name="mcf_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\mcf_s.out" numAccesses="10000000"/>
+      <TraceInfo name="lbm_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\lbm_s.out" numAccesses="10000000"/>
+      <TraceInfo name="omnetpp_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\omnetpp_s.out" numAccesses="10000000"/>
+      <TraceInfo name="xalancbmk_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\xalancbmk_s.out" numAccesses="10000000"/>
+      <TraceInfo name="x264_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\x264_s.out" numAccesses="10000000"/>
+      <TraceInfo name="deepsjeng_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\deepsjeng_s.out" numAccesses="10000000"/>
+      <TraceInfo name="leela_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\leela_s.out" numAccesses="10000000"/>
+      <TraceInfo name="cactuBSSN_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\cactuBSSN_s.out" numAccesses="10000000"/>
+      <TraceInfo name="exchange2_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\exchange2_s.out" numAccesses="10000000"/>
+      <TraceInfo name="roms_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\TrazasRecortadas\roms_s.out" numAccesses="10000000"/>
+      -->
+      <TraceInfo name="bodytrack_cut_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\MemMAP\data\bodytrack_1_1M.out" numAccesses="5000000"/>
+      <TraceInfo name="canneal_cut_s" filename="C:\Users\pablo\Desktop\Doctorado\PredicMem24\MemMAP\data\canneal_1_1M.out" numAccesses="5000000"/>
+    </TracesInfo>
+    <PredictorParametersDomain>
+        <PredictorType>BufferSVM</PredictorType>
+        <PredictorType>DFCM</PredictorType>
+        <cacheParams>
+            <numIndexBits>7</numIndexBits>
+            <numIndexBits>8</numIndexBits>
+            <numIndexBits>9</numIndexBits>
+            <numWays>2</numWays>
+            <numWays>4</numWays>
+            <numSequenceAccesses>4</numSequenceAccesses>
+            <numSequenceAccesses>8</numSequenceAccesses>
+            <saveHistoryAndClassIfNotValid>1</saveHistoryAndClassIfNotValid>
+        </cacheParams>
+        <additionalCacheParams>
+            <numIndexBits>7</numIndexBits>
+            <numWays>2</numWays>
+            <numSequenceAccesses>-1</numSequenceAccesses>
+            <saveHistoryAndClassIfNotValid>1</saveHistoryAndClassIfNotValid>
+        </additionalCacheParams>
+        <dictParams>
+            <numClasses>6</numClasses>
+            <numClasses>8</numClasses>
+            <maxConfidence>255</maxConfidence>
+            <maxConfidence>127</maxConfidence>
+            <numConfidenceJumps>4</numConfidenceJumps>
+            <numConfidenceJumps>8</numConfidenceJumps>
+            <saveHistoryAndClassIfNotValid>1</saveHistoryAndClassIfNotValid>
+        </dictParams>
+    </PredictorParametersDomain>
+    <numAccessesPerExperiment>2500000</numAccessesPerExperiment>
+    <outputFilename>C:\Users\pablo\Desktop\Doctorado\PredicMem22\PredicMem23\PredicMem23\results\output_example.xml</outputFilename>
+    <countTotalMemory>0</countTotalMemory>
+</InputConfig>

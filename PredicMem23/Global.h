@@ -10,8 +10,10 @@
 /// - ModelParameters
 /// - CacheParameters
 /// - CacheParametersDomain
+/// - decodeCacheParametersDomain
 /// - DictionaryParameters
 /// - DictionaryParametersDomain
+/// - decodeDictionaryParametersDomain
 /// - PredictorModelType
 /// - PredictorParameters
 /// - PredictorParametersDomain
@@ -20,6 +22,7 @@
 /// - BuffersSVMPredictResultsAndCosts
 /// - DFCMPredictResultsAndCosts
 /// - TraceInfo
+/// - decodeTraceInfo
 /// - AccessesDataset
 /// - BuffersDataset
 ///
@@ -52,6 +55,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <tinyxml.h>
 
 using namespace std;
 using std::vector;
@@ -77,6 +81,7 @@ struct CacheParameters {
 	bool saveHistoryAndClassIfNotValid; ///< Flag to save history and class if not valid.
 };
 
+
 /**
  * @brief Structure to store domain of cache parameters.
  */
@@ -86,6 +91,12 @@ struct CacheParametersDomain {
 	vector<int> numSequenceAccesses; ///< Domain of number of sequence accesses.
 	vector<bool> saveHistoryAndClassIfNotValid; ///< Domain of save history and class if not valid flag.
 };
+
+/**
+*  @brief Decodification function from XML to CacheParametersDomain.
+* @param element XML element that contains the CacheParametersDomain
+*/
+CacheParametersDomain decodeCacheParametersDomain(TiXmlElement* element);
 
 
 /**
@@ -109,9 +120,20 @@ struct DictionaryParametersDomain {
 };
 
 /**
+*  @brief Decodification function from XML to DictionaryParametersDomain.
+* @param element XML element that contains the DictionaryParametersDomain
+*/
+DictionaryParametersDomain decodeDictionaryParametersDomain(TiXmlElement* element);
+
+/**
  * @brief Enum class for predictor model types.
  */
 enum class PredictorModelType { BufferSVM, DFCM };
+
+static map<string, PredictorModelType> stringToPredictorTable = { 
+	{ "BufferSVM", PredictorModelType::BufferSVM },
+	{ "DFCM", PredictorModelType::DFCM}
+};
 
 /**
  * @brief Structure to store predictor parameters.
@@ -132,6 +154,12 @@ struct PredictorParametersDomain {
 	CacheParametersDomain additionalCacheParams; ///< Domain of additional cache parameters.
 	DictionaryParametersDomain dictParams; ///< Domain of dictionary parameters.
 };
+
+/**
+*  @brief Decodification function from XML to PredictorParametersDomain.
+* @param element XML element that contains the PredictorParametersDomain
+*/
+PredictorParametersDomain decodePredictorParametersDomain(TiXmlElement* element);
 
 /**
  * @brief Decomposes a predictor parameters domain into a vector of predictor parameters.
@@ -330,6 +358,12 @@ struct TraceInfo {
 	std::string filename; ///< Trace filename.
 	unsigned long numAccesses; ///< Number of accesses.
 };
+
+/**
+*  @brief Decodification function from XML to TraceInfo.	
+* @param element XML element that contains the TraceInfo 
+*/
+TraceInfo decodeTraceInfo(TiXmlElement* element);
 
 
 /**

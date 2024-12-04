@@ -239,6 +239,49 @@ void TracePredictExperimentation::buildExperiments(vector<TraceInfo> tracesInfo,
 	}
 }
 
+void TracePredictExperimentation::performAndExportExperimentations(string specsFilePath) {
+	
+	vector<TraceInfo> tracesInfo;
+	PredictorParametersDomain params; 
+	long numAccessesPerExperiment = 0L; 
+	string outputFilename; 
+	bool countTotalMemory = false;
+	
+	TiXmlDocument doc(specsFilePath);
+	doc.LoadFile();
+	auto root = doc.FirstChildElement();
+
+	for (TiXmlElement* element = root->FirstChildElement(); element != NULL; element = element->NextSiblingElement()) {
+		string elemName = element->Value();
+		if (elemName == "TracesInfo") {
+			for (TiXmlElement* traceInfo = element->FirstChildElement(); traceInfo != NULL; traceInfo = traceInfo->NextSiblingElement()) {
+				tracesInfo.push_back(decodeTraceInfo(traceInfo));
+			}
+		}
+		else if (elemName == "PredictorParametersDomain") {
+			params = decodePredictorParametersDomain(element);
+		}
+		else if (elemName == "numAccessesPerExperiment") {
+			numAccessesPerExperiment = std::stol(element->GetText());
+		}
+		else if (elemName == "outputFilename") {
+			outputFilename = element->GetText();
+		}
+		else if (elemName == "countTotalMemory") {
+			countTotalMemory = (bool)std::stoi(element->GetText());
+		}
+	}
+
+	if (numAccessesPerExperiment <= 0) {
+		string msg = string("ERROR: The number accesses per experiment has to be greater than zero!\n");
+		std::cout << msg;
+		throw std::invalid_argument(msg);
+	}
+
+	TracePredictExperimentation::performAndExportExperimentations(tracesInfo, params, numAccessesPerExperiment, 
+		outputFilename, countTotalMemory);
+}
+
 void TracePredictExperimentation::performAndExportExperimentations(vector<TraceInfo> tracesInfo,
 	PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory = false) {
 	vector<PredictorParameters> allPredictorParams = decomposePredictorParametersDomain(params);

@@ -200,6 +200,13 @@ public:
 	static void performAndExportExperimentations(vector<TraceInfo> tracesInfo,
 		PredictorParametersDomain params, long numAccessesPerExperiment, string outputFilename, bool countTotalMemory);
 
+	/**
+	 * @brief Static method to perform and export experimentations.
+	 * @param specsFilePath Path of the XML file that contains all info related to (1) the traces, (2) the predicor's parameters
+	 * (3) the number of accesses per experiment, (4) the output file path and (5) if the total memory cost should be counted.
+	 */
+	static void performAndExportExperimentations(string specsFilePath);
+
 	TraceReader<L64bu, L64bu> traceReader; ///< Trace reader.
 
 	/**

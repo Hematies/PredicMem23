@@ -275,7 +275,7 @@ public:
 				for (auto e : input)
 					in += to_string((e - 1.0) * numInputClasses) + ", ";
 				std::cout << in << " -> " << output << " vs " << predictedOutput << std::endl;
-				std::cout << "Tasa de éxito: " << (double)numHits / (i + 1) << " ; " << ((double)i) / inputData.size() << std::endl;
+				std::cout << "Hit rate: " << (double)numHits / (i + 1) << " ; " << ((double)i) / inputData.size() << std::endl;
 			}
 
 		}
