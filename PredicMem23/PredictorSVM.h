@@ -49,7 +49,7 @@ private:
     int numPartsToPrint = 10000; ///< Number of parts to print during simulation.
     int numInputClasses; ///< The number of input classes.
 
-    shared_ptr<Encoder<uint8_t, float>> encoder;
+    shared_ptr<Encoder<T_input, float>> encoder;
 
 public:
     vector<vector<float>> inputData = vector<vector<float>>(); ///< Input data for training.
@@ -109,8 +109,8 @@ public:
 
         importData(classesDataset);
         initializeModel();
-        this->encoder = shared_ptr<Encoder<uint8_t, float>>(
-            (Encoder<uint8_t, float>*) new OneHotEncoder<uint8_t, float>(numClasses)
+        this->encoder = shared_ptr<Encoder<T_input, float>>(
+            (Encoder<T_input, float>*) new OneHotEncoder<T_input, float>(numClasses)
         );
     }
 
@@ -132,8 +132,8 @@ public:
         if (predictOnNonValidInput) numInputClasses++;
 
         initializeModel();
-        this->encoder = shared_ptr<Encoder<uint8_t, float>>(
-            (Encoder<uint8_t, float>*) new OneHotEncoder<uint8_t, float>(numClasses)
+        this->encoder = shared_ptr<Encoder<T_input, float>>(
+            (Encoder<T_input, float>*) new OneHotEncoder<T_input, float>(numClasses)
         );
     }
 
@@ -148,8 +148,8 @@ public:
         this->numSequenceElements = 0;
         this->numClasses = 0;
         this->predictOnNonValidInput = true;
-        this->encoder = shared_ptr<Encoder<uint8_t, float>>(
-            (Encoder<uint8_t, float>*) new OneHotEncoder<uint8_t, float>(1)
+        this->encoder = shared_ptr<Encoder<T_input, float>>(
+            (Encoder<T_input, float>*) new OneHotEncoder<T_input, float>(1)
         );
     }
 
@@ -183,7 +183,7 @@ public:
                 input.push_back(((float)classesDataset.inputAccesses[i][j]) / numInputClasses + 1.0);
             }
             */
-            input = adaptSequenceForSVM<Encoder>(this->encoder, classesDataset.inputAccesses[i]);
+            input = adaptSequenceForSVM<T_input, float>(this->encoder, classesDataset.inputAccesses[i]);
 
             output = classesDataset.outputAccesses[i];
             isInputValid = classesDataset.isValid[i];

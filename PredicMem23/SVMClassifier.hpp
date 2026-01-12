@@ -6,7 +6,6 @@
 using namespace std;
 
 
-long minWeight = +0L, maxWeight = -0L;
 
 template<typename T>
 string vectorToString(vector<T> v);
@@ -202,6 +201,9 @@ public:
 	* parameters w and b in case of prediction miss controlled by the stablished lerarning rate.
 	*/
 	void fit(vector<vector<double>>& data, vector<int>& label, double learningRate = 0) {
+
+		static long minWeight = +0L, maxWeight = -0L;
+
 
 		if (w.size() == 0)
 			w.resize(data[0].size());

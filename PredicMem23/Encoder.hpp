@@ -11,9 +11,9 @@ public:
     virtual void clean() = 0;
 };
 
-template <typename encoder_t>
-vector<float> adaptSequenceForSVM(encoder_t& encoder, vector<uint8_t>& sequence) {
-    return encoder.encode(sequence);
+template <typename InType, typename OutType>
+vector<OutType> adaptSequenceForSVM(shared_ptr<Encoder<InType, OutType>> encoder, vector<InType>& sequence) {
+    return encoder->encode(sequence);
 }
 
 
