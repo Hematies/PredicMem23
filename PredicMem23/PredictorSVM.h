@@ -29,6 +29,7 @@
 //#include "Experimentation.h"
 #include "Global.h"
 #include "PredictorModel.h"
+#include "Encoder.hpp"
 
 using namespace std;
 
@@ -47,6 +48,8 @@ class SVM : PredictorModel<L64bu, T_input> {
 private:
     int numPartsToPrint = 10000; ///< Number of parts to print during simulation.
     int numInputClasses; ///< The number of input classes.
+
+    shared_ptr<Encoder<uint8_t, float>> encoder;
 
 public:
     vector<vector<float>> inputData = vector<vector<float>>(); ///< Input data for training.
@@ -106,6 +109,9 @@ public:
 
         importData(classesDataset);
         initializeModel();
+        this->encoder = shared_ptr<Encoder<uint8_t, float>>(
+            (Encoder<uint8_t, float>*) new OneHotEncoder<uint8_t, float>(numClasses)
+        );
     }
 
     /**
@@ -126,6 +132,9 @@ public:
         if (predictOnNonValidInput) numInputClasses++;
 
         initializeModel();
+        this->encoder = shared_ptr<Encoder<uint8_t, float>>(
+            (Encoder<uint8_t, float>*) new OneHotEncoder<uint8_t, float>(numClasses)
+        );
     }
 
     /**
@@ -139,6 +148,9 @@ public:
         this->numSequenceElements = 0;
         this->numClasses = 0;
         this->predictOnNonValidInput = true;
+        this->encoder = shared_ptr<Encoder<uint8_t, float>>(
+            (Encoder<uint8_t, float>*) new OneHotEncoder<uint8_t, float>(1)
+        );
     }
 
     /**
@@ -166,9 +178,12 @@ public:
             char output = -1;
             char isInputValid = false;
 
+            /*
             for (int j = 0; j < classesDataset.inputAccesses[i].size(); j++) {
                 input.push_back(((float)classesDataset.inputAccesses[i][j]) / numInputClasses + 1.0);
             }
+            */
+            input = adaptSequenceForSVM<Encoder>(this->encoder, classesDataset.inputAccesses[i]);
 
             output = classesDataset.outputAccesses[i];
             isInputValid = classesDataset.isValid[i];

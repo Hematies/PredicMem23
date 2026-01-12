@@ -581,7 +581,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 			}
 
 			// We test the buffers just in case:
-			noError = this->testBuffers(instruction, access, previousAccess);
+		noError = this->testBuffers(instruction, access, previousAccess);
 
 			if (!noError)
 				cout << "ERROR" << endl;
@@ -592,7 +592,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 			outputAccess = class_;
 
 			// We test the buffers just in case:
-			noError = this->testBuffers(instruction, access, previousAccess);
+		noError = this->testBuffers(instruction, access, previousAccess);
 
 			if (!noError)
 				cout << "ERROR" << endl;
@@ -606,7 +606,7 @@ BuffersDataset<A> BuffersSimulator<T, I, A, LA, Delta>::simulate(AccessesDataset
 
 		numFallosDiccionario += isDictionaryMiss;
 
-		history.reset();
+	history.reset();
 	}
 
 	printf("\nFallos de diccionario: %f", (double)numFallosDiccionario / accesses.size());

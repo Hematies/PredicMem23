@@ -145,14 +145,13 @@
     <ClCompile Include="Experimentation.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="multi_svm_classifier.cpp" />
     <ClCompile Include="PredictorDFCM.cpp" />
     <ClCompile Include="PredictorSVM.cpp" />
-    <ClCompile Include="svm_classifier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuffersSimulator.h" />
     <ClInclude Include="DFCM.h" />
+    <ClInclude Include="Encoder.hpp" />
     <ClInclude Include="Experimentation.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="KOrderDFCM.h" />
