@@ -204,7 +204,7 @@ public:
     void initializeModel() {
         double c = 1.0;
         double learningRate = 0.7;
-        model = T_pred(this->numSequenceElements, this->numClasses, c, 1, learningRate);
+        model = T_pred(this->numSequenceElements * this->numClasses, this->numClasses, c, 1, learningRate);
     }
 
     /**
