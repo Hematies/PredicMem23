@@ -1,18 +1,18 @@
 <?xml version="1.0" ?>
 <InputConfig>
     <TracesInfo>
-      <TraceInfo name="perlbench_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\600.perlbench_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="gcc_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\602.gcc_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="mcf_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\605.mcf_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="lbm_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\619.lbm_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="omnetpp_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\620.omnetpp_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="xalancbmk_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\623.xalancbmk_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="x264_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\625.x264_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="deepsjeng_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\631.deepsjeng_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="leela_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\641.leela_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="cactuBSSN_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\607.cactuBSSN_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="exchange2_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\648.exchange2_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
-      <TraceInfo name="roms_s" filename="D:\TrazasDistribSPEC\benchspec\CPU\654.roms_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="perlbench_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\600.perlbench_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="gcc_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\602.gcc_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="mcf_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\605.mcf_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="lbm_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\619.lbm_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="omnetpp_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\620.omnetpp_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="xalancbmk_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\623.xalancbmk_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="x264_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\625.x264_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="deepsjeng_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\631.deepsjeng_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="leela_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\641.leela_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="cactuBSSN_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\607.cactuBSSN_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="exchange2_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\648.exchange2_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
+      <TraceInfo name="roms_s" filename="E:\TrazasDistribSPEC\benchspec\CPU\654.roms_s\run\run_peak_refspeed_mytest-m64.0000\pinatrace.out" numAccesses="10000000"/>
       
     </TracesInfo>
     <PredictorParametersDomain>
@@ -37,7 +37,7 @@
             <saveHistoryAndClassIfNotValid>1</saveHistoryAndClassIfNotValid>
         </dictParams>
     </PredictorParametersDomain>
-    <numAccessesPerExperiment>2500000</numAccessesPerExperiment>
-    <outputFilename>C:\Users\EQUIPO\Desktop\cache_testbenchs\PredicMem23\output_example_predicmem24.xml</outputFilename>
+    <numAccessesPerExperiment>5000000</numAccessesPerExperiment>
+    <outputFilename>C:\Users\pablo\Desktop\Doctorado\PredicMem22\PredicMem23\Stats\output_example_predicmem24.xml</outputFilename>
     <countTotalMemory>0</countTotalMemory>
 </InputConfig>

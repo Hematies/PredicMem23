@@ -288,7 +288,7 @@ public:
 			if (i % numPartsToPrint == 0) {
 				string in = "";
 				for (auto e : input)
-					in += to_string((e - 1.0) * numInputClasses) + ", ";
+					in += to_string(e) + ", ";
 				std::cout << in << " -> " << output << " vs " << predictedOutput << std::endl;
 				std::cout << "Hit rate: " << (double)numHits / (i + 1) << " ; " << ((double)i) / inputData.size() << std::endl;
 			}

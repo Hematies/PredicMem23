@@ -542,13 +542,14 @@ public:
  * @tparam LA Type of the last access.
  */
 template<typename T, typename I, typename A, typename LA>
-class RealHistoryCache : public HistoryCache<T, I, A, LA>, public InfiniteHistoryCache<T, I, A, LA> {
+class RealHistoryCache : public HistoryCache<T, I, A, LA> {
 protected:
 	// map<I, RealHistoryCache<T, A, LA>> entries;
 	vector<HistoryCacheSet<T, I, A, LA>> sets; ///< Cache sets.
 	int numWays; ///< Number of ways.
 	int numIndexBits; ///< Number of index bits.
-	// int numAccesses;
+	int numAccesses; ///< Number of accesses.
+	int numClasses; ///< Number of classes.
 public:
 
 	/**
