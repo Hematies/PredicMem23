@@ -57,6 +57,8 @@
 #include <vector>
 #include <tinyxml.h>
 
+#include<iostream>
+
 using namespace std;
 using std::vector;
 using std::map;

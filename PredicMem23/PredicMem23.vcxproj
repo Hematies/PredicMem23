@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="BuffersSimulator.h" />
     <ClInclude Include="DFCM.h" />
+    <ClInclude Include="Encoder.hpp" />
     <ClInclude Include="Experimentation.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="KOrderDFCM.h" />

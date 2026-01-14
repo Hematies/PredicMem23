@@ -247,7 +247,7 @@ void TracePredictExperimentation::performAndExportExperimentations(string specsF
 	string outputFilename; 
 	bool countTotalMemory = false;
 	
-	TiXmlDocument doc(specsFilePath);
+	TiXmlDocument doc(specsFilePath.c_str());
 	doc.LoadFile();
 	auto root = doc.FirstChildElement();
 
